@@ -1,0 +1,60 @@
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/home/jobmate/JobMate:cached
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - 8080:8080
+      - 5173:5173
+    networks:
+      - jobmate-network
+  mysql:
+    image: mysql:8.0
+    user: "1000:1000"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=jobmate_db
+      - MYSQL_USER=jobmate_admin
+      - MYSQL_PASSWORD=jobmate_password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - jobmate-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  redis:
+    image: redis:7.2-alpine
+    volumes:
+      - redis-data:/data
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=jobmate_password
+    networks:
+      - jobmate-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "{REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+networks:
+  jobmate-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
