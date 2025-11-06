@@ -1,8 +1,9 @@
 package cn.edu.zju.cs.jobmate.service;
 
-import cn.edu.zju.cs.jobmate.entity.User;
+import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -12,6 +13,9 @@ public class AuthService {
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     
     /**
      * 用户注册
@@ -36,8 +40,9 @@ public class AuthService {
             return new RegisterResult(false, "用户名已存在", null);
         }
         
-        // 创建新用户
-        User user = new User(username, password, displayName);
+        // 创建新用户（密码加密）
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = new User(username, encodedPassword, displayName);
         User savedUser = userRepository.save(user);
         
         return new RegisterResult(true, "注册成功", savedUser);
@@ -68,8 +73,8 @@ public class AuthService {
         
         User user = userOpt.get();
         
-        // 验证密码（注意：实际项目中应该使用加密密码）
-        if (!password.equals(user.getPassword())) {
+        // 验证密码（使用加密密码）
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             return new LoginResult(false, "用户名或密码错误", null);
         }
         

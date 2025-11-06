@@ -1,14 +1,21 @@
-package cn.edu.zju.cs.jobmate.entity;
+package cn.edu.zju.cs.jobmate.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 
+/**
+ * User entity.
+ */
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +51,42 @@ public class User {
         this.displayName = displayName;
     }
     
+    // UserDetails接口实现
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList(); // 暂时返回空权限列表，后续可扩展角色权限
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+    
     // Getter和Setter方法
     public Long getId() {
         return id;
@@ -53,16 +96,8 @@ public class User {
         this.id = id;
     }
     
-    public String getUsername() {
-        return username;
-    }
-    
     public void setUsername(String username) {
         this.username = username;
-    }
-    
-    public String getPassword() {
-        return password;
     }
     
     public void setPassword(String password) {

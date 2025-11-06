@@ -1,6 +1,6 @@
 package cn.edu.zju.cs.jobmate.repository;
 
-import cn.edu.zju.cs.jobmate.entity.User;
+import cn.edu.zju.cs.jobmate.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

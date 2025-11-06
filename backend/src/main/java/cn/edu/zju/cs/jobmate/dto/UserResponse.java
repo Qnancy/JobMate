@@ -1,6 +1,6 @@
 package cn.edu.zju.cs.jobmate.dto;
 
-import cn.edu.zju.cs.jobmate.entity.User;
+import cn.edu.zju.cs.jobmate.models.User;
 
 import java.time.LocalDateTime;
 
