@@ -1,16 +1,21 @@
 package cn.edu.zju.cs.jobmate.models;
 
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * Company entity.
  */
+@Entity
+@Table(name = "company")
 public class Company {
 
     @Id
