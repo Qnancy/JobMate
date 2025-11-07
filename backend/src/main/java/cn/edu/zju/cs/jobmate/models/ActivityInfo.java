@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
  * @see Info
  */
 @Entity
-@Table(name = "job_info")
+@Table(name = "activity_info")
 public class ActivityInfo extends Info {
 
     @Column(name = "title", nullable = false)
