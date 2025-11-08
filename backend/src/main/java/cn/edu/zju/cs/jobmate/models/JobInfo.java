@@ -57,8 +57,9 @@ public class JobInfo extends Info {
                 ", company=" + getCompany() +
                 ", recruitType=" + recruitType +
                 ", position='" + position + "\'" +
-                ", link='" + getLink() + "\'" +
+                ", city='" + getCity() + '\'' +
                 ", location='" + getLocation() + "\'" +
+                ", link='" + getLink() + "\'" +
                 ", extra='" + getExtra() + "\'" +
                 '}';
     }
