@@ -6,8 +6,6 @@ import org.springframework.util.Assert;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,21 +28,12 @@ public class Subsription {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "info_id", updatable = false)
+    @JoinColumn(name = "activity_info_id", updatable = false)
     private ActivityInfo activityInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "info_id", updatable = false)
+    @JoinColumn(name = "job_info_id", updatable = false)
     private JobInfo jobInfo;
-
-    private enum SubscriptionType {
-        ACTIVITY,
-        JOB
-    }
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private SubscriptionType type;
 
     @Column(name = "subscribed_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime subscribedAt;
@@ -56,29 +45,26 @@ public class Subsription {
         Assert.notNull(activityInfo, "Subscribed info must not be null");
         this.user = user;
         this.activityInfo = activityInfo;
-        this.type = SubscriptionType.ACTIVITY;
     }
 
     public Subsription(User user, JobInfo jobInfo) {
         Assert.notNull(jobInfo, "Subscribed info must not be null.");
         this.user = user;
         this.jobInfo = jobInfo;
-        this.type = SubscriptionType.JOB;
     }
 
     @PrePersist
     protected void onCreate() {
         this.subscribedAt = LocalDateTime.now();
 
-        // Validate consistency between type and info.
-        if (this.type == SubscriptionType.ACTIVITY && this.activityInfo != null) {
-            return ;
-        }
-        if (this.type == SubscriptionType.JOB && this.jobInfo != null) {
-            return ;
-        }
+        // Validate info entity.
         // TODO: Print error log.
-        throw new IllegalStateException("Inconsistent subscription type and info.");
+        if (this.activityInfo == null && this.jobInfo == null) {
+            throw new IllegalStateException("Empty or null subscription info.");
+        }
+        if (this.activityInfo != null && this.jobInfo != null) {
+            throw new IllegalStateException("Conflicting subscription info.");
+        }
     }
 
     public Integer getId() {
@@ -94,7 +80,13 @@ public class Subsription {
     }
 
     public Info getInfo() {
-        return this.type == SubscriptionType.ACTIVITY ? this.activityInfo : this.jobInfo;
+        if (this.activityInfo != null) {
+            return this.activityInfo;
+        }
+        if (this.jobInfo != null) {
+            return this.jobInfo;
+        }
+        return null;
     }
 
     public void setUser(User user) {
@@ -108,7 +100,6 @@ public class Subsription {
                 ", user=" + user +
                 ", activityInfo=" + activityInfo +
                 ", jobInfo=" + jobInfo +
-                ", type=" + type +
                 ", subscribedAt=" + subscribedAt +
                 '}';
     }
