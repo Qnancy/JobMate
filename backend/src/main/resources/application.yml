@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: JobMate
+  sql:
+    init:
+      mode: never
+  datasource:
+    url: jdbc:mysql://localhost:3306/jobmate_db?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8
+    username: jobmate_dev
+    password: JobMate@123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 600000
+      connection-timeout: 30000
+    jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: false
+      properties:
+        hibernate:
+          format_sql: true
+          use_sql_comments: false
+          connection:
+            characterEncoding: utf8
+            useUnicode: true
+      open-in-view: false
+    data:
+      redis:
+        host: localhost
+        port: 6379
+        password: JobMate@123
+        lettuce:
+          pool:
+            max-active: 8
+            max-idle: 8
+            min-idle: 0
+            max-wait: 2000ms
+        timeout: 2000ms
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    cn.edu.zju.cs.jobmate: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+  file:
+    name: logs/jobmate.log
+
+app:
