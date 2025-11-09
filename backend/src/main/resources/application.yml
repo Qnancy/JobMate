@@ -45,12 +45,23 @@ server:
 
 logging:
   level:
-    root: INFO
+    root: WARN
+    org.springframework: WARN
+    org.hibernate.SQL: WARN
     cn.edu.zju.cs.jobmate: DEBUG
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
-    name: logs/jobmate.log
+    name: ../logs/jobmate.log
+    path: ../logs/
+  logback:
+    rollingpolicy:
+      max-file-size: 1MB
+      max-history: 30
+      total-size-cap: 30MB
+      file-name-pattern: ../logs/jobmate-dev.%d{yyyy-MM-dd}.%i.log
+  charset:
+    file: UTF-8
 
 app:
