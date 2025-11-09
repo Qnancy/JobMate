@@ -8,7 +8,6 @@ import { RouterView } from "vue-router";
   <RouterView />
   <van-tabbar route>
     <van-tabbar-item to="/" icon="home-o">主页</van-tabbar-item>
-    <van-tabbar-item to="/info" icon="search">信息</van-tabbar-item>
     <van-tabbar-item to="/my" icon="friends-o">我的</van-tabbar-item>
   </van-tabbar>
 </template>
