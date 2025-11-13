@@ -14,9 +14,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "subscription")
+@Table(name = "subscription",
+       uniqueConstraints = {
+           @UniqueConstraint(name = "uk_user_activity", 
+                            columnNames = {"user_id", "activity_info_id"}),
+           @UniqueConstraint(name = "uk_user_job", 
+                            columnNames = {"user_id", "job_info_id"})
+       })
 public class Subsription {
 
     @Id
