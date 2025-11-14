@@ -1,6 +1,7 @@
 package cn.edu.zju.cs.jobmate.models;
 
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
+import cn.edu.zju.cs.jobmate.models.bases.Info;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +15,7 @@ import jakarta.persistence.Table;
  * @see Info
  */
 @Entity
-@Table(name = "job_info")
+@Table(name = "job_infos")
 public class JobInfo extends Info {
 
     @Enumerated(EnumType.STRING)
