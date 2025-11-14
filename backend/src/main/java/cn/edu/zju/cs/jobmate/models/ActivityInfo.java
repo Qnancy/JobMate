@@ -1,5 +1,7 @@
 package cn.edu.zju.cs.jobmate.models;
 
+import cn.edu.zju.cs.jobmate.models.bases.Info;
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -12,7 +14,7 @@ import jakarta.persistence.Table;
  * @see Info
  */
 @Entity
-@Table(name = "activity_info")
+@Table(name = "activity_infos")
 public class ActivityInfo extends Info {
 
     @Column(name = "title", nullable = false)
