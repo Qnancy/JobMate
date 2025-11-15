@@ -3,6 +3,8 @@ package cn.edu.zju.cs.jobmate.repositories;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,12 +25,30 @@ public interface JobInfoRepository extends JpaRepository<JobInfo, Integer> {
     List<JobInfo> findByCompany(Company company);
 
     /**
+     * Find job infos by company with pagination.
+     *
+     * @param company company entity
+     * @param pageable pageable
+     * @return page of job infos
+     */
+    Page<JobInfo> findByCompany(Company company, Pageable pageable);
+
+    /**
      * Find job infos by company id.
      *
      * @param companyId company id
      * @return list of job infos
      */
     List<JobInfo> findByCompanyId(Integer companyId);
+
+    /**
+     * Find job infos by company id with pagination.
+     *
+     * @param companyId company id
+     * @param pageable pageable
+     * @return page of job infos
+     */
+    Page<JobInfo> findByCompanyId(Integer companyId, Pageable pageable);
 
     /**
      * Find job infos by recruit type.
@@ -39,12 +59,30 @@ public interface JobInfoRepository extends JpaRepository<JobInfo, Integer> {
     List<JobInfo> findByRecruitType(RecruitType recruitType);
 
     /**
+     * Find job infos by recruit type with pagination.
+     *
+     * @param recruitType recruit type
+     * @param pageable pageable
+     * @return page of job infos
+     */
+    Page<JobInfo> findByRecruitType(RecruitType recruitType, Pageable pageable);
+
+    /**
      * Find job infos by city.
      *
      * @param city city name
      * @return list of job infos
      */
     List<JobInfo> findByCity(String city);
+
+    /**
+     * Find job infos by city with pagination.
+     *
+     * @param city city name
+     * @param pageable pageable
+     * @return page of job infos
+     */
+    Page<JobInfo> findByCity(String city, Pageable pageable);
 
     /**
      * Find job infos by company and recruit type.
@@ -54,5 +92,15 @@ public interface JobInfoRepository extends JpaRepository<JobInfo, Integer> {
      * @return list of job infos
      */
     List<JobInfo> findByCompanyAndRecruitType(Company company, RecruitType recruitType);
+
+    /**
+     * Find job infos by company and recruit type with pagination.
+     *
+     * @param company company entity
+     * @param recruitType recruit type
+     * @param pageable pageable
+     * @return page of job infos
+     */
+    Page<JobInfo> findByCompanyAndRecruitType(Company company, RecruitType recruitType, Pageable pageable);
 }
 
