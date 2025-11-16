@@ -6,18 +6,18 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
- * 职位信息创建请求DTO
+ * Job information creation request DTO
  */
 public class JobInfoCreateRequest {
     
-    @NotNull(message = "公司ID不能为空")
+    @NotNull(message = "Company ID cannot be empty")
     private Integer companyId;
     
-    @NotNull(message = "招聘类型不能为空")
+    @NotNull(message = "Recruitment type cannot be empty")
     private RecruitType recruitType;
     
-    @NotBlank(message = "职位名称不能为空")
-    @Size(max = 128, message = "职位名称长度不能超过128")
+    @NotBlank(message = "Job position name cannot be empty")
+    @Size(max = 128, message = "Job position name length cannot exceed 128")
     private String position;
     
     private String link;

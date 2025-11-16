@@ -5,14 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * 公司创建请求DTO
+ * Company creation request DTO
  */
 public class CompanyCreateRequest {
     
-    @NotBlank(message = "公司名称不能为空")
+    @NotBlank(message = "Company name cannot be empty")
     private String name;
     
-    @NotNull(message = "公司类型不能为空")
+    @NotNull(message = "Company type cannot be empty")
     private CompanyType type;
 
     public CompanyCreateRequest() {

@@ -5,7 +5,7 @@ import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
 
 /**
- * 职位信息响应DTO
+ * Job information response DTO
  */
 public class JobInfoResponse {
     
@@ -34,7 +34,7 @@ public class JobInfoResponse {
     }
 
     /**
-     * 从JobInfo实体转换为JobInfoResponse
+     * Convert from JobInfo entity to JobInfoResponse
      */
     public static JobInfoResponse from(JobInfo jobInfo) {
         if (jobInfo == null) {

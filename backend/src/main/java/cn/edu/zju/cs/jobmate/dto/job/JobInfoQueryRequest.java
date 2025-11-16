@@ -6,34 +6,34 @@ import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * 职位信息查询请求DTO
- * 支持可选参数查询
+ * Job information query request DTO
+ * Supports optional parameter queries
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JobInfoQueryRequest extends PageRequest {
     
     /**
-     * 关键词搜索（可搜索职位名称、公司名称等）
+     * Keyword search (can search job position name, company name, etc.)
      */
     private String keyword;
     
     /**
-     * 公司类型
+     * Company type
      */
     private CompanyType companyType;
     
     /**
-     * 地点
+     * Location
      */
     private String location;
     
     /**
-     * 招聘类型
+     * Recruitment type
      */
     private RecruitType recruitType;
     
     /**
-     * 职位名称
+     * Job position name
      */
     private String position;
 

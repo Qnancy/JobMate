@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 /**
- * 用户响应DTO
- * 不包含敏感信息（如密码）
+ * User response DTO
+ * Does not contain sensitive information (e.g., password)
  */
 public class UserResponse {
     
@@ -30,7 +30,7 @@ public class UserResponse {
     }
 
     /**
-     * 从User实体转换为UserResponse
+     * Convert from User entity to UserResponse
      */
     public static UserResponse from(User user) {
         if (user == null) {

@@ -6,9 +6,9 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 /**
- * 分页响应类
+ * Pagination response class
  * 
- * @param <T> 列表元素类型
+ * @param <T> List element type
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PageResponse<T> {
@@ -31,7 +31,7 @@ public class PageResponse<T> {
     }
 
     /**
-     * 从Spring Data Page对象创建PageResponse
+     * Create PageResponse from Spring Data Page object
      */
     public static <T> PageResponse<T> from(Page<T> page) {
         return new PageResponse<>(
@@ -56,7 +56,7 @@ public class PageResponse<T> {
 
     public void setTotal(Long total) {
         this.total = total;
-        // 重新计算总页数
+        // Recalculate total pages
         if (this.pageSize != null && this.pageSize > 0) {
             this.totalPages = (int) Math.ceil((double) total / this.pageSize);
         }
@@ -76,7 +76,7 @@ public class PageResponse<T> {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
-        // 重新计算总页数
+        // Recalculate total pages
         if (this.total != null && pageSize > 0) {
             this.totalPages = (int) Math.ceil((double) this.total / pageSize);
         }

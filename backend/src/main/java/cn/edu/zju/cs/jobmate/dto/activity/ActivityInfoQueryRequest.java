@@ -8,40 +8,40 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
 
 /**
- * 活动信息查询请求DTO
- * 支持可选参数查询
+ * Activity information query request DTO
+ * Supports optional parameter queries
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActivityInfoQueryRequest extends PageRequest {
     
     /**
-     * 关键词搜索（可搜索活动标题、公司名称等）
+     * Keyword search (can search activity title, company name, etc.)
      */
     private String keyword;
     
     /**
-     * 公司类型
+     * Company type
      */
     private CompanyType companyType;
     
     /**
-     * 地点
+     * Location
      */
     private String location;
     
     /**
-     * 城市
+     * City
      */
     private String city;
     
     /**
-     * 活动开始时间（查询此时间之后的活动）
+     * Activity start time (query activities after this time)
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
     
     /**
-     * 活动结束时间（查询此时间之前的活动）
+     * Activity end time (query activities before this time)
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;

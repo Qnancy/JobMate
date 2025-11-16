@@ -4,8 +4,8 @@ import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * 公司更新请求DTO
- * 所有字段都是可选的
+ * Company update request DTO
+ * All fields are optional
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CompanyUpdateRequest {

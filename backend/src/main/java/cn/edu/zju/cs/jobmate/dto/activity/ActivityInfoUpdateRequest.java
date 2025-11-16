@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
 
 /**
- * 活动信息更新请求DTO
- * 所有字段都是可选的
+ * Activity information update request DTO
+ * All fields are optional
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActivityInfoUpdateRequest {

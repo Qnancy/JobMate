@@ -5,16 +5,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Size;
 
 /**
- * 用户更新请求DTO
- * 所有字段都是可选的
+ * User update request DTO
+ * All fields are optional
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserUpdateRequest {
     
-    @Size(min = 1, max = 31, message = "用户名长度必须在1-31之间")
+    @Size(min = 1, max = 31, message = "Username length must be between 1 and 31")
     private String name;
     
-    @Size(min = 6, message = "密码长度不能少于6位")
+    @Size(min = 6, message = "Password length cannot be less than 6 characters")
     private String password;
     
     private UserRole role;

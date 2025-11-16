@@ -4,7 +4,7 @@ import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
 
 /**
- * 公司响应DTO
+ * Company response DTO
  */
 public class CompanyResponse {
     
@@ -22,7 +22,7 @@ public class CompanyResponse {
     }
 
     /**
-     * 从Company实体转换为CompanyResponse
+     * Convert from Company entity to CompanyResponse
      */
     public static CompanyResponse from(Company company) {
         if (company == null) {

@@ -4,15 +4,15 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 
 /**
- * 分页请求参数
+ * Pagination request parameters
  */
 public class PageRequest {
     
-    @Min(value = 0, message = "页码不能小于0")
+    @Min(value = 0, message = "Page number cannot be less than 0")
     private Integer page = 0;
     
-    @Min(value = 1, message = "每页大小不能小于1")
-    @Max(value = 100, message = "每页大小不能超过100")
+    @Min(value = 1, message = "Page size cannot be less than 1")
+    @Max(value = 100, message = "Page size cannot exceed 100")
     private Integer pageSize = 10;
 
     public PageRequest() {

@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Size;
 
 /**
- * 职位信息更新请求DTO
- * 所有字段都是可选的
+ * Job information update request DTO
+ * All fields are optional
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JobInfoUpdateRequest {
@@ -14,7 +14,7 @@ public class JobInfoUpdateRequest {
     private Integer companyId;
     private RecruitType recruitType;
     
-    @Size(max = 128, message = "职位名称长度不能超过128")
+    @Size(max = 128, message = "Job position name length cannot exceed 128")
     private String position;
     
     private String link;

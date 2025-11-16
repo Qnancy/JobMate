@@ -7,17 +7,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 /**
- * 活动信息创建请求DTO
+ * Activity information creation request DTO
  */
 public class ActivityInfoCreateRequest {
     
-    @NotNull(message = "公司ID不能为空")
+    @NotNull(message = "Company ID cannot be empty")
     private Integer companyId;
     
-    @NotBlank(message = "活动标题不能为空")
+    @NotBlank(message = "Activity title cannot be empty")
     private String title;
     
-    @NotNull(message = "活动时间不能为空")
+    @NotNull(message = "Activity time cannot be empty")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
     

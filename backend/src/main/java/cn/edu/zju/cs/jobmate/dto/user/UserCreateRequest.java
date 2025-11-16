@@ -6,19 +6,19 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
- * 用户创建请求DTO
+ * User creation request DTO
  */
 public class UserCreateRequest {
     
-    @NotBlank(message = "用户名不能为空")
-    @Size(min = 1, max = 31, message = "用户名长度必须在1-31之间")
+    @NotBlank(message = "Username cannot be empty")
+    @Size(min = 1, max = 31, message = "Username length must be between 1 and 31")
     private String name;
     
-    @NotBlank(message = "密码不能为空")
-    @Size(min = 6, message = "密码长度不能少于6位")
+    @NotBlank(message = "Password cannot be empty")
+    @Size(min = 6, message = "Password length cannot be less than 6 characters")
     private String password;
     
-    @NotNull(message = "用户角色不能为空")
+    @NotNull(message = "User role cannot be empty")
     private UserRole role;
 
     public UserCreateRequest() {

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 /**
- * 活动信息响应DTO
+ * Activity information response DTO
  */
 public class ActivityInfoResponse {
     
@@ -40,7 +40,7 @@ public class ActivityInfoResponse {
     }
 
     /**
-     * 从ActivityInfo实体转换为ActivityInfoResponse
+     * Convert from ActivityInfo entity to ActivityInfoResponse
      */
     public static ActivityInfoResponse from(ActivityInfo activityInfo) {
         if (activityInfo == null) {
