@@ -1,9 +1,9 @@
 package cn.edu.zju.cs.jobmate.services;
 
-import cn.edu.zju.cs.jobmate.dto.PageResponse;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,9 +41,9 @@ public interface JobInfoService {
      *
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with job infos
+     * @return page of job infos
      */
-    PageResponse<JobInfo> getAll(Integer page, Integer pageSize);
+    Page<JobInfo> getAll(Integer page, Integer pageSize);
 
     /**
      * Get job infos by company.
@@ -67,9 +67,9 @@ public interface JobInfoService {
      * @param company company entity
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with job infos
+     * @return page of job infos
      */
-    PageResponse<JobInfo> getByCompany(Company company, Integer page, Integer pageSize);
+    Page<JobInfo> getByCompany(Company company, Integer page, Integer pageSize);
 
     /**
      * Get job infos by company id with pagination.
@@ -77,9 +77,9 @@ public interface JobInfoService {
      * @param companyId company id
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with job infos
+     * @return page of job infos
      */
-    PageResponse<JobInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize);
+    Page<JobInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize);
 
     /**
      * Get job infos by recruit type.
@@ -95,9 +95,9 @@ public interface JobInfoService {
      * @param recruitType recruit type
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with job infos
+     * @return page of job infos
      */
-    PageResponse<JobInfo> getByRecruitType(RecruitType recruitType, Integer page, Integer pageSize);
+    Page<JobInfo> getByRecruitType(RecruitType recruitType, Integer page, Integer pageSize);
 
     /**
      * Get job infos by city.
@@ -113,9 +113,9 @@ public interface JobInfoService {
      * @param city city name
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with job infos
+     * @return page of job infos
      */
-    PageResponse<JobInfo> getByCity(String city, Integer page, Integer pageSize);
+    Page<JobInfo> getByCity(String city, Integer page, Integer pageSize);
 
     /**
      * Get job infos by company and recruit type.
@@ -133,9 +133,9 @@ public interface JobInfoService {
      * @param recruitType recruit type
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with job infos
+     * @return page of job infos
      */
-    PageResponse<JobInfo> getByCompanyAndRecruitType(Company company, RecruitType recruitType, Integer page, Integer pageSize);
+    Page<JobInfo> getByCompanyAndRecruitType(Company company, RecruitType recruitType, Integer page, Integer pageSize);
 
     /**
      * Update job info.

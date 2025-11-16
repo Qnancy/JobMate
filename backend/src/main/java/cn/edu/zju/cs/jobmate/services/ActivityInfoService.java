@@ -1,8 +1,8 @@
 package cn.edu.zju.cs.jobmate.services;
 
-import cn.edu.zju.cs.jobmate.dto.PageResponse;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.models.Company;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,9 +41,9 @@ public interface ActivityInfoService {
      *
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with activity infos
+     * @return page of activity infos
      */
-    PageResponse<ActivityInfo> getAll(Integer page, Integer pageSize);
+    Page<ActivityInfo> getAll(Integer page, Integer pageSize);
 
     /**
      * Get activity infos by company.
@@ -67,9 +67,9 @@ public interface ActivityInfoService {
      * @param company company entity
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with activity infos
+     * @return page of activity infos
      */
-    PageResponse<ActivityInfo> getByCompany(Company company, Integer page, Integer pageSize);
+    Page<ActivityInfo> getByCompany(Company company, Integer page, Integer pageSize);
 
     /**
      * Get activity infos by company id with pagination.
@@ -77,9 +77,9 @@ public interface ActivityInfoService {
      * @param companyId company id
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with activity infos
+     * @return page of activity infos
      */
-    PageResponse<ActivityInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize);
+    Page<ActivityInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize);
 
     /**
      * Get activity infos by city.
@@ -95,9 +95,9 @@ public interface ActivityInfoService {
      * @param city city name
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with activity infos
+     * @return page of activity infos
      */
-    PageResponse<ActivityInfo> getByCity(String city, Integer page, Integer pageSize);
+    Page<ActivityInfo> getByCity(String city, Integer page, Integer pageSize);
 
     /**
      * Get activity infos after specified time.
@@ -113,9 +113,9 @@ public interface ActivityInfoService {
      * @param time time threshold
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with activity infos
+     * @return page of activity infos
      */
-    PageResponse<ActivityInfo> getByTimeAfter(LocalDateTime time, Integer page, Integer pageSize);
+    Page<ActivityInfo> getByTimeAfter(LocalDateTime time, Integer page, Integer pageSize);
 
     /**
      * Get activity infos before specified time.
@@ -131,9 +131,9 @@ public interface ActivityInfoService {
      * @param time time threshold
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with activity infos
+     * @return page of activity infos
      */
-    PageResponse<ActivityInfo> getByTimeBefore(LocalDateTime time, Integer page, Integer pageSize);
+    Page<ActivityInfo> getByTimeBefore(LocalDateTime time, Integer page, Integer pageSize);
 
     /**
      * Get activity infos between two times.
@@ -151,9 +151,9 @@ public interface ActivityInfoService {
      * @param endTime end time
      * @param page page number (0-based)
      * @param pageSize page size
-     * @return page response with activity infos
+     * @return page of activity infos
      */
-    PageResponse<ActivityInfo> getByTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Integer page, Integer pageSize);
+    Page<ActivityInfo> getByTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Integer page, Integer pageSize);
 
     /**
      * Update activity info.

@@ -1,6 +1,5 @@
 package cn.edu.zju.cs.jobmate.services.impl;
 
-import cn.edu.zju.cs.jobmate.dto.PageResponse;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
@@ -51,15 +50,9 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<JobInfo> getAll(Integer page, Integer pageSize) {
+    public Page<JobInfo> getAll(Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<JobInfo> pageResult = jobInfoRepository.findAll(pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return jobInfoRepository.findAll(pageable);
     }
 
     @Override
@@ -76,28 +69,16 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<JobInfo> getByCompany(Company company, Integer page, Integer pageSize) {
+    public Page<JobInfo> getByCompany(Company company, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<JobInfo> pageResult = jobInfoRepository.findByCompany(company, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return jobInfoRepository.findByCompany(company, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<JobInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize) {
+    public Page<JobInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<JobInfo> pageResult = jobInfoRepository.findByCompanyId(companyId, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return jobInfoRepository.findByCompanyId(companyId, pageable);
     }
 
     @Override
@@ -108,15 +89,9 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<JobInfo> getByRecruitType(RecruitType recruitType, Integer page, Integer pageSize) {
+    public Page<JobInfo> getByRecruitType(RecruitType recruitType, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<JobInfo> pageResult = jobInfoRepository.findByRecruitType(recruitType, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return jobInfoRepository.findByRecruitType(recruitType, pageable);
     }
 
     @Override
@@ -127,15 +102,9 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<JobInfo> getByCity(String city, Integer page, Integer pageSize) {
+    public Page<JobInfo> getByCity(String city, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<JobInfo> pageResult = jobInfoRepository.findByCity(city, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return jobInfoRepository.findByCity(city, pageable);
     }
 
     @Override
@@ -146,15 +115,9 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<JobInfo> getByCompanyAndRecruitType(Company company, RecruitType recruitType, Integer page, Integer pageSize) {
+    public Page<JobInfo> getByCompanyAndRecruitType(Company company, RecruitType recruitType, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<JobInfo> pageResult = jobInfoRepository.findByCompanyAndRecruitType(company, recruitType, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return jobInfoRepository.findByCompanyAndRecruitType(company, recruitType, pageable);
     }
 
     @Override

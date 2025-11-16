@@ -1,6 +1,5 @@
 package cn.edu.zju.cs.jobmate.services.impl;
 
-import cn.edu.zju.cs.jobmate.dto.PageResponse;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
@@ -51,15 +50,9 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ActivityInfo> getAll(Integer page, Integer pageSize) {
+    public Page<ActivityInfo> getAll(Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<ActivityInfo> pageResult = activityInfoRepository.findAll(pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return activityInfoRepository.findAll(pageable);
     }
 
     @Override
@@ -76,28 +69,16 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ActivityInfo> getByCompany(Company company, Integer page, Integer pageSize) {
+    public Page<ActivityInfo> getByCompany(Company company, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<ActivityInfo> pageResult = activityInfoRepository.findByCompany(company, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return activityInfoRepository.findByCompany(company, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ActivityInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize) {
+    public Page<ActivityInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<ActivityInfo> pageResult = activityInfoRepository.findByCompanyId(companyId, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return activityInfoRepository.findByCompanyId(companyId, pageable);
     }
 
     @Override
@@ -108,15 +89,9 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ActivityInfo> getByCity(String city, Integer page, Integer pageSize) {
+    public Page<ActivityInfo> getByCity(String city, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<ActivityInfo> pageResult = activityInfoRepository.findByCity(city, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return activityInfoRepository.findByCity(city, pageable);
     }
 
     @Override
@@ -127,15 +102,9 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ActivityInfo> getByTimeAfter(LocalDateTime time, Integer page, Integer pageSize) {
+    public Page<ActivityInfo> getByTimeAfter(LocalDateTime time, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<ActivityInfo> pageResult = activityInfoRepository.findByTimeAfter(time, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return activityInfoRepository.findByTimeAfter(time, pageable);
     }
 
     @Override
@@ -146,15 +115,9 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ActivityInfo> getByTimeBefore(LocalDateTime time, Integer page, Integer pageSize) {
+    public Page<ActivityInfo> getByTimeBefore(LocalDateTime time, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<ActivityInfo> pageResult = activityInfoRepository.findByTimeBefore(time, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return activityInfoRepository.findByTimeBefore(time, pageable);
     }
 
     @Override
@@ -165,15 +128,9 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ActivityInfo> getByTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Integer page, Integer pageSize) {
+    public Page<ActivityInfo> getByTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<ActivityInfo> pageResult = activityInfoRepository.findByTimeBetween(startTime, endTime, pageable);
-        return new PageResponse<>(
-                pageResult.getContent(),
-                pageResult.getTotalElements(),
-                page,
-                pageSize
-        );
+        return activityInfoRepository.findByTimeBetween(startTime, endTime, pageable);
     }
 
     @Override
