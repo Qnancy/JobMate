@@ -3,11 +3,15 @@ package cn.edu.zju.cs.jobmate.dto.user;
 import cn.edu.zju.cs.jobmate.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * User update request DTO
  * All fields are optional
  */
+@Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserUpdateRequest {
     
@@ -18,32 +22,4 @@ public class UserUpdateRequest {
     private String password;
     
     private UserRole role;
-
-    public UserUpdateRequest() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
 }
-

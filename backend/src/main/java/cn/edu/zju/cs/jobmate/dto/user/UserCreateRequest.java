@@ -4,10 +4,14 @@ import cn.edu.zju.cs.jobmate.enums.UserRole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * User creation request DTO
  */
+@Data
+@Builder
 public class UserCreateRequest {
     
     @NotBlank(message = "Username cannot be empty")
@@ -20,32 +24,4 @@ public class UserCreateRequest {
     
     @NotNull(message = "User role cannot be empty")
     private UserRole role;
-
-    public UserCreateRequest() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
 }
-

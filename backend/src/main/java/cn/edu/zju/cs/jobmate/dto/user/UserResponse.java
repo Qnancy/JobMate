@@ -2,6 +2,9 @@ package cn.edu.zju.cs.jobmate.dto.user;
 
 import cn.edu.zju.cs.jobmate.enums.UserRole;
 import cn.edu.zju.cs.jobmate.models.User;
+import lombok.Builder;
+import lombok.Data;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
@@ -10,6 +13,8 @@ import java.time.LocalDateTime;
  * User response DTO
  * Does not contain sensitive information (e.g., password)
  */
+@Data
+@Builder
 public class UserResponse {
     
     private Integer id;
@@ -18,16 +23,6 @@ public class UserResponse {
     
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
-
-    public UserResponse() {
-    }
-
-    public UserResponse(Integer id, String name, UserRole role, LocalDateTime createdAt) {
-        this.id = id;
-        this.name = name;
-        this.role = role;
-        this.createdAt = createdAt;
-    }
 
     /**
      * Convert from User entity to UserResponse
@@ -43,37 +38,4 @@ public class UserResponse {
             user.getCreatedAt()
         );
     }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }
-
