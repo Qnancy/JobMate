@@ -1,77 +1,49 @@
 package cn.edu.zju.cs.jobmate.dto.common;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.Builder;
 import lombok.Data;
 
 /**
  * Unified API response wrapper class
  * 
+ * TODO: Add ErrorCode wrapper.
+ * 
  * @param <T> Response data type
+ * @apiNote This class will be set in HTTP response body as JSON format.
  */
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-    
+
     private Integer code;
     private String message;
     private T data;
 
-    /**
-     * Success response (HTTP 200)
-     */
-    public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(200, "Operation successful", data);
+    public static <T> ApiResponse<T> ok() {
+        return new ApiResponse<>(200, "success", null);
     }
 
-    /**
-     * Success response (HTTP 200) with custom message
-     */
-    public static <T> ApiResponse<T> success(String message, T data) {
-        return new ApiResponse<>(200, message, data);
-    }
-
-    /**
-     * Success response (HTTP 200) without data
-     */
-    public static <T> ApiResponse<T> success() {
-        return new ApiResponse<>(200, "Operation successful", null);
-    }
-
-    /**
-     * Success response (HTTP 200) with custom message, without data
-     */
-    public static <T> ApiResponse<T> success(String message) {
+    public static <T> ApiResponse<T> ok(String message) {
         return new ApiResponse<>(200, message, null);
     }
 
-    /**
-     * Error response
-     */
+    public static <T> ApiResponse<T> ok(T data) {
+        return new ApiResponse<>(200, "success", data);
+    }
+
+    public static <T> ApiResponse<T> ok(String message, T data) {
+        return new ApiResponse<>(200, message, data);
+    }
+
     public static <T> ApiResponse<T> error(Integer code, String message) {
         return new ApiResponse<>(code, message, null);
     }
 
-    /**
-     * Error response (HTTP 400)
-     */
-    public static <T> ApiResponse<T> badRequest(String message) {
-        return new ApiResponse<>(400, message, null);
+    public static <T> ApiResponse<T> error(Integer code, String message, T data) {
+        return new ApiResponse<>(code, message, data);
     }
 
-    /**
-     * Error response (HTTP 404)
-     */
-    public static <T> ApiResponse<T> notFound(String message) {
-        return new ApiResponse<>(404, message, null);
-    }
-
-    /**
-     * Error response (HTTP 500)
-     */
-    public static <T> ApiResponse<T> internalError(String message) {
-        return new ApiResponse<>(500, message, null);
-    }
+    public Integer getCode() { return code; }
+    public String getMessage() { return message; }
+    public T getData() { return data; }
 }
