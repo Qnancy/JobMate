@@ -1,5 +1,7 @@
 package cn.edu.zju.cs.jobmate.exceptions;
 
+import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
+
 import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
@@ -18,31 +20,27 @@ public class GlobalExceptionHandler {
     /**
      * Handle {@link BusinessException}.
      * 
-     * TODO: using ApiResponse to fit in body
-     * 
      * @param ex the business exception
      * @return a standardized error response
      */
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<Void> handleBusinessException(BusinessException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException ex) {
         ErrorCode code = ex.getErrorCode();
         return ResponseEntity
             .status(Objects.requireNonNull(code.getHttpStatus()))
-            .build();
+            .body(ApiResponse.error(code));
     }
 
     /**
      * Handle all uncaught exceptions.
      * 
-     * TODO: using ApiResponse to fit in body
-     * 
      * @param ex the uncaught exception
      * @return a standardized error response
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> handleUncaughtException(Exception ex) {
+    public ResponseEntity<ApiResponse<Void>> handleUncaughtException(Exception ex) {
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .build();
+            .body(ApiResponse.error(500, "服务器内部错误，请联系管理员"));
     }
 }
