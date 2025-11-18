@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
  * Company entity.
  */
 @Entity
-@Table(name = "company")
+@Table(name = "companies")
 public class Company {
 
     @Id

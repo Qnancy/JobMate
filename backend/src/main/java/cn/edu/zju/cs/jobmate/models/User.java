@@ -23,7 +23,7 @@ import cn.edu.zju.cs.jobmate.enums.UserRole;
  * User entity.
  */
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User implements UserDetails {
 
     @Id
