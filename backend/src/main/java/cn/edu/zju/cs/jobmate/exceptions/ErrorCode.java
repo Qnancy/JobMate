@@ -1,5 +1,7 @@
 package cn.edu.zju.cs.jobmate.exceptions;
 
+import org.springframework.http.HttpStatus;
+
 /**
  * Custom error codes for {@link BusinessException} in JobMate.
  * 
@@ -8,7 +10,7 @@ package cn.edu.zju.cs.jobmate.exceptions;
 public enum ErrorCode {
 
     // Unknown Errors.
-    UNKNOWN_ERROR(0001, "未知错误");
+    UNKNOWN_ERROR(0001, HttpStatus.INTERNAL_SERVER_ERROR, "未知错误");
 
     // System Errors.
 
@@ -21,13 +23,16 @@ public enum ErrorCode {
     // Resource Errors.
 
     private final int code;
+    private final HttpStatus httpStatus;
     private final String message;
 
-    ErrorCode(int code, String message) {
+    ErrorCode(int code, HttpStatus httpStatus, String message) {
         this.code = code;
+        this.httpStatus = httpStatus;
         this.message = message;
     }
 
     public int getCode() { return code; }
+    public HttpStatus getHttpStatus() { return httpStatus; }
     public String getMessage() { return message; }
 }
