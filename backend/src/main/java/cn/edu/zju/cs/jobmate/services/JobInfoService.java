@@ -159,5 +159,16 @@ public interface JobInfoService {
      * @return true if exists
      */
     boolean existsById(Integer id);
+
+    /**
+     * Query job infos with pagination and filters.
+     *
+     * @param keyword keyword to search in company_name, position, location, optional
+     * @param recruitType recruitment type filter, optional
+     * @param page page number (0-based), optional
+     * @param pageSize page size, optional
+     * @return page of job infos
+     */
+    Page<JobInfo> query(String keyword, RecruitType recruitType, Integer page, Integer pageSize);
 }
 

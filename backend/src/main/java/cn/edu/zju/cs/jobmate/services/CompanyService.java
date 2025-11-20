@@ -2,6 +2,7 @@ package cn.edu.zju.cs.jobmate.services;
 
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,12 +44,31 @@ public interface CompanyService {
     List<Company> getAll();
 
     /**
+     * Get all companies with pagination.
+     *
+     * @param page page number (0-based)
+     * @param pageSize page size
+     * @return page of companies
+     */
+    Page<Company> getAll(Integer page, Integer pageSize);
+
+    /**
      * Get companies by type.
      *
      * @param type company type
      * @return list of companies
      */
     List<Company> getByType(CompanyType type);
+
+    /**
+     * Get companies by type with pagination.
+     *
+     * @param type company type
+     * @param page page number (0-based)
+     * @param pageSize page size
+     * @return page of companies
+     */
+    Page<Company> getByType(CompanyType type, Integer page, Integer pageSize);
 
     /**
      * Update company.

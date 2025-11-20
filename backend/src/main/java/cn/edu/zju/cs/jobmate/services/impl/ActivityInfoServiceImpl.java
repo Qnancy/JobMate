@@ -4,15 +4,23 @@ import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
 import cn.edu.zju.cs.jobmate.services.ActivityInfoService;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service implementation for ActivityInfo entity.
@@ -153,6 +161,50 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
     @Transactional(readOnly = true)
     public boolean existsById(Integer id) {
         return id != null && activityInfoRepository.existsById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ActivityInfo> query(String keyword, Integer page, Integer pageSize) {
+        Specification<ActivityInfo> spec = buildSpecification(keyword);
+        Pageable pageable = PageRequest.of(
+            page != null ? page : 0,
+            pageSize != null ? pageSize : 10
+        );
+        return activityInfoRepository.findAll(spec, pageable);
+    }
+
+    private Specification<ActivityInfo> buildSpecification(String keyword) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Keyword search with space-separated tokens
+            // Each token must appear in at least one of: title, company_name
+            if (StringUtils.hasText(keyword)) {
+                Join<ActivityInfo, Company> companyJoin = root.join("company", JoinType.LEFT);
+                
+                // Split keyword by spaces and filter out empty strings
+                List<String> tokens = Arrays.stream(keyword.trim().split("\\s+"))
+                        .filter(StringUtils::hasText)
+                        .collect(Collectors.toList());
+                
+                if (!tokens.isEmpty()) {
+                    // For each token, create an OR condition: token in title OR company_name
+                    List<Predicate> tokenPredicates = new ArrayList<>();
+                    for (String token : tokens) {
+                        String tokenPattern = "%" + token + "%";
+                        Predicate titlePredicate = cb.like(cb.lower(root.get("title")), tokenPattern.toLowerCase());
+                        Predicate companyNamePredicate = cb.like(cb.lower(companyJoin.get("name")), tokenPattern.toLowerCase());
+                        // Each token must appear in at least one field
+                        tokenPredicates.add(cb.or(titlePredicate, companyNamePredicate));
+                    }
+                    // All tokens must be matched (AND logic)
+                    predicates.add(cb.and(tokenPredicates.toArray(new Predicate[0])));
+                }
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 }
 

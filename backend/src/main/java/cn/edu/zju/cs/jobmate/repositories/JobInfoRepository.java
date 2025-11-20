@@ -6,6 +6,7 @@ import cn.edu.zju.cs.jobmate.models.JobInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * Repository for JobInfo entity.
  */
 @Repository
-public interface JobInfoRepository extends JpaRepository<JobInfo, Integer> {
+public interface JobInfoRepository extends JpaRepository<JobInfo, Integer>, JpaSpecificationExecutor<JobInfo> {
 
     /**
      * Find job infos by company.
