@@ -1,5 +1,6 @@
 package cn.edu.zju.cs.jobmate.configs.interceptors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,11 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class LogInterceptor implements HandlerInterceptor{
 
+    @Value("${monitor.slow-api-threshold-ms}")
+    private long slowApiThresholdMs;
+
+    private final String timeAttribute = "REQUEST_START_TIME";
+
     @Override
     public boolean preHandle(
         @NonNull HttpServletRequest request,
@@ -21,7 +27,7 @@ public class LogInterceptor implements HandlerInterceptor{
         @NonNull Object handler
     ) throws Exception {
         long startTime = System.currentTimeMillis();
-        request.setAttribute("REQUEST_START_TIME", startTime);
+        request.setAttribute(timeAttribute, startTime);
         //String uri = request.getRequestURI();
         //String method = request.getMethod();
         // TODO: log request info here
@@ -35,7 +41,7 @@ public class LogInterceptor implements HandlerInterceptor{
         @NonNull Object handler,
         @Nullable Exception exception
     ) throws Exception {
-        long startTime = (Long) request.getAttribute("REQUEST_START_TIME");
+        long startTime = (Long) request.getAttribute(timeAttribute);
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
         //String uri = request.getRequestURI();
@@ -45,7 +51,7 @@ public class LogInterceptor implements HandlerInterceptor{
         // TODO: get user auth info from SecurityContext
         if (exception != null) {
             // TODO: log exception info here
-        } else if (duration > 1000) {
+        } else if (duration > slowApiThresholdMs) {
             // TODO: log slow requests here
         } else {
             // TODO: log normal requests here

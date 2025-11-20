@@ -43,6 +43,9 @@ spring:
 server:
   port: 8080
 
+monitor:
+  slow-api-threshold-ms: 1000
+
 web-mvc:
   cors:
     allowed-origins: 
