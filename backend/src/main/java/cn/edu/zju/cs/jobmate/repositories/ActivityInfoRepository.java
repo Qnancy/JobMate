@@ -5,6 +5,7 @@ import cn.edu.zju.cs.jobmate.models.Company;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ import java.util.List;
  * Repository for ActivityInfo entity.
  */
 @Repository
-public interface ActivityInfoRepository extends JpaRepository<ActivityInfo, Integer> {
+public interface ActivityInfoRepository extends JpaRepository<ActivityInfo, Integer>, JpaSpecificationExecutor<ActivityInfo> {
 
     /**
      * Find activity infos by company.

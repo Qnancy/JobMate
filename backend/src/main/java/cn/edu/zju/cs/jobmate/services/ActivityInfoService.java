@@ -177,5 +177,15 @@ public interface ActivityInfoService {
      * @return true if exists
      */
     boolean existsById(Integer id);
+
+    /**
+     * Query activity infos with pagination and filters.
+     *
+     * @param keyword keyword to search in title, company_name, optional
+     * @param page page number (0-based), optional
+     * @param pageSize page size, optional
+     * @return page of activity infos
+     */
+    Page<ActivityInfo> query(String keyword, Integer page, Integer pageSize);
 }
 
