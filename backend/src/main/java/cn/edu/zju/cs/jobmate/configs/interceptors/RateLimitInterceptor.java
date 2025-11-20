@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
+import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
+import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -46,8 +48,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         }
         // Too many requests
         if (cnt != null && cnt > rateLimiter.getMaxRequestsPerInterval()) {
-            response.setStatus(429); // TODO: raise business exception
-            return false;
+            throw new BusinessException(ErrorCode.TOO_MANY_REQUESTS);
         }
         return true;
     }

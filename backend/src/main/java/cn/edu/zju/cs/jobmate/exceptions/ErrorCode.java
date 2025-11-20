@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // Unknown Errors.
-    UNKNOWN_ERROR(0001, HttpStatus.INTERNAL_SERVER_ERROR, "未知错误");
+    UNKNOWN_ERROR(0001, HttpStatus.INTERNAL_SERVER_ERROR, "未知错误"),
 
     // System Errors.
 
@@ -21,6 +21,7 @@ public enum ErrorCode {
     // Permission Errors.
 
     // Resource Errors.
+    TOO_MANY_REQUESTS(5001, HttpStatus.TOO_MANY_REQUESTS, "请求过于频繁，请稍后再试");
 
     private final int code;
     private final HttpStatus httpStatus;
