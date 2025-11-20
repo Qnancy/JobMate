@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
  */
 @Component
 @Validated
-@ConfigurationProperties(prefix = "web-mvc")
+@ConfigurationProperties(prefix = "app.web-mvc")
 public class WebMvcProperties {
 
     @NotNull

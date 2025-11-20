@@ -1,6 +1,7 @@
 package cn.edu.zju.cs.jobmate.configs.interceptors;
 
-import org.springframework.beans.factory.annotation.Value;
+import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
+
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -15,10 +16,12 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class LogInterceptor implements HandlerInterceptor {
 
-    @Value("${monitor.slow-api-threshold-ms}")
-    private long slowApiThresholdMs;
+    private MonitorProperties.SlowApi slowApi; // Slow API monitoring properties.
+    private static final String timeAttribute = "REQUEST_START_TIME";
 
-    private final String timeAttribute = "REQUEST_START_TIME";
+    public LogInterceptor(MonitorProperties monitorProperties) {
+        this.slowApi = monitorProperties.getSlowApi();
+    }
 
     @Override
     public boolean preHandle(
@@ -51,7 +54,7 @@ public class LogInterceptor implements HandlerInterceptor {
         // TODO: get user auth info from SecurityContext
         if (exception != null) {
             // TODO: log exception info here
-        } else if (duration > slowApiThresholdMs) {
+        } else if (slowApi.isEnabled() && duration > slowApi.getThresholdMs()) {
             // TODO: log slow requests here
         } else {
             // TODO: log normal requests here

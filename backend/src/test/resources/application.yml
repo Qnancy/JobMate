@@ -33,11 +33,20 @@ spring:
 server:
   port: 8080
 
-web-mvc:
-  cors:
-    allowed-origins: 
-      - "https://localhost:3000"
-    max-age: 3600
+app:
+  monitor:
+    slow-api:
+      enabled: true
+      threshold-ms: 1000
+    rate-limiter:
+      enabled: true
+      limit-interval-s: 60
+      max-requests-per-interval: 100
+  web-mvc:
+    cors:
+      allowed-origins: 
+        - "https://localhost:3000"
+      max-age: 3600
 
 logging:
   level:
@@ -59,5 +68,3 @@ logging:
       file-name-pattern: ../logs/jobmate-test.%d{yyyy-MM-dd}.%i.log
   charset:
     file: UTF-8
-
-app:
