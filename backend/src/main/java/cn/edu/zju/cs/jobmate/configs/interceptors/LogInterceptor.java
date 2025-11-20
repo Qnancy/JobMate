@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * Interceptor to log requests.
  */
 @Component
-public class LogInterceptor implements HandlerInterceptor{
+public class LogInterceptor implements HandlerInterceptor {
 
     @Value("${monitor.slow-api-threshold-ms}")
     private long slowApiThresholdMs;
