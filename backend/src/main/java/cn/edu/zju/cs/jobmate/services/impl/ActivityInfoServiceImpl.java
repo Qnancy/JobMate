@@ -17,8 +17,10 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service implementation for ActivityInfo entity.
@@ -176,13 +178,29 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // Keyword search: title, company_name
+            // Keyword search with space-separated tokens
+            // Each token must appear in at least one of: title, company_name
             if (StringUtils.hasText(keyword)) {
-                String keywordPattern = "%" + keyword.trim() + "%";
                 Join<ActivityInfo, Company> companyJoin = root.join("company", JoinType.LEFT);
-                Predicate titlePredicate = cb.like(cb.lower(root.get("title")), keywordPattern.toLowerCase());
-                Predicate companyNamePredicate = cb.like(cb.lower(companyJoin.get("name")), keywordPattern.toLowerCase());
-                predicates.add(cb.or(titlePredicate, companyNamePredicate));
+                
+                // Split keyword by spaces and filter out empty strings
+                List<String> tokens = Arrays.stream(keyword.trim().split("\\s+"))
+                        .filter(StringUtils::hasText)
+                        .collect(Collectors.toList());
+                
+                if (!tokens.isEmpty()) {
+                    // For each token, create an OR condition: token in title OR company_name
+                    List<Predicate> tokenPredicates = new ArrayList<>();
+                    for (String token : tokens) {
+                        String tokenPattern = "%" + token + "%";
+                        Predicate titlePredicate = cb.like(cb.lower(root.get("title")), tokenPattern.toLowerCase());
+                        Predicate companyNamePredicate = cb.like(cb.lower(companyJoin.get("name")), tokenPattern.toLowerCase());
+                        // Each token must appear in at least one field
+                        tokenPredicates.add(cb.or(titlePredicate, companyNamePredicate));
+                    }
+                    // All tokens must be matched (AND logic)
+                    predicates.add(cb.and(tokenPredicates.toArray(new Predicate[0])));
+                }
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

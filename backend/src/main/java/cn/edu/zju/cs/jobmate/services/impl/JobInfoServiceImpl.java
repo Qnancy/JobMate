@@ -17,8 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service implementation for JobInfo entity.
@@ -163,14 +165,30 @@ public class JobInfoServiceImpl implements JobInfoService {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // Keyword search: company_name, position, location
+            // Keyword search with space-separated tokens
+            // Each token must appear in at least one of: company_name, position, location
             if (StringUtils.hasText(keyword)) {
-                String keywordPattern = "%" + keyword.trim() + "%";
                 Join<JobInfo, Company> companyJoin = root.join("company", JoinType.LEFT);
-                Predicate companyNamePredicate = cb.like(cb.lower(companyJoin.get("name")), keywordPattern.toLowerCase());
-                Predicate positionPredicate = cb.like(cb.lower(root.get("position")), keywordPattern.toLowerCase());
-                Predicate locationPredicate = cb.like(cb.lower(root.get("location")), keywordPattern.toLowerCase());
-                predicates.add(cb.or(companyNamePredicate, positionPredicate, locationPredicate));
+                
+                // Split keyword by spaces and filter out empty strings
+                List<String> tokens = Arrays.stream(keyword.trim().split("\\s+"))
+                        .filter(StringUtils::hasText)
+                        .collect(Collectors.toList());
+                
+                if (!tokens.isEmpty()) {
+                    // For each token, create an OR condition: token in company_name OR position OR location
+                    List<Predicate> tokenPredicates = new ArrayList<>();
+                    for (String token : tokens) {
+                        String tokenPattern = "%" + token + "%";
+                        Predicate companyNamePredicate = cb.like(cb.lower(companyJoin.get("name")), tokenPattern.toLowerCase());
+                        Predicate positionPredicate = cb.like(cb.lower(root.get("position")), tokenPattern.toLowerCase());
+                        Predicate locationPredicate = cb.like(cb.lower(root.get("location")), tokenPattern.toLowerCase());
+                        // Each token must appear in at least one field
+                        tokenPredicates.add(cb.or(companyNamePredicate, positionPredicate, locationPredicate));
+                    }
+                    // All tokens must be matched (AND logic)
+                    predicates.add(cb.and(tokenPredicates.toArray(new Predicate[0])));
+                }
             }
 
             // Recruit type filter
