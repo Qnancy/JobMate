@@ -8,6 +8,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+
 /**
  * Redis configurations.
  */
@@ -25,12 +28,27 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
+
+        // Set key serializers.
         StringRedisSerializer stringSerializer = new StringRedisSerializer();
-        Jackson2JsonRedisSerializer<Object> jsonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         template.setKeySerializer(stringSerializer);
-        template.setValueSerializer(jsonSerializer);
         template.setHashKeySerializer(stringSerializer);
+
+        // Set value serializers.
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.activateDefaultTyping(
+            LaissezFaireSubTypeValidator.instance,
+            ObjectMapper.DefaultTyping.NON_FINAL
+        );
+        Jackson2JsonRedisSerializer<Object> jsonSerializer = new Jackson2JsonRedisSerializer<>(
+            objectMapper, 
+            Object.class
+        );
+        template.setValueSerializer(jsonSerializer);
         template.setHashValueSerializer(jsonSerializer);
+
+        // Finalize the template configuration.
+        template.afterPropertiesSet();
         return template;
     }
 }
