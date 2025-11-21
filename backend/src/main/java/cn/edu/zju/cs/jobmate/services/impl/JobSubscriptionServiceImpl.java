@@ -5,6 +5,9 @@ import cn.edu.zju.cs.jobmate.models.JobSubscription;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.repositories.JobSubscriptionRepository;
 import cn.edu.zju.cs.jobmate.services.JobSubscriptionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +44,6 @@ public class JobSubscriptionServiceImpl implements JobSubscriptionService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<JobSubscription> getById(Integer id) {
         if (id == null) {
             return Optional.empty();
@@ -50,31 +52,32 @@ public class JobSubscriptionServiceImpl implements JobSubscriptionService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<JobSubscription> getAll() {
         return jobSubscriptionRepository.findAll();
     }
 
     @Override
-    @Transactional(readOnly = true)
+    public Page<JobSubscription> getAll(Integer page, Integer pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return jobSubscriptionRepository.findAll(pageable);
+    }
+
+    @Override
     public List<JobSubscription> getByUser(User user) {
         return jobSubscriptionRepository.findByUser(user);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<JobSubscription> getByUserId(Integer userId) {
         return jobSubscriptionRepository.findByUserId(userId);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<JobSubscription> getByUserAndJobInfo(User user, JobInfo jobInfo) {
         return jobSubscriptionRepository.findByUserAndJobInfo(user, jobInfo);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<JobSubscription> getByUserIdAndJobInfoId(Integer userId, Integer jobInfoId) {
         return jobSubscriptionRepository.findByUserIdAndJobInfoId(userId, jobInfoId);
     }
@@ -108,19 +111,16 @@ public class JobSubscriptionServiceImpl implements JobSubscriptionService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsById(Integer id) {
         return id != null && jobSubscriptionRepository.existsById(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsByUserAndJobInfo(User user, JobInfo jobInfo) {
         return jobSubscriptionRepository.existsByUserAndJobInfo(user, jobInfo);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsByUserIdAndJobInfoId(Integer userId, Integer jobInfoId) {
         return jobSubscriptionRepository.existsByUserIdAndJobInfoId(userId, jobInfoId);
     }

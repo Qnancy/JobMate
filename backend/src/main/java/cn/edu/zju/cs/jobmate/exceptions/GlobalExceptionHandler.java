@@ -6,8 +6,10 @@ import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import jakarta.validation.ConstraintViolationException;
 
 /**
  * Global exception handler for the application.
@@ -29,6 +31,32 @@ public class GlobalExceptionHandler {
         return ResponseEntity
             .status(Objects.requireNonNull(code.getHttpStatus()))
             .body(ApiResponse.error(code));
+    }
+
+    /**
+     * Handle Spring @Valid validation failures.
+     * 
+     * @param ex the method argument not valid exception
+     * @return a standardized error response with 400 status
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ApiResponse.error(ErrorCode.INVALID_PARAMETER));
+    }
+
+    /**
+     * Handle Jakarta @Validated constraint violations.
+     * 
+     * @param ex the constraint violation exception
+     * @return a standardized error response with 400 status
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConstraintViolationException(ConstraintViolationException ex) {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ApiResponse.error(ErrorCode.INVALID_PARAMETER));
     }
 
     /**

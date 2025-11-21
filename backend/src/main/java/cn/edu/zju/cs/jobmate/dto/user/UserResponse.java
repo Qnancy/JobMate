@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +22,7 @@ public class UserResponse {
     private String name;
     private UserRole role;
     
+    @JsonProperty("create_at")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 

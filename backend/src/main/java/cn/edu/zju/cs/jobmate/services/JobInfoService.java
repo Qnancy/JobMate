@@ -146,6 +146,21 @@ public interface JobInfoService {
     JobInfo update(JobInfo jobInfo);
 
     /**
+     * Update job info by id with new values.
+     *
+     * @param id job info id
+     * @param companyId company id
+     * @param recruitType new recruit type
+     * @param position new position
+     * @param link new link
+     * @param location new location
+     * @param extra new extra information
+     * @return updated job info
+     */
+    JobInfo updateById(Integer id, Integer companyId, RecruitType recruitType, String position, 
+                      String link, String location, String extra);
+
+    /**
      * Delete job info by id.
      *
      * @param id job info id

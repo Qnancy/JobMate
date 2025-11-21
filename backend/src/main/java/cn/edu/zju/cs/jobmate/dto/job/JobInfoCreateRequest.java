@@ -1,6 +1,8 @@
 package cn.edu.zju.cs.jobmate.dto.job;
 
+import cn.edu.zju.cs.jobmate.dto.company.CompanyResponse;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,8 +16,9 @@ import lombok.Data;
 @Builder
 public class JobInfoCreateRequest {
     
-    @NotNull(message = "Company ID cannot be empty")
-    private Integer companyId;
+    @Valid
+    @NotNull(message = "Company information cannot be empty")
+    private CompanyResponse company;
     
     @NotNull(message = "Recruitment type cannot be empty")
     private RecruitType recruitType;
@@ -25,7 +28,6 @@ public class JobInfoCreateRequest {
     private String position;
     
     private String link;
-    private String city;
     private String location;
     private String extra;
 }

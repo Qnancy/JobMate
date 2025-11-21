@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -103,5 +106,27 @@ public interface JobInfoRepository extends JpaRepository<JobInfo, Integer>, JpaS
      * @return page of job infos
      */
     Page<JobInfo> findByCompanyAndRecruitType(Company company, RecruitType recruitType, Pageable pageable);
+
+    /**
+     * Update job info by id with new values.
+     *
+     * @param id job info id
+     * @param companyId company id
+     * @param recruitType new recruit type
+     * @param position new position
+     * @param link new link
+     * @param location new location
+     * @param extra new extra information
+     */
+    @Modifying
+    @Query("UPDATE JobInfo j SET j.company.id = :companyId, j.recruitType = :recruitType, " +
+           "j.position = :position, j.link = :link, j.location = :location, j.extra = :extra WHERE j.id = :id")
+    void updateJobInfoById(@Param("id") Integer id, 
+                          @Param("companyId") Integer companyId, 
+                          @Param("recruitType") RecruitType recruitType, 
+                          @Param("position") String position, 
+                          @Param("link") String link, 
+                          @Param("location") String location, 
+                          @Param("extra") String extra);
 }
 

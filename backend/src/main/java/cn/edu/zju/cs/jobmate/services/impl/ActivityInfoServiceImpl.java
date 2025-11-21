@@ -1,5 +1,8 @@
 package cn.edu.zju.cs.jobmate.services.impl;
 
+import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
+import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
+
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
@@ -42,7 +45,6 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<ActivityInfo> getById(Integer id) {
         if (id == null) {
             return Optional.empty();
@@ -51,91 +53,77 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ActivityInfo> getAll() {
         return activityInfoRepository.findAll();
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ActivityInfo> getAll(Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return activityInfoRepository.findAll(pageable);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ActivityInfo> getByCompany(Company company) {
         return activityInfoRepository.findByCompany(company);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ActivityInfo> getByCompanyId(Integer companyId) {
         return activityInfoRepository.findByCompanyId(companyId);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ActivityInfo> getByCompany(Company company, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return activityInfoRepository.findByCompany(company, pageable);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ActivityInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return activityInfoRepository.findByCompanyId(companyId, pageable);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ActivityInfo> getByCity(String city) {
         return activityInfoRepository.findByCity(city);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ActivityInfo> getByCity(String city, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return activityInfoRepository.findByCity(city, pageable);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ActivityInfo> getByTimeAfter(LocalDateTime time) {
         return activityInfoRepository.findByTimeAfter(time);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ActivityInfo> getByTimeAfter(LocalDateTime time, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return activityInfoRepository.findByTimeAfter(time, pageable);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ActivityInfo> getByTimeBefore(LocalDateTime time) {
         return activityInfoRepository.findByTimeBefore(time);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ActivityInfo> getByTimeBefore(LocalDateTime time, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return activityInfoRepository.findByTimeBefore(time, pageable);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ActivityInfo> getByTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
         return activityInfoRepository.findByTimeBetween(startTime, endTime);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ActivityInfo> getByTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return activityInfoRepository.findByTimeBetween(startTime, endTime, pageable);
@@ -145,9 +133,24 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
     public ActivityInfo update(ActivityInfo activityInfo) {
         Integer id = activityInfo.getId();
         if (id == null || !activityInfoRepository.existsById(id)) {
-            throw new IllegalArgumentException("ActivityInfo with id " + id + " does not exist");
+            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
         }
         return activityInfoRepository.save(activityInfo);
+    }
+
+    @Override
+    public ActivityInfo updateById(Integer id, Integer companyId, String title, LocalDateTime time, 
+                                  String link, String location, String extra) {
+        if (id == null || !activityInfoRepository.existsById(id)) {
+            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+        
+        // Use custom update query to modify specific fields
+        activityInfoRepository.updateActivityInfoById(id, companyId, title, time, link, location, extra);
+        
+        // Return the updated activity info
+        return activityInfoRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Failed to retrieve updated activity info with id " + id));
     }
 
     @Override
@@ -158,13 +161,11 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsById(Integer id) {
         return id != null && activityInfoRepository.existsById(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ActivityInfo> query(String keyword, Integer page, Integer pageSize) {
         Specification<ActivityInfo> spec = buildSpecification(keyword);
         Pageable pageable = PageRequest.of(

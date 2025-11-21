@@ -5,6 +5,9 @@ import cn.edu.zju.cs.jobmate.models.ActivitySubscription;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.repositories.ActivitySubscriptionRepository;
 import cn.edu.zju.cs.jobmate.services.ActivitySubscriptionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +44,6 @@ public class ActivitySubscriptionServiceImpl implements ActivitySubscriptionServ
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<ActivitySubscription> getById(Integer id) {
         if (id == null) {
             return Optional.empty();
@@ -50,31 +52,32 @@ public class ActivitySubscriptionServiceImpl implements ActivitySubscriptionServ
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ActivitySubscription> getAll() {
         return activitySubscriptionRepository.findAll();
     }
 
     @Override
-    @Transactional(readOnly = true)
+    public Page<ActivitySubscription> getAll(Integer page, Integer pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return activitySubscriptionRepository.findAll(pageable);
+    }
+
+    @Override
     public List<ActivitySubscription> getByUser(User user) {
         return activitySubscriptionRepository.findByUser(user);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ActivitySubscription> getByUserId(Integer userId) {
         return activitySubscriptionRepository.findByUserId(userId);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<ActivitySubscription> getByUserAndActivityInfo(User user, ActivityInfo activityInfo) {
         return activitySubscriptionRepository.findByUserAndActivityInfo(user, activityInfo);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<ActivitySubscription> getByUserIdAndActivityInfoId(Integer userId, Integer activityInfoId) {
         return activitySubscriptionRepository.findByUserIdAndActivityInfoId(userId, activityInfoId);
     }
@@ -108,19 +111,16 @@ public class ActivitySubscriptionServiceImpl implements ActivitySubscriptionServ
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsById(Integer id) {
         return id != null && activitySubscriptionRepository.existsById(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsByUserAndActivityInfo(User user, ActivityInfo activityInfo) {
         return activitySubscriptionRepository.existsByUserAndActivityInfo(user, activityInfo);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsByUserIdAndActivityInfoId(Integer userId, Integer activityInfoId) {
         return activitySubscriptionRepository.existsByUserIdAndActivityInfoId(userId, activityInfoId);
     }

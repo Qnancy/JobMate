@@ -1,5 +1,7 @@
 package cn.edu.zju.cs.jobmate.dto.activity;
 
+import cn.edu.zju.cs.jobmate.dto.company.CompanyResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -16,8 +18,9 @@ import java.time.LocalDateTime;
 @Builder
 public class ActivityInfoCreateRequest {
     
-    @NotNull(message = "Company ID cannot be empty")
-    private Integer companyId;
+    @Valid
+    @NotNull(message = "Company information cannot be empty")
+    private CompanyResponse company;
     
     @NotBlank(message = "Activity title cannot be empty")
     private String title;
@@ -26,9 +29,12 @@ public class ActivityInfoCreateRequest {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
     
+    @NotBlank(message = "Link cannot be empty")
     private String link;
-    private String city;
+    
+    @NotBlank(message = "Location cannot be empty")
     private String location;
+    
+    @NotBlank(message = "Extra information cannot be empty")
     private String extra;
-
 }

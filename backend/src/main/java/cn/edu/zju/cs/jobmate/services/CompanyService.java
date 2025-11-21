@@ -79,6 +79,16 @@ public interface CompanyService {
     Company update(Company company);
 
     /**
+     * Update company by id with new values.
+     *
+     * @param id company id
+     * @param name new company name
+     * @param type new company type
+     * @return updated company
+     */
+    Company updateById(Integer id, String name, CompanyType type);
+
+    /**
      * Delete company by id.
      *
      * @param id company id

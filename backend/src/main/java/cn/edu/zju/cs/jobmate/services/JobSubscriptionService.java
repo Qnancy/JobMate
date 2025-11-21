@@ -3,6 +3,7 @@ package cn.edu.zju.cs.jobmate.services;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
 import cn.edu.zju.cs.jobmate.models.JobSubscription;
 import cn.edu.zju.cs.jobmate.models.User;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,15 @@ public interface JobSubscriptionService {
      * @return list of job subscriptions
      */
     List<JobSubscription> getAll();
+
+    /**
+     * Get all job subscriptions with pagination.
+     *
+     * @param page page number (0-based)
+     * @param pageSize page size
+     * @return page of job subscriptions
+     */
+    Page<JobSubscription> getAll(Integer page, Integer pageSize);
 
     /**
      * Get job subscriptions by user.

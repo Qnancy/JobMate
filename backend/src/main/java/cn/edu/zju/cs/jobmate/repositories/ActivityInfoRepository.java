@@ -6,6 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -120,5 +123,27 @@ public interface ActivityInfoRepository extends JpaRepository<ActivityInfo, Inte
      * @return page of activity infos
      */
     Page<ActivityInfo> findByTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+
+    /**
+     * Update activity info by id with new values.
+     *
+     * @param id activity info id
+     * @param companyId company id
+     * @param title new title
+     * @param time new time
+     * @param link new link
+     * @param location new location
+     * @param extra new extra information
+     */
+    @Modifying
+    @Query("UPDATE ActivityInfo a SET a.company.id = :companyId, a.title = :title, " +
+           "a.time = :time, a.link = :link, a.location = :location, a.extra = :extra WHERE a.id = :id")
+    void updateActivityInfoById(@Param("id") Integer id, 
+                               @Param("companyId") Integer companyId, 
+                               @Param("title") String title, 
+                               @Param("time") LocalDateTime time, 
+                               @Param("link") String link, 
+                               @Param("location") String location, 
+                               @Param("extra") String extra);
 }
 

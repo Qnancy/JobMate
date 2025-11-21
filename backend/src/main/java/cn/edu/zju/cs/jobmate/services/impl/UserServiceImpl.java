@@ -1,5 +1,9 @@
 package cn.edu.zju.cs.jobmate.services.impl;
 
+import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
+import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
+
+import cn.edu.zju.cs.jobmate.enums.UserRole;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.repositories.UserRepository;
 import cn.edu.zju.cs.jobmate.services.UserService;
@@ -31,7 +35,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<User> getById(Integer id) {
         if (id == null) {
             return Optional.empty();
@@ -40,13 +43,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<User> getByName(String name) {
         return userRepository.findByName(name);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<User> getAll() {
         return userRepository.findAll();
     }
@@ -55,9 +56,23 @@ public class UserServiceImpl implements UserService {
     public User update(User user) {
         Integer id = user.getId();
         if (id == null || !userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User with id " + id + " does not exist");
+            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
         }
         return userRepository.save(user);
+    }
+
+    @Override
+    public User updateById(Integer id, String name, UserRole role) {
+        if (id == null || !userRepository.existsById(id)) {
+            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+        
+        // Use custom update query to modify specific fields
+        userRepository.updateUserById(id, name, role);
+        
+        // Return the updated user
+        return userRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Failed to retrieve updated user with id " + id));
     }
 
     @Override
@@ -68,13 +83,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsById(Integer id) {
         return id != null && userRepository.existsById(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsByName(String name) {
         return userRepository.existsByName(name);
     }

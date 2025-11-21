@@ -164,6 +164,21 @@ public interface ActivityInfoService {
     ActivityInfo update(ActivityInfo activityInfo);
 
     /**
+     * Update activity info by id with new values.
+     *
+     * @param id activity info id
+     * @param companyId company id
+     * @param title new title
+     * @param time new time
+     * @param link new link
+     * @param location new location
+     * @param extra new extra information
+     * @return updated activity info
+     */
+    ActivityInfo updateById(Integer id, Integer companyId, String title, LocalDateTime time, 
+                           String link, String location, String extra);
+
+    /**
      * Delete activity info by id.
      *
      * @param id activity info id

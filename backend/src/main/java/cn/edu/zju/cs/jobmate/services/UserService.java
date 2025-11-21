@@ -1,5 +1,6 @@
 package cn.edu.zju.cs.jobmate.services;
 
+import cn.edu.zju.cs.jobmate.enums.UserRole;
 import cn.edu.zju.cs.jobmate.models.User;
 
 import java.util.List;
@@ -48,6 +49,16 @@ public interface UserService {
      * @return updated user
      */
     User update(User user);
+
+    /**
+     * Update user by id with new values.
+     *
+     * @param id user id
+     * @param name new username
+     * @param role new user role
+     * @return updated user
+     */
+    User updateById(Integer id, String name, UserRole role);
 
     /**
      * Delete user by id.

@@ -3,6 +3,7 @@ package cn.edu.zju.cs.jobmate.services;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.models.ActivitySubscription;
 import cn.edu.zju.cs.jobmate.models.User;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,15 @@ public interface ActivitySubscriptionService {
      * @return list of activity subscriptions
      */
     List<ActivitySubscription> getAll();
+
+    /**
+     * Get all activity subscriptions with pagination.
+     *
+     * @param page page number (0-based)
+     * @param pageSize page size
+     * @return page of activity subscriptions
+     */
+    Page<ActivitySubscription> getAll(Integer page, Integer pageSize);
 
     /**
      * Get activity subscriptions by user.
