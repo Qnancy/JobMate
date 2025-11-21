@@ -41,7 +41,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         String ip = request.getRemoteAddr();
         String uri = request.getRequestURI();
         String key = PREFIX + ip + ":" + uri;
-        Long cnt = redis.opsForValue().increment(key);
+        Long cnt = redis.opsForValue().increment(key); // TODO: use Lua script for atomicity
         // Set expiration for the key on first increment
         if (cnt != null && cnt == 1) {
             redis.expire(key, rateLimiter.getLimitIntervalS(), TimeUnit.SECONDS);
