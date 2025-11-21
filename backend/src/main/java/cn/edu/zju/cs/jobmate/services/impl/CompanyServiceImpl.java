@@ -38,6 +38,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Company> getById(Integer id) {
         if (id == null) {
             return Optional.empty();
@@ -46,27 +47,32 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Company> getByName(String name) {
         return companyRepository.findByName(name);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Company> getAll() {
         return companyRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Company> getAll(Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return companyRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Company> getByType(CompanyType type) {
         return companyRepository.findByType(type);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Company> getByType(CompanyType type, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return companyRepository.findByType(type, pageable);
@@ -103,11 +109,13 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsById(Integer id) {
         return id != null && companyRepository.existsById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByName(String name) {
         return companyRepository.existsByName(name);
     }

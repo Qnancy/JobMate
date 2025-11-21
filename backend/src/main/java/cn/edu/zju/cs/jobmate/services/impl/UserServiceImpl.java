@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> getById(Integer id) {
         if (id == null) {
             return Optional.empty();
@@ -43,11 +44,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> getByName(String name) {
         return userRepository.findByName(name);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getAll() {
         return userRepository.findAll();
     }
@@ -83,11 +86,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsById(Integer id) {
         return id != null && userRepository.existsById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByName(String name) {
         return userRepository.existsByName(name);
     }
