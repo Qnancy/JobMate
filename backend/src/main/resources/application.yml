@@ -49,7 +49,7 @@ app:
       enabled: true
       threshold-ms: 1000
     rate-limiter:
-      enabled: true
+      enabled: false
       limit-interval-s: 60
       max-requests-per-interval: 100
   web-mvc:
