@@ -40,8 +40,8 @@ app:
       threshold-ms: 1000
     rate-limiter:
       enabled: true
-      limit-interval-s: 60
-      max-requests-per-interval: 100
+      limit-interval-s: 10
+      max-requests-per-interval: 5
   web-mvc:
     cors:
       allowed-origins: 
