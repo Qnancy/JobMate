@@ -78,7 +78,7 @@ public class MonitorProperties {
         @NotNull
         private Integer maxRequestsPerInterval;
 
-        public Boolean getEnabled() {
+        public Boolean isEnabled() {
             return enabled;
         }
 

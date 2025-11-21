@@ -1,6 +1,7 @@
 package cn.edu.zju.cs.jobmate.configs;
 
 import cn.edu.zju.cs.jobmate.configs.interceptors.*;
+import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
 import cn.edu.zju.cs.jobmate.configs.properties.WebMvcProperties;
 
 import java.util.Objects;
@@ -22,7 +23,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private WebMvcProperties webMvcProperties;
 
     @Autowired
+    private MonitorProperties monitorProperties;
+
+    @Autowired
     private LogInterceptor logInterceptor;
+
+    @Autowired
+    private RateLimitInterceptor rateLimitInterceptor;
 
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
@@ -45,5 +52,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     "/api/register",
                     "/api/health"
                 );
+        // Rate limiting interceptor
+        if (monitorProperties.getRateLimiter().isEnabled()) {
+            registry.addInterceptor(Objects.requireNonNull(rateLimitInterceptor))
+                    .addPathPatterns("/api/**");
+        }
     }
 }
