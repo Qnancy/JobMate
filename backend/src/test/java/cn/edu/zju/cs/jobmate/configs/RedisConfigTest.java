@@ -29,7 +29,7 @@ class RedisConfigTest {
 
     @BeforeAll
     static void startRedis() throws Exception {
-        redisServer = new RedisServer(6379);
+        redisServer = new RedisServer(6378);
         redisServer.start();
     }
 
