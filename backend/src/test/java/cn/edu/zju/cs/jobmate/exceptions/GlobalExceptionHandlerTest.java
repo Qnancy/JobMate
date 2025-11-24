@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = DummyControllerUtil.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import({
-    cn.edu.zju.cs.jobmate.configs.properties.WebMvcProperties.class,
+    cn.edu.zju.cs.jobmate.configs.properties.CorsProperties.class,
     cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties.class
 })
 class GlobalExceptionHandlerTest {

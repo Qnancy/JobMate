@@ -42,11 +42,10 @@ app:
       enabled: true
       limit-interval-s: 10
       max-requests-per-interval: 5
-  web-mvc:
-    cors:
-      allowed-origins: 
-        - "https://localhost:3000"
-      max-age: 3600
+  cors:
+    allowed-origins: 
+      - "https://localhost:3000"
+    max-age: 3600
 
 logging:
   level:
