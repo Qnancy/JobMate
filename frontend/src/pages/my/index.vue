@@ -4,8 +4,15 @@
   <div class="page">
     <template v-if="user">
 
-      <div style="text-align: center; margin-bottom: 16px;">
-        <van-avatar :src="user.avatarUrl" size="64px" />
+      <div class="profile-header">
+        <van-image
+          class="profile-avatar"
+          round
+          width="72px"
+          height="72px"
+          fit="cover"
+          :src="user.avatarUrl || defaultAvatar"
+        />
         <div style="margin-top: 8px; font-weight: bold;">{{ user.displayName || user.username }}</div>
       </div>
 
@@ -33,6 +40,7 @@ import { Toast } from "vant";
 import * as auth from "@/services/auth";
 
 const router = useRouter();
+const defaultAvatar = 'https://avatars.githubusercontent.com/u/9919?s=200&v=4';
 
 const user = ref(auth.currentUser());
 
@@ -44,12 +52,21 @@ function onLogout() {
   auth.logout();
   user.value = null;
   Toast.success("已退出");
+  router.push({ path: "/" });
 }
 </script>
 
 <style scoped>
 .page {
   padding: 16px;
+}
+.profile-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.profile-avatar {
+  border: 2px solid rgba(15, 23, 42, 0.15);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
 }
 .actions {
   margin-top: 24px;
