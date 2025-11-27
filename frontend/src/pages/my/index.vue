@@ -11,9 +11,9 @@
           width="72px"
           height="72px"
           fit="cover"
-          :src="user.avatarUrl || defaultAvatar"
+          :src="defaultAvatar"
         />
-        <div style="margin-top: 8px; font-weight: bold;">{{ user.displayName || user.username }}</div>
+        <div style="margin-top: 8px; font-weight: bold;">{{user.name }}</div>
       </div>
 
       <van-grid clickable :column-num="3">

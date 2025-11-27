@@ -7,7 +7,7 @@
       <p>(logo)</p>
     </div>
 
-    <van-form @submit.prevent="onSubmit">
+    <van-form @submit="onSubmit">
       <van-field 
         v-model="form.username" 
         label="用户名" 
@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
-import { Toast } from 'vant'
+import { showToast, Toast } from 'vant'
 import * as auth from '@/services/auth'
 
 const router = useRouter()
@@ -123,18 +123,21 @@ onBeforeRouteLeave(() => {
   saveForm();
 });
 
-function onSubmit() {
-  if (!form.value.username) return Toast.fail('请输入用户名')
-  if (!form.value.password || form.value.password.length < 3) return Toast.fail('密码至少 3 位')
-  if (form.value.password !== form.value.confirmPassword) return Toast.fail('两次输入的密码不一致')
-
-  const res = auth.register({
-    username: form.value.username.trim(),
-    password: form.value.password,
-    displayName: form.value.displayName?.trim() || undefined,
+async function onSubmit() {
+  if (!form.value.username) return showToast({ type: 'fail', message: '用户名不能为空' });
+  if (!form.value.password || form.value.password.length < 3) return showToast('密码长度不能少于3位')
+  if (form.value.password !== form.value.confirmPassword) return showToast('两次输入的密码不一致')
+  console.log('注册请求发送中:', form.value)
+  const res = await auth.register(
+    form.value.username.trim(),
+    form.value.password.trim(),
+    "user" // 默认注册为普通用户,应该支持管理员登录
+  ).catch((e) => {
+    console.error('注册请求失败:', e)
+    return { code: 500, message: '网络错误，请稍后重试' }
   })
 
-  if (!res.success) return Toast.fail(res.message || '注册失败')
+  if (res.code !== 94) return Toast.fail(res.message || '注册失败')
 
   localStorage.removeItem(STORAGE_KEY);
 

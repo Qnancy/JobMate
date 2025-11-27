@@ -1,23 +1,25 @@
 <template>
-  <van-nav-bar title="登录" left-text=" " />
-
   <div class="page">
-    <div class="logo">
-      <img src="@/assets/vue.svg" alt="" />
-      <p>(logo)</p>
+    <div class="slogan-container">
+      <h1 class="main-slogan">连接机遇，成就未来</h1>
+      <p class="sub-slogan">从这里开始你的职业新篇章</p>
     </div>
 
     <van-form @submit="onSubmit">
       <van-field
         v-model="form.username"
+        left-icon="user"
         label="用户名"
         placeholder="请输入用户名"
         clearable
         @update:value="saveForm"
-      />
+      >
+
+      </van-field>
       <van-field
         v-model="form.password"
         :type="showPassword ? 'text' : 'password'"
+        left-icon="lock"
         label="密码"
         placeholder="请输入密码"
         clearable
@@ -30,20 +32,21 @@
         </template>
       </van-field>
 
-      <div style="margin-top: 1.5em; margin-left: 2em; margin-right: 2em">
-        <van-button block round type="primary" native-type="submit"
+      <div class="login-button-box">
+        <van-button block  type="primary" native-type="submit" class="login-button"
           >登录</van-button
         >
       </div>
     </van-form>
 
-    <div style="margin-top: 12px; text-align: center; font-size: 0.5em">
-      <router-link to="/my/register">还没有账号？去注册</router-link>
-    </div>
-    <div style="margin-top: 24px; text-align: center">
-      <van-button round size="small" type="success"
-        >浙大统一身份认证</van-button
+    <div class="login-button-box">
+      <van-button block  type="success" class="login-button"
+        >统一身份认证登录</van-button
       >
+    </div>
+
+    <div class="register-link">
+      <router-link to="/my/register">还没有账号？去注册</router-link>
     </div>
   </div>
 </template>
@@ -51,12 +54,13 @@
 <script setup lang="ts">
 import { ref, onMounted, watchEffect } from "vue";
 import { useRouter, onBeforeRouteLeave } from "vue-router";
-import { Toast } from "vant";
+import { showToast, Toast } from "vant";
 import * as auth from "@/services/auth";
 
 const router = useRouter();
 
 const STORAGE_KEY = "jobmate_login_form";
+const CURRENT_KEY = "jobmate_current_user";
 const form = ref({ username: "", password: "" });
 const showPassword = ref(false);
 
@@ -108,30 +112,61 @@ onBeforeRouteLeave(() => {
   saveForm();
 });
 
-function onSubmit() {
-  if (!form.value.username) return Toast.fail("请输入用户名");
+async function onSubmit() {
+  if (!form.value.username) return showToast("请输入用户名");
   if (!form.value.password || form.value.password.length < 3)
-    return Toast.fail("请输入至少 3 位密码");
+    return showToast("请输入至少 3 位密码");
 
-  const res = auth.login(form.value.username.trim(), form.value.password);
-  if (!res.success) return Toast.fail(res.message || "登录失败");
+  const res = await auth.login(form.value.username.trim(), form.value.password);
+  if (res.code !== 0) return showToast(res.message || "登录失败");
 
   // 登录成功后清除保存的表单数据
   localStorage.removeItem(STORAGE_KEY);
-  Toast.success("登录成功");
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(res.data));
+  showToast("登录成功");
   // navigate to the My page
   router.push({ path: "/my" });
 }
 </script>
 
 <style scoped>
+/* 引入字体 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
 .page {
   padding: 16px;
+  font-family: 'Noto Sans SC', sans-serif;
 }
-.logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 3em;
-  margin-top: 3em;
+.slogan-container {
+  text-align: center;
+}
+.main-slogan {
+  font-size: 26px;
+  font-weight: 700;
+  color: #333;
+}
+.sub-slogan {
+  font-size: 14px;
+  font-weight: 300;
+  color: #888;
+}
+.login-button-box {
+  margin-top: 24px;
+  text-align: center;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+.login-button-box .login-button {
+  border-radius: 8px;
+  font-weight: 500;
+}
+.register-link {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+.register-link a {
+  color: #888;
+  text-decoration: none;
 }
 </style>
