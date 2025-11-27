@@ -9,10 +9,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Interceptor to log requests.
  */
+@Slf4j
 @Component
 public class LogInterceptor implements HandlerInterceptor {
 
@@ -31,9 +33,10 @@ public class LogInterceptor implements HandlerInterceptor {
     ) throws Exception {
         long startTime = System.currentTimeMillis();
         request.setAttribute(timeAttribute, startTime);
-        //String uri = request.getRequestURI();
-        //String method = request.getMethod();
-        // TODO: log request info here
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+        String ip = request.getRemoteAddr();
+        log.info("Receiving request from {} : {} {}", ip, method, uri);
         return true;
     }
 
@@ -47,17 +50,20 @@ public class LogInterceptor implements HandlerInterceptor {
         long startTime = (Long) request.getAttribute(timeAttribute);
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
-        //String uri = request.getRequestURI();
-        //String method = request.getMethod();
-        //int status = response.getStatus();
-        //String clientIp = request.getRemoteAddr();
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+        int status = response.getStatus();
+        String ip = request.getRemoteAddr();
         // TODO: get user auth info from SecurityContext
         if (exception != null) {
-            // TODO: log exception info here
+            log.error("Request from {} : {} {} completed with exception after {} ms",
+                ip, method, uri, duration, exception);
         } else if (slowApi.isEnabled() && duration > slowApi.getThresholdMs()) {
-            // TODO: log slow requests here
+            log.warn("Slow request from {} : {} {} completed in {} ms with status {}",
+                ip, method, uri, duration, status);
         } else {
-            // TODO: log normal requests here
+            log.info("Request from {} : {} {} completed in {} ms with status {}",
+                ip, method, uri, duration, status);
         }
     }
 }

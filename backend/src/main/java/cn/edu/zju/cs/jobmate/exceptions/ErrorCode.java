@@ -36,4 +36,13 @@ public enum ErrorCode {
     public int getCode() { return code; }
     public HttpStatus getHttpStatus() { return httpStatus; }
     public String getMessage() { return message; }
+
+    @Override
+    public String toString() {
+        return "ErrorCode{" +
+               "code=" + code +
+               ", httpStatus=" + httpStatus +
+               ", message='" + message + '\'' +
+               '}';
+    }
 }

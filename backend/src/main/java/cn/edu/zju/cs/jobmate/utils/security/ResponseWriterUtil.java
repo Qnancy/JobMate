@@ -9,12 +9,14 @@ import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Response writer utility class for Spring Security.
  * 
  * @apiNote Only used in Spring Security.
  */
+@Slf4j
 public class ResponseWriterUtil {
 
     /**
@@ -41,7 +43,7 @@ public class ResponseWriterUtil {
         try {
             mapper.writeValue(response.getOutputStream(), body);
         } catch (IOException e) {
-            // TODO: log error here.
+            log.error("Failed to write response: {}", e.getMessage(), e);
         }
     }
 }
