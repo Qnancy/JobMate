@@ -2,9 +2,13 @@ package cn.edu.zju.cs.jobmate.controller;
 
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
+import cn.edu.zju.cs.jobmate.repositories.*;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
 import cn.edu.zju.cs.jobmate.repositories.JobInfoRepository;
 import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
+import cn.edu.zju.cs.jobmate.repositories.JobSubscriptionRepository;
+import cn.edu.zju.cs.jobmate.repositories.ActivitySubscriptionRepository;
+import cn.edu.zju.cs.jobmate.repositories.UserRepository;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,10 +27,10 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import org.springframework.test.annotation.Commit;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 @DisplayName("CompanyController功能测试")
 class CompanyControllerTest {
 
@@ -46,6 +50,15 @@ class CompanyControllerTest {
     private ActivityInfoRepository activityInfoRepository;
 
     @Autowired
+    private JobSubscriptionRepository jobSubscriptionRepository;
+
+    @Autowired
+    private ActivitySubscriptionRepository activitySubscriptionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
@@ -53,11 +66,6 @@ class CompanyControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        
-        // 清理数据 - 先删除子表，再删除父表（避免外键约束冲突）
-        jobInfoRepository.deleteAll();
-        activityInfoRepository.deleteAll();
-        companyRepository.deleteAll();
     }
 
     @Test
@@ -107,7 +115,8 @@ class CompanyControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.code").value(409));
+                .andExpect(jsonPath("$.code").value(409))
+                .andExpect(jsonPath("$.message").value("公司已存在"));
 
         // 验证数据库中只有一个公司
         assertEquals(1, companyRepository.count());
@@ -162,7 +171,8 @@ class CompanyControllerTest {
         
         mockMvc.perform(get("/api/companies/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("公司不存在"));
 
         System.out.println("✓ 查询不存在的公司返回404");
     }
@@ -262,7 +272,8 @@ class CompanyControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("公司不存在"));
 
         System.out.println("✓ 更新不存在的公司返回404");
     }
@@ -294,7 +305,8 @@ class CompanyControllerTest {
         
         mockMvc.perform(delete("/api/companies/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("公司不存在"));
 
         System.out.println("✓ 删除不存在的公司返回404");
     }

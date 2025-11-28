@@ -49,6 +49,14 @@ public class Company {
         return type;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setType(CompanyType type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "Company{" +

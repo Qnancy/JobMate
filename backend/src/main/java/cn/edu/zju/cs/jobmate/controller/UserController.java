@@ -57,24 +57,10 @@ public class UserController {
         
         logger.info("Retrieving user with ID: {}", id);
         
-        try {
-            Optional<User> user = userService.getById(id);
-            
-            if (user.isPresent()) {
-                UserResponse response = UserResponse.from(user.get());
-                logger.info("Successfully retrieved user: {}", user.get().getUsername());
-                return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
-            } else {
-                logger.warn("User not found with ID: {}", id);
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error retrieving user with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        User user = userService.getUserById(id);
+        UserResponse response = UserResponse.from(user);
+        logger.info("Successfully retrieved user: {}", user.getUsername());
+        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 
     /**
@@ -87,24 +73,10 @@ public class UserController {
         
         logger.info("Retrieving current user with ID: {}", request.getId());
         
-        try {
-            Optional<User> user = userService.getById(request.getId());
-            
-            if (user.isPresent()) {
-                UserResponse response = UserResponse.from(user.get());
-                logger.info("Successfully retrieved current user: {}", user.get().getUsername());
-                return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
-            } else {
-                logger.warn("Current user not found with ID: {}", request.getId());
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error retrieving current user with ID {}: {}", request.getId(), e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        User user = userService.getUserById(request.getId());
+        UserResponse response = UserResponse.from(user);
+        logger.info("Successfully retrieved current user: {}", user.getUsername());
+        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 
     /**
@@ -118,20 +90,11 @@ public class UserController {
         
         logger.info("Updating user with ID: {}", id);
         
-        try {
-            // Use the new updateById method that handles ID preservation
-            User savedUser = userService.updateById(id, request.getName(), request.getRole());
-            UserResponse response = UserResponse.from(savedUser);
-            
-            logger.info("Successfully updated user with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error updating user with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        User savedUser = userService.updateById(id, request.getName(), request.getRole());
+        UserResponse response = UserResponse.from(savedUser);
+        
+        logger.info("Successfully updated user with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
     }
 
     /**
@@ -143,20 +106,8 @@ public class UserController {
         
         logger.info("Deleting user with ID: {}", id);
         
-        try {
-            if (!userService.existsById(id)) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            userService.deleteById(id);
-            logger.info("Successfully deleted user with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("删除成功"));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error deleting user with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        userService.deleteUserById(id);
+        logger.info("Successfully deleted user with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("删除成功"));
     }
 }

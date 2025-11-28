@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.test.annotation.Commit;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 @DisplayName("UserController功能测试")
 class UserControllerTest {
 
@@ -44,9 +45,6 @@ class UserControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        
-        // 清理数据
-        userRepository.deleteAll();
     }
 
     @Test
@@ -77,9 +75,10 @@ class UserControllerTest {
         
         mockMvc.perform(get("/api/users/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))  // USER_NOT_FOUND
+                .andExpect(jsonPath("$.message").value("用户不存在"));
 
-        System.out.println("✓ 查询不存在的用户返回404");
+        System.out.println("✓ 查询不存在的用户返回4041错误码");
     }
 
     @Test
@@ -125,12 +124,14 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))  // USER_NOT_FOUND
+                .andExpect(jsonPath("$.message").value("用户不存在"));
 
-        System.out.println("✓ 当前用户不存在时返回404");
+        System.out.println("✓ 当前用户不存在时返回4041错误码");
     }
 
     @Test
+    @Rollback(false)
     @DisplayName("测试更新用户 - 成功")
     void testUpdateUser_Success() throws Exception {
         System.out.println("\n========== 测试更新用户 - 成功 ==========");
@@ -180,9 +181,10 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))  // USER_NOT_FOUND
+                .andExpect(jsonPath("$.message").value("用户不存在"));
 
-        System.out.println("✓ 更新不存在的用户返回404");
+        System.out.println("✓ 更新不存在的用户返回4041错误码");
     }
 
     @Test
@@ -241,9 +243,10 @@ class UserControllerTest {
         
         mockMvc.perform(delete("/api/users/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))  // USER_NOT_FOUND
+                .andExpect(jsonPath("$.message").value("用户不存在"));
 
-        System.out.println("✓ 删除不存在的用户返回404");
+        System.out.println("✓ 删除不存在的用户返回4041错误码");
     }
 
     @Test

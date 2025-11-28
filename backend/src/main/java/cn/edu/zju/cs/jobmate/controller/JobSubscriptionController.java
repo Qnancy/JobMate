@@ -71,37 +71,21 @@ public class JobSubscriptionController {
         logger.info("Creating job subscription for user: {}, jobInfo: {}", 
                    request.getUser().getId(), request.getJobInfo().getId());
         
-        try {
-            // Validate user exists
-            Optional<User> user = userService.getById(request.getUser().getId());
-            if (!user.isPresent()) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            // Validate job info exists
-            Optional<JobInfo> jobInfo = jobInfoService.getById(request.getJobInfo().getId());
-            if (!jobInfo.isPresent()) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            // Check if subscription already exists
-            if (jobSubscriptionService.existsByUserIdAndJobInfoId(user.get().getId(), jobInfo.get().getId())) {
-                throw new BusinessException(ErrorCode.RESOURCE_ALREADY_EXISTS);
-            }
-            
-            // Create JobSubscription
-            JobSubscription jobSubscription = jobSubscriptionService.create(user.get(), jobInfo.get());
-            JobSubscriptionResponse response = JobSubscriptionResponse.from(jobSubscription);
-            
-            logger.info("Successfully created job subscription with ID: {}", jobSubscription.getId());
-            return ResponseEntity.ok(ApiResponse.ok("招聘订阅创建成功", response));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error creating job subscription: {}", e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+        // Validate user and job info exist using new service methods
+        User user = userService.getUserById(request.getUser().getId());
+        JobInfo jobInfo = jobInfoService.getJobInfoById(request.getJobInfo().getId());
+        
+        // Check if subscription already exists
+        if (jobSubscriptionService.existsByUserIdAndJobInfoId(user.getId(), jobInfo.getId())) {
+            throw new BusinessException(ErrorCode.JOB_SUBSCRIPTION_ALREADY_EXISTS);
         }
+        
+        // Create JobSubscription
+        JobSubscription jobSubscription = jobSubscriptionService.create(user, jobInfo);
+        JobSubscriptionResponse response = JobSubscriptionResponse.from(jobSubscription);
+        
+        logger.info("Successfully created job subscription with ID: {}", jobSubscription.getId());
+        return ResponseEntity.ok(ApiResponse.ok("招聘订阅创建成功", response));
     }
 
     /**
@@ -113,21 +97,13 @@ public class JobSubscriptionController {
         
         logger.info("Deleting job subscription with ID: {}", id);
         
-        try {
-            if (!jobSubscriptionService.existsById(id)) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            jobSubscriptionService.deleteById(id);
-            logger.info("Successfully deleted job subscription with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("删除成功"));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error deleting job subscription with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+        if (!jobSubscriptionService.existsById(id)) {
+            throw new BusinessException(ErrorCode.JOB_SUBSCRIPTION_NOT_FOUND);
         }
+        
+        jobSubscriptionService.deleteById(id);
+        logger.info("Successfully deleted job subscription with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("删除成功"));
     }
 
     /**

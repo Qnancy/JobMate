@@ -107,26 +107,6 @@ public interface JobInfoRepository extends JpaRepository<JobInfo, Integer>, JpaS
      */
     Page<JobInfo> findByCompanyAndRecruitType(Company company, RecruitType recruitType, Pageable pageable);
 
-    /**
-     * Update job info by id with new values.
-     *
-     * @param id job info id
-     * @param companyId company id
-     * @param recruitType new recruit type
-     * @param position new position
-     * @param link new link
-     * @param location new location
-     * @param extra new extra information
-     */
-    @Modifying
-    @Query("UPDATE JobInfo j SET j.company.id = :companyId, j.recruitType = :recruitType, " +
-           "j.position = :position, j.link = :link, j.location = :location, j.extra = :extra WHERE j.id = :id")
-    void updateJobInfoById(@Param("id") Integer id, 
-                          @Param("companyId") Integer companyId, 
-                          @Param("recruitType") RecruitType recruitType, 
-                          @Param("position") String position, 
-                          @Param("link") String link, 
-                          @Param("location") String location, 
-                          @Param("extra") String extra);
+    // Removed updateJobInfoById - using standard JPA save() instead
 }
 

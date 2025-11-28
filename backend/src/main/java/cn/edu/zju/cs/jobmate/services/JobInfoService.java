@@ -30,6 +30,15 @@ public interface JobInfoService {
     Optional<JobInfo> getById(Integer id);
 
     /**
+     * Get job info by id, throw exception if not found.
+     *
+     * @param id job info id
+     * @return job info
+     * @throws BusinessException if job info not found
+     */
+    JobInfo getJobInfoById(Integer id);
+
+    /**
      * Get all job infos.
      *
      * @return list of job infos
@@ -166,6 +175,14 @@ public interface JobInfoService {
      * @param id job info id
      */
     void deleteById(Integer id);
+
+    /**
+     * Delete job info by id, throw exception if not found.
+     *
+     * @param id job info id
+     * @throws BusinessException if job info not found
+     */
+    void deleteJobInfoById(Integer id);
 
     /**
      * Check if job info exists by id.

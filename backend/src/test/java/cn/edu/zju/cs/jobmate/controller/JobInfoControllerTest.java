@@ -4,8 +4,13 @@ import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
+import cn.edu.zju.cs.jobmate.repositories.*;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
 import cn.edu.zju.cs.jobmate.repositories.JobInfoRepository;
+import cn.edu.zju.cs.jobmate.repositories.JobSubscriptionRepository;
+import cn.edu.zju.cs.jobmate.repositories.ActivitySubscriptionRepository;
+import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
+import cn.edu.zju.cs.jobmate.repositories.UserRepository;
 import cn.edu.zju.cs.jobmate.services.JobInfoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +23,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.test.annotation.Commit;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 @DisplayName("JobInfoController功能测试")
 class JobInfoControllerTest {
 
@@ -43,6 +48,18 @@ class JobInfoControllerTest {
     private CompanyRepository companyRepository;
 
     @Autowired
+    private JobSubscriptionRepository jobSubscriptionRepository;
+
+    @Autowired
+    private ActivitySubscriptionRepository activitySubscriptionRepository;
+
+    @Autowired
+    private ActivityInfoRepository activityInfoRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
@@ -51,10 +68,6 @@ class JobInfoControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        
-        // 清理数据 - 先删除子表，再删除父表
-        jobInfoRepository.deleteAll();
-        companyRepository.deleteAll();
         
         // 创建测试公司
         testCompany = new Company("测试公司", CompanyType.PRIVATE);
@@ -127,7 +140,8 @@ class JobInfoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("公司不存在"));
 
         assertEquals(0, jobInfoRepository.count());
         System.out.println("✓ 公司不存在时创建失败，符合预期");
@@ -164,7 +178,8 @@ class JobInfoControllerTest {
         
         mockMvc.perform(get("/api/jobs/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("招聘信息不存在"));
 
         System.out.println("✓ 查询不存在的招聘信息返回404");
     }
@@ -239,7 +254,8 @@ class JobInfoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("招聘信息不存在"));
 
         System.out.println("✓ 更新不存在的招聘信息返回404");
     }
@@ -271,7 +287,8 @@ class JobInfoControllerTest {
         
         mockMvc.perform(delete("/api/jobs/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("招聘信息不存在"));
 
         System.out.println("✓ 删除不存在的招聘信息返回404");
     }

@@ -52,17 +52,6 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
      */
     boolean existsByName(String name);
 
-    /**
-     * Update company by id with new values.
-     *
-     * @param id company id
-     * @param name new company name
-     * @param type new company type
-     */
-    @Modifying
-    @Query("UPDATE Company c SET c.name = :name, c.type = :type WHERE c.id = :id")
-    void updateCompanyById(@Param("id") Integer id, 
-                          @Param("name") String name, 
-                          @Param("type") CompanyType type);
+    // Removed updateCompanyById - using standard JPA save() instead
 }
 

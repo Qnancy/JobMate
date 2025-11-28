@@ -29,6 +29,15 @@ public interface CompanyService {
     Optional<Company> getById(Integer id);
 
     /**
+     * Get company by id, throw exception if not found.
+     *
+     * @param id company id
+     * @return company
+     * @throws BusinessException if company not found
+     */
+    Company getCompanyById(Integer id);
+
+    /**
      * Get company by name.
      *
      * @param name company name
@@ -94,6 +103,14 @@ public interface CompanyService {
      * @param id company id
      */
     void deleteById(Integer id);
+
+    /**
+     * Delete company by id, throw exception if not found.
+     *
+     * @param id company id
+     * @throws BusinessException if company not found
+     */
+    void deleteCompanyById(Integer id);
 
     /**
      * Check if company exists by id.

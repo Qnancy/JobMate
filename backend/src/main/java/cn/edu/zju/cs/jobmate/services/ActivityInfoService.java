@@ -1,5 +1,6 @@
 package cn.edu.zju.cs.jobmate.services;
 
+import cn.edu.zju.cs.jobmate.dto.activity.ActivityInfoCreateRequest;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.models.Company;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,15 @@ public interface ActivityInfoService {
      * @return optional activity info
      */
     Optional<ActivityInfo> getById(Integer id);
+
+    /**
+     * Get activity info by id, throw exception if not found.
+     *
+     * @param id activity info id
+     * @return activity info
+     * @throws BusinessException if activity info not found
+     */
+    ActivityInfo getActivityInfoById(Integer id);
 
     /**
      * Get all activity infos.
@@ -184,6 +194,14 @@ public interface ActivityInfoService {
      * @param id activity info id
      */
     void deleteById(Integer id);
+
+    /**
+     * Delete activity info by id, throw exception if not found.
+     *
+     * @param id activity info id
+     * @throws BusinessException if activity info not found
+     */
+    void deleteActivityInfoById(Integer id);
 
     /**
      * Check if activity info exists by id.

@@ -3,8 +3,13 @@ package cn.edu.zju.cs.jobmate.controller;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.models.Company;
+import cn.edu.zju.cs.jobmate.repositories.*;
 import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
+import cn.edu.zju.cs.jobmate.repositories.JobSubscriptionRepository;
+import cn.edu.zju.cs.jobmate.repositories.ActivitySubscriptionRepository;
+import cn.edu.zju.cs.jobmate.repositories.JobInfoRepository;
+import cn.edu.zju.cs.jobmate.repositories.UserRepository;
 import cn.edu.zju.cs.jobmate.services.ActivityInfoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.test.annotation.Commit;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
@@ -29,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 @DisplayName("ActivityInfoController功能测试")
 class ActivityInfoControllerTest {
 
@@ -45,6 +50,18 @@ class ActivityInfoControllerTest {
     private CompanyRepository companyRepository;
 
     @Autowired
+    private JobSubscriptionRepository jobSubscriptionRepository;
+
+    @Autowired
+    private ActivitySubscriptionRepository activitySubscriptionRepository;
+
+    @Autowired
+    private JobInfoRepository jobInfoRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
@@ -54,10 +71,6 @@ class ActivityInfoControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        
-        // 清理数据 - 先删除子表，再删除父表
-        activityInfoRepository.deleteAll();
-        companyRepository.deleteAll();
         
         // 创建测试公司
         testCompany = new Company("测试公司", CompanyType.PRIVATE);
@@ -136,7 +149,8 @@ class ActivityInfoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("公司不存在"));
 
         assertEquals(0, activityInfoRepository.count());
         System.out.println("✓ 公司不存在时创建失败，符合预期");
@@ -175,7 +189,8 @@ class ActivityInfoControllerTest {
         
         mockMvc.perform(get("/api/activities/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("活动信息不存在"));
 
         System.out.println("✓ 查询不存在的宣讲会返回404");
     }
@@ -259,7 +274,8 @@ class ActivityInfoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("活动信息不存在"));
 
         System.out.println("✓ 更新不存在的宣讲会返回404");
     }
@@ -292,7 +308,8 @@ class ActivityInfoControllerTest {
         
         mockMvc.perform(delete("/api/activities/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404));
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("活动信息不存在"));
 
         System.out.println("✓ 删除不存在的宣讲会返回404");
     }

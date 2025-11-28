@@ -66,21 +66,12 @@ public class CompanyController {
         
         logger.info("Creating company with name: {}, type: {}", request.getName(), request.getType());
         
-        try {
-            Company company = new Company(request.getName(), request.getType());
-            Company savedCompany = companyService.create(company);
-            CompanyResponse response = CompanyResponse.from(savedCompany);
-            
-            logger.info("Successfully created company with ID: {}", savedCompany.getId());
-            return ResponseEntity.ok(ApiResponse.ok("公司创建成功", response));
-            
-        } catch (IllegalArgumentException e) {
-            logger.warn("Failed to create company - duplicate name: {}", request.getName());
-            throw new BusinessException(ErrorCode.RESOURCE_ALREADY_EXISTS);
-        } catch (Exception e) {
-            logger.error("Unexpected error creating company: {}", e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        Company company = new Company(request.getName(), request.getType());
+        Company savedCompany = companyService.create(company);
+        CompanyResponse response = CompanyResponse.from(savedCompany);
+        
+        logger.info("Successfully created company with ID: {}", savedCompany.getId());
+        return ResponseEntity.ok(ApiResponse.ok("公司创建成功", response));
     }
 
     /**
@@ -136,24 +127,10 @@ public class CompanyController {
         
         logger.info("Retrieving company with ID: {}", id);
         
-        try {
-            Optional<Company> company = companyService.getById(id);
-            
-            if (company.isPresent()) {
-                CompanyResponse response = CompanyResponse.from(company.get());
-                logger.info("Successfully retrieved company: {}", company.get().getName());
-                return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
-            } else {
-                logger.warn("Company not found with ID: {}", id);
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error retrieving company with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        Company company = companyService.getCompanyById(id);
+        CompanyResponse response = CompanyResponse.from(company);
+        logger.info("Successfully retrieved company: {}", company.getName());
+        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 
     /**
@@ -167,20 +144,11 @@ public class CompanyController {
         
         logger.info("Updating company with ID: {}", id);
         
-        try {
-            // Use the new updateById method that handles ID preservation
-            Company savedCompany = companyService.updateById(id, request.getName(), request.getType());
-            CompanyResponse response = CompanyResponse.from(savedCompany);
-            
-            logger.info("Successfully updated company with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error updating company with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        Company savedCompany = companyService.updateById(id, request.getName(), request.getType());
+        CompanyResponse response = CompanyResponse.from(savedCompany);
+        
+        logger.info("Successfully updated company with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
     }
 
     /**
@@ -192,21 +160,9 @@ public class CompanyController {
         
         logger.info("Deleting company with ID: {}", id);
         
-        try {
-            if (!companyService.existsById(id)) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            companyService.deleteById(id);
-            logger.info("Successfully deleted company with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("删除成功"));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error deleting company with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        companyService.deleteCompanyById(id);
+        logger.info("Successfully deleted company with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("删除成功"));
     }
 
 }

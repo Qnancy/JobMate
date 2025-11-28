@@ -45,6 +45,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public User getUserById(Integer id) {
+        if (id == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+        return userRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<User> getByName(String name) {
         return userRepository.findByName(name);
     }
@@ -59,23 +69,21 @@ public class UserServiceImpl implements UserService {
     public User update(User user) {
         Integer id = user.getId();
         if (id == null || !userRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
         return userRepository.save(user);
     }
 
     @Override
     public User updateById(Integer id, String name, UserRole role) {
-        if (id == null || !userRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-        }
+        User user = getUserById(id);  // Reuse existing method, throws exception if not found
         
-        // Use custom update query to modify specific fields
-        userRepository.updateUserById(id, name, role);
+        // Update entity properties
+        user.setUsername(name);
+        user.setRole(role);
         
-        // Return the updated user
-        return userRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Failed to retrieve updated user with id " + id));
+        // Use standard JPA save - no cache issues
+        return userRepository.save(user);
     }
 
     @Override
@@ -83,6 +91,14 @@ public class UserServiceImpl implements UserService {
         if (id != null) {
             userRepository.deleteById(id);
         }
+    }
+
+    @Override
+    public void deleteUserById(Integer id) {
+        if (id == null || !userRepository.existsById(id)) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+        userRepository.deleteById(id);
     }
 
     @Override

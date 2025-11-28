@@ -68,35 +68,24 @@ public class JobInfoController {
         logger.info("Creating job info for company: {}, position: {}", 
                    request.getCompany().getName(), request.getPosition());
         
-        try {
-            // Validate company exists
-            Optional<Company> company = companyService.getById(request.getCompany().getId());
-            if (!company.isPresent()) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            // Create JobInfo
-            JobInfo jobInfo = new JobInfo(
-                company.get(),
-                request.getRecruitType(),
-                request.getPosition(),
-                request.getLink()
-            );
-            jobInfo.setLocation(request.getLocation());
-            jobInfo.setExtra(request.getExtra());
-            
-            JobInfo savedJobInfo = jobInfoService.create(jobInfo);
-            JobInfoResponse response = JobInfoResponse.from(savedJobInfo);
-            
-            logger.info("Successfully created job info with ID: {}", savedJobInfo.getId());
-            return ResponseEntity.ok(ApiResponse.ok("招聘信息创建成功", response));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error creating job info: {}", e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        // Validate company exists using new service method
+        Company company = companyService.getCompanyById(request.getCompany().getId());
+        
+        // Create JobInfo
+        JobInfo jobInfo = new JobInfo(
+            company,
+            request.getRecruitType(),
+            request.getPosition(),
+            request.getLink()
+        );
+        jobInfo.setLocation(request.getLocation());
+        jobInfo.setExtra(request.getExtra());
+        
+        JobInfo savedJobInfo = jobInfoService.create(jobInfo);
+        JobInfoResponse response = JobInfoResponse.from(savedJobInfo);
+        
+        logger.info("Successfully created job info with ID: {}", savedJobInfo.getId());
+        return ResponseEntity.ok(ApiResponse.ok("招聘信息创建成功", response));
     }
 
     /**
@@ -109,24 +98,10 @@ public class JobInfoController {
         
         logger.info("Retrieving job info with ID: {}", id);
         
-        try {
-            Optional<JobInfo> jobInfo = jobInfoService.getById(id);
-            
-            if (jobInfo.isPresent()) {
-                JobInfoResponse response = JobInfoResponse.from(jobInfo.get());
-                logger.info("Successfully retrieved job info: {}", jobInfo.get().getPosition());
-                return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
-            } else {
-                logger.warn("Job info not found with ID: {}", id);
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error retrieving job info with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        JobInfo jobInfo = jobInfoService.getJobInfoById(id);
+        JobInfoResponse response = JobInfoResponse.from(jobInfo);
+        logger.info("Successfully retrieved job info: {}", jobInfo.getPosition());
+        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 
     /**
@@ -140,34 +115,23 @@ public class JobInfoController {
         
         logger.info("Updating job info with ID: {}", id);
         
-        try {
-            // Validate company exists
-            Optional<Company> company = companyService.getById(request.getCompany().getId());
-            if (!company.isPresent()) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            // Use the new updateById method that handles ID preservation
-            JobInfo savedJobInfo = jobInfoService.updateById(
-                id, 
-                request.getCompany().getId(), 
-                request.getRecruitType(), 
-                request.getPosition(), 
-                request.getLink(), 
-                request.getLocation(), 
-                request.getExtra()
-            );
-            JobInfoResponse response = JobInfoResponse.from(savedJobInfo);
-            
-            logger.info("Successfully updated job info with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error updating job info with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        // Validate company exists using new service method
+        Company company = companyService.getCompanyById(request.getCompany().getId());
+        
+        // Use the new updateById method that handles ID preservation
+        JobInfo savedJobInfo = jobInfoService.updateById(
+            id, 
+            request.getCompany().getId(), 
+            request.getRecruitType(), 
+            request.getPosition(), 
+            request.getLink(), 
+            request.getLocation(), 
+            request.getExtra()
+        );
+        JobInfoResponse response = JobInfoResponse.from(savedJobInfo);
+        
+        logger.info("Successfully updated job info with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
     }
 
     /**
@@ -179,21 +143,9 @@ public class JobInfoController {
         
         logger.info("Deleting job info with ID: {}", id);
         
-        try {
-            if (!jobInfoService.existsById(id)) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            jobInfoService.deleteById(id);
-            logger.info("Successfully deleted job info with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("删除成功"));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error deleting job info with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        jobInfoService.deleteJobInfoById(id);
+        logger.info("Successfully deleted job info with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("删除成功"));
     }
 
     /**

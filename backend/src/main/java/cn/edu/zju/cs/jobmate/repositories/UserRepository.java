@@ -32,17 +32,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
      */
     boolean existsByName(String name);
 
-    /**
-     * Update user by id with new values.
-     *
-     * @param id user id
-     * @param name new username
-     * @param role new user role
-     */
-    @Modifying
-    @Query("UPDATE User u SET u.name = :name, u.role = :role WHERE u.id = :id")
-    void updateUserById(@Param("id") Integer id, 
-                       @Param("name") String name, 
-                       @Param("role") UserRole role);
+    // Removed updateUserById - using standard JPA save() instead
 }
 

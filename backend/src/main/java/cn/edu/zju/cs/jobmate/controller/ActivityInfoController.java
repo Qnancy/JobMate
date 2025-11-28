@@ -67,35 +67,24 @@ public class ActivityInfoController {
         logger.info("Creating activity info for company: {}, title: {}", 
                    request.getCompany().getName(), request.getTitle());
         
-        try {
-            // Validate company exists
-            Optional<Company> company = companyService.getById(request.getCompany().getId());
-            if (!company.isPresent()) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            // Create ActivityInfo
-            ActivityInfo activityInfo = new ActivityInfo(
-                company.get(),
-                request.getTitle(),
-                request.getTime()
-            );
-            activityInfo.setLink(request.getLink());
-            activityInfo.setLocation(request.getLocation());
-            activityInfo.setExtra(request.getExtra());
-            
-            ActivityInfo savedActivityInfo = activityInfoService.create(activityInfo);
-            ActivityInfoResponse response = ActivityInfoResponse.from(savedActivityInfo);
-            
-            logger.info("Successfully created activity info with ID: {}", savedActivityInfo.getId());
-            return ResponseEntity.ok(ApiResponse.ok("宣讲会信息创建成功", response));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error creating activity info: {}", e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        // Validate company exists using new service method
+        Company company = companyService.getCompanyById(request.getCompany().getId());
+        
+        // Create ActivityInfo
+        ActivityInfo activityInfo = new ActivityInfo(
+            company,
+            request.getTitle(),
+            request.getTime()
+        );
+        activityInfo.setLink(request.getLink());
+        activityInfo.setLocation(request.getLocation());
+        activityInfo.setExtra(request.getExtra());
+        
+        ActivityInfo savedActivityInfo = activityInfoService.create(activityInfo);
+        ActivityInfoResponse response = ActivityInfoResponse.from(savedActivityInfo);
+        
+        logger.info("Successfully created activity info with ID: {}", savedActivityInfo.getId());
+        return ResponseEntity.ok(ApiResponse.ok("宣讲会信息创建成功", response));
     }
 
     /**
@@ -108,24 +97,10 @@ public class ActivityInfoController {
         
         logger.info("Retrieving activity info with ID: {}", id);
         
-        try {
-            Optional<ActivityInfo> activityInfo = activityInfoService.getById(id);
-            
-            if (activityInfo.isPresent()) {
-                ActivityInfoResponse response = ActivityInfoResponse.from(activityInfo.get());
-                logger.info("Successfully retrieved activity info: {}", activityInfo.get().getTitle());
-                return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
-            } else {
-                logger.warn("Activity info not found with ID: {}", id);
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error retrieving activity info with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        ActivityInfo activityInfo = activityInfoService.getActivityInfoById(id);
+        ActivityInfoResponse response = ActivityInfoResponse.from(activityInfo);
+        logger.info("Successfully retrieved activity info: {}", activityInfo.getTitle());
+        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 
     /**
@@ -139,34 +114,23 @@ public class ActivityInfoController {
         
         logger.info("Updating activity info with ID: {}", id);
         
-        try {
-            // Validate company exists
-            Optional<Company> company = companyService.getById(request.getCompany().getId());
-            if (!company.isPresent()) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            // Use the new updateById method that handles ID preservation
-            ActivityInfo savedActivityInfo = activityInfoService.updateById(
-                id, 
-                request.getCompany().getId(), 
-                request.getTitle(), 
-                request.getTime(), 
-                request.getLink(), 
-                request.getLocation(), 
-                request.getExtra()
-            );
-            ActivityInfoResponse response = ActivityInfoResponse.from(savedActivityInfo);
-            
-            logger.info("Successfully updated activity info with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error updating activity info with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        // Validate company exists using new service method
+        Company company = companyService.getCompanyById(request.getCompany().getId());
+        
+        // Use the new updateById method that handles ID preservation
+        ActivityInfo savedActivityInfo = activityInfoService.updateById(
+            id, 
+            request.getCompany().getId(), 
+            request.getTitle(), 
+            request.getTime(), 
+            request.getLink(), 
+            request.getLocation(), 
+            request.getExtra()
+        );
+        ActivityInfoResponse response = ActivityInfoResponse.from(savedActivityInfo);
+        
+        logger.info("Successfully updated activity info with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
     }
 
     /**
@@ -178,21 +142,9 @@ public class ActivityInfoController {
         
         logger.info("Deleting activity info with ID: {}", id);
         
-        try {
-            if (!activityInfoService.existsById(id)) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            activityInfoService.deleteById(id);
-            logger.info("Successfully deleted activity info with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("删除成功"));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error deleting activity info with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        activityInfoService.deleteActivityInfoById(id);
+        logger.info("Successfully deleted activity info with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("删除成功"));
     }
 
     /**

@@ -25,10 +25,30 @@ public enum ErrorCode {
     // Permission Errors.
     FORBIDDEN(4030, HttpStatus.FORBIDDEN, "权限不足"),
 
-    // Resource Errors.
-    RESOURCE_NOT_FOUND(4040, HttpStatus.NOT_FOUND, "资源不存在"),
-    RESOURCE_ALREADY_EXISTS(4090, HttpStatus.CONFLICT, "资源已存在"),
-    RESOURCE_CONFLICT(4091, HttpStatus.CONFLICT, "资源冲突");
+    // General Resource Errors.
+    RESOURCE_CONFLICT(4091, HttpStatus.CONFLICT, "资源冲突"),
+    
+    // User Errors.
+    USER_NOT_FOUND(4041, HttpStatus.NOT_FOUND, "用户不存在"),
+    USER_ALREADY_EXISTS(4092, HttpStatus.CONFLICT, "用户已存在"),
+    
+    // Company Errors.
+    COMPANY_NOT_FOUND(4042, HttpStatus.NOT_FOUND, "公司不存在"),
+    COMPANY_ALREADY_EXISTS(4093, HttpStatus.CONFLICT, "公司已存在"),
+    
+    // Job Info Errors.
+    JOB_INFO_NOT_FOUND(4043, HttpStatus.NOT_FOUND, "招聘信息不存在"),
+    JOB_INFO_ALREADY_EXISTS(4094, HttpStatus.CONFLICT, "招聘信息已存在"),
+    
+    // Activity Info Errors.
+    ACTIVITY_INFO_NOT_FOUND(4044, HttpStatus.NOT_FOUND, "活动信息不存在"),
+    ACTIVITY_INFO_ALREADY_EXISTS(4095, HttpStatus.CONFLICT, "活动信息已存在"),
+    
+    // Subscription Errors.
+    JOB_SUBSCRIPTION_NOT_FOUND(4045, HttpStatus.NOT_FOUND, "招聘订阅不存在"),
+    JOB_SUBSCRIPTION_ALREADY_EXISTS(4096, HttpStatus.CONFLICT, "招聘订阅已存在"),
+    ACTIVITY_SUBSCRIPTION_NOT_FOUND(4046, HttpStatus.NOT_FOUND, "活动订阅不存在"),
+    ACTIVITY_SUBSCRIPTION_ALREADY_EXISTS(4097, HttpStatus.CONFLICT, "活动订阅已存在");
 
     private final int code;
     private final HttpStatus httpStatus;

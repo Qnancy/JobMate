@@ -71,37 +71,21 @@ public class ActivitySubscriptionController {
         logger.info("Creating activity subscription for user: {}, activityInfo: {}", 
                    request.getUser().getId(), request.getActivityInfo().getId());
         
-        try {
-            // Validate user exists
-            Optional<User> user = userService.getById(request.getUser().getId());
-            if (!user.isPresent()) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            // Validate activity info exists
-            Optional<ActivityInfo> activityInfo = activityInfoService.getById(request.getActivityInfo().getId());
-            if (!activityInfo.isPresent()) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            // Check if subscription already exists
-            if (activitySubscriptionService.existsByUserIdAndActivityInfoId(user.get().getId(), activityInfo.get().getId())) {
-                throw new BusinessException(ErrorCode.RESOURCE_ALREADY_EXISTS);
-            }
-            
-            // Create ActivitySubscription
-            ActivitySubscription activitySubscription = activitySubscriptionService.create(user.get(), activityInfo.get());
-            ActivitySubscriptionResponse response = ActivitySubscriptionResponse.from(activitySubscription);
-            
-            logger.info("Successfully created activity subscription with ID: {}", activitySubscription.getId());
-            return ResponseEntity.ok(ApiResponse.ok("宣讲会订阅创建成功", response));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error creating activity subscription: {}", e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+        // Validate user and activity info exist using new service methods
+        User user = userService.getUserById(request.getUser().getId());
+        ActivityInfo activityInfo = activityInfoService.getActivityInfoById(request.getActivityInfo().getId());
+        
+        // Check if subscription already exists
+        if (activitySubscriptionService.existsByUserIdAndActivityInfoId(user.getId(), activityInfo.getId())) {
+            throw new BusinessException(ErrorCode.ACTIVITY_SUBSCRIPTION_ALREADY_EXISTS);
         }
+        
+        // Create ActivitySubscription
+        ActivitySubscription activitySubscription = activitySubscriptionService.create(user, activityInfo);
+        ActivitySubscriptionResponse response = ActivitySubscriptionResponse.from(activitySubscription);
+        
+        logger.info("Successfully created activity subscription with ID: {}", activitySubscription.getId());
+        return ResponseEntity.ok(ApiResponse.ok("宣讲会订阅创建成功", response));
     }
 
     /**
@@ -113,21 +97,13 @@ public class ActivitySubscriptionController {
         
         logger.info("Deleting activity subscription with ID: {}", id);
         
-        try {
-            if (!activitySubscriptionService.existsById(id)) {
-                throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-            }
-            
-            activitySubscriptionService.deleteById(id);
-            logger.info("Successfully deleted activity subscription with ID: {}", id);
-            return ResponseEntity.ok(ApiResponse.ok("删除成功"));
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error deleting activity subscription with ID {}: {}", id, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+        if (!activitySubscriptionService.existsById(id)) {
+            throw new BusinessException(ErrorCode.ACTIVITY_SUBSCRIPTION_NOT_FOUND);
         }
+        
+        activitySubscriptionService.deleteById(id);
+        logger.info("Successfully deleted activity subscription with ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok("删除成功"));
     }
 
     /**

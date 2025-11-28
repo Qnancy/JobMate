@@ -32,7 +32,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Company create(Company company) {
         if (companyRepository.existsByName(company.getName())) {
-            throw new IllegalArgumentException("Company with name " + company.getName() + " already exists");
+            throw new BusinessException(ErrorCode.COMPANY_ALREADY_EXISTS);
         }
         return companyRepository.save(company);
     }
@@ -44,6 +44,16 @@ public class CompanyServiceImpl implements CompanyService {
             return Optional.empty();
         }
         return companyRepository.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Company getCompanyById(Integer id) {
+        if (id == null) {
+            throw new BusinessException(ErrorCode.COMPANY_NOT_FOUND);
+        }
+        return companyRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(ErrorCode.COMPANY_NOT_FOUND));
     }
 
     @Override
@@ -82,23 +92,21 @@ public class CompanyServiceImpl implements CompanyService {
     public Company update(Company company) {
         Integer id = company.getId();
         if (id == null || !companyRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
+            throw new BusinessException(ErrorCode.COMPANY_NOT_FOUND);
         }
         return companyRepository.save(company);
     }
 
     @Override
     public Company updateById(Integer id, String name, CompanyType type) {
-        if (id == null || !companyRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-        }
+        Company company = getCompanyById(id);  // Reuse existing method, throws exception if not found
         
-        // Use custom update query to modify specific fields
-        companyRepository.updateCompanyById(id, name, type);
+        // Update entity properties
+        company.setName(name);
+        company.setType(type);
         
-        // Return the updated company
-        return companyRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Failed to retrieve updated company with id " + id));
+        // Use standard JPA save - no cache issues
+        return companyRepository.save(company);
     }
 
     @Override
@@ -106,6 +114,14 @@ public class CompanyServiceImpl implements CompanyService {
         if (id != null) {
             companyRepository.deleteById(id);
         }
+    }
+
+    @Override
+    public void deleteCompanyById(Integer id) {
+        if (id == null || !companyRepository.existsById(id)) {
+            throw new BusinessException(ErrorCode.COMPANY_NOT_FOUND);
+        }
+        companyRepository.deleteById(id);
     }
 
     @Override

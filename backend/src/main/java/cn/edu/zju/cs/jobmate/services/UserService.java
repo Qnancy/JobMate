@@ -28,6 +28,15 @@ public interface UserService {
     Optional<User> getById(Integer id);
 
     /**
+     * Get user by id, throw exception if not found.
+     *
+     * @param id user id
+     * @return user
+     * @throws BusinessException if user not found
+     */
+    User getUserById(Integer id);
+
+    /**
      * Get user by name.
      *
      * @param name user name
@@ -66,6 +75,14 @@ public interface UserService {
      * @param id user id
      */
     void deleteById(Integer id);
+
+    /**
+     * Delete user by id, throw exception if not found.
+     *
+     * @param id user id
+     * @throws BusinessException if user not found
+     */
+    void deleteUserById(Integer id);
 
     /**
      * Check if user exists by id.
