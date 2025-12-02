@@ -4,6 +4,7 @@ import VueJsx from '@vitejs/plugin-vue-jsx'
 import { fileURLToPath, URL } from 'node:url'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
+import tailwindcss from '@tailwindcss/vite'
 
 // Still kept in case we need other UI Lib
 // import { ElementPlusResolver, NaiveUiResolver } from 'unplugin-vue-components/resolvers'
@@ -14,6 +15,7 @@ import VueRouter from 'unplugin-vue-router/vite'
 export default defineConfig({
   plugins: [    
     VueRouter(),
+    tailwindcss(),
     vue(),
     VueJsx(),
     AutoImport({

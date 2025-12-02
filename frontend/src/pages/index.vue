@@ -1,10 +1,85 @@
 <template>
-    <div class="page-root">
-        <header class="top-hero" role="banner">
-            <div class="hero-content">
+      <div class="min-h-screen bg-gradient-to-b from-sky-50 to-white">
+    <main  class="p-4">
+        <!-- Logo区域 -->
+        <div class="text-center py-8">
+            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-sky-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg mb-4">
+                <!-- <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg> -->
+                <p class="text-white">(校徽)</p>
+        </div>
+        <h2 class="text-2xl font-bold text-blue-800">浙大就业信息平台</h2>
+        <p class="text-sky-600 mt-2">助力浙大学子，开启职业未来</p>
+    </div>
+    
+    <!-- 搜索框 -->
+    <div class="relative mb-8">
+        <input 
+          v-model="searchQuery"
+          type="text" 
+          placeholder="搜索职位、公司、招聘会..."
+          class="w-full px-4 py-3 pl-12 rounded-xl border-2 border-sky-200 focus:border-sky-400 focus:outline-none shadow-sm text-gray-700"
+          @keyup.enter="handleSearch"
+        />
+        <svg class="w-5 h-5 text-sky-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <button 
+        @click="handleSearch"
+          class="absolute right-2 top-1/2 -translate-y-1/2 bg-sky-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-sky-600 transition"
+          >
+          搜索
+        </button>
+      </div>
+
+      <!-- 功能按钮 -->
+      <div class="space-y-4">
+        <button 
+          @click="$router.push('/info?tab=job')"
+          class="w-full bg-gradient-tzo-r from-sky-500 to-blue-500 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+        >
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          查看职位
+        </button>
+        
+        <button 
+          @click="$router.push('/info?tab=fair')"
+          class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+        >
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          查看招聘会
+        </button>
+      </div>
+
+      <!-- 统计数据 -->
+      <div class="mt-8 grid grid-cols-3 gap-3">
+        <div class="bg-white rounded-xl p-4 text-center shadow-md border border-sky-100">
+          <div class="text-2xl font-bold text-sky-600">{{ 42 }}</div>
+          <div class="text-xs text-gray-500 mt-1">在招职位</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 text-center shadow-md border border-sky-100">
+          <div class="text-2xl font-bold text-blue-600">{{ 42 }}</div>
+          <div class="text-xs text-gray-500 mt-1">招聘会</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 text-center shadow-md border border-sky-100">
+          <div class="text-2xl font-bold text-blue-800">500+</div>
+          <div class="text-xs text-gray-500 mt-1">合作企业</div>
+        </div>
+    </div>
+    </main>
+    </div>
+    
+    <!-- <div class="page-root">
+    <header class="top-hero" role="banner">
+        <div class="hero-content">
                 <h1 class="title">浙大就业信息平台</h1>
                 <p class="subtitle">Zhejiang University Career Information Platform</p>
-
+                
                 <form class="search-form" @submit.prevent="onSearch">
                     <input
                         v-model="q"
@@ -18,33 +93,8 @@
             </div>
         </header>
 
-        <!-- 页面下方的其它内容占位 -->
-        <main class="page-body">
-            <div class="page-actions">
-                <!--info里面需要分开jobs和events（目前应该是以events为主）-->
-                <button class="action-large" @click="goInfo('jobs')">查看职位</button>
-                <button class="action-large outline" @click="goInfo('events')">查看活动</button>
-            </div>
-            <!-- 平台数据栏 -->
-            <section class="stats-section" aria-label="平台数据">
-                <h2 class="stats-title">平台数据</h2>
-                <div class="stats-list">
-                    <div class="stat-card">
-                        <div class="stat-value">{{ stats.fairs ?? '--' }}</div>
-                        <div class="stat-label">宣讲会</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">{{ stats.jobs ?? '--' }}</div>
-                        <div class="stat-label">招聘职位</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">{{ stats.companies ?? '--' }}</div>
-                        <div class="stat-label">合作企业</div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
+ 
+    </div> -->
 </template>
 
 <script setup>
