@@ -35,19 +35,22 @@
       <div class="login-button-box">
         <van-button block  type="primary" native-type="submit" class="login-button"
           >登录</van-button
-        >
+          >
+        </div>
+      </van-form>
+
+      <div class="register-link">
+        <router-link to="/my/register">还没有账号？去注册</router-link>
       </div>
-    </van-form>
+      
+      
+      <an-divider>其他方式</an-divider>
+      
 
     <div class="login-button-box">
-      <van-button block  type="success" class="login-button"
-        >统一身份认证登录</van-button
-      >
+      <ZjuLoginButton />
     </div>
 
-    <div class="register-link">
-      <router-link to="/my/register">还没有账号？去注册</router-link>
-    </div>
   </div>
 </template>
 
@@ -56,6 +59,8 @@ import { ref, onMounted, watchEffect } from "vue";
 import { useRouter, onBeforeRouteLeave } from "vue-router";
 import { showToast, Toast } from "vant";
 import * as auth from "@/services/auth";
+import { Divider as AnDivider } from "ant-design-vue";
+import ZjuLoginButton from "@/components/zju-login-button.vue";
 
 const router = useRouter();
 
@@ -155,6 +160,8 @@ async function onSubmit() {
   text-align: center;
   margin-left: 16px;
   margin-right: 16px;
+  display: flex;
+  justify-content: center;
 }
 .login-button-box .login-button {
   border-radius: 8px;

@@ -34,6 +34,7 @@ declare module 'vue' {
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
     VanTabs: typeof import('vant/es')['Tabs']
     VanTag: typeof import('vant/es')['Tag']
+    ZjuLoginButton: typeof import('./src/components/zju-login-button.vue')['default']
   }
 }
 
@@ -61,4 +62,5 @@ declare global {
   const VanTabbarItem: typeof import('vant/es')['TabbarItem']
   const VanTabs: typeof import('vant/es')['Tabs']
   const VanTag: typeof import('vant/es')['Tag']
+  const ZjuLoginButton: typeof import('./src/components/zju-login-button.vue')['default']
 }
