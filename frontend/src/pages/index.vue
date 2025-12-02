@@ -38,6 +38,7 @@
         <button 
           @click="$router.push('/info?tab=job')"
           class="w-full bg-gradient-tzo-r from-sky-500 to-blue-500 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+        
         >
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -48,6 +49,7 @@
         <button 
           @click="$router.push('/info?tab=fair')"
           class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+           style="color: white"
         >
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -141,7 +143,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.page-root {
+@import "tailwindcss";
+/* .page-root {
     min-height: 100vh;
     background: linear-gradient(180deg, #f4f7ff 0%, #ffffff 35%);
     padding-bottom: 48px;
@@ -336,5 +339,5 @@ onMounted(() => {
     .search-btn {
         width: 100%;
     }
-}
+} */
 </style>

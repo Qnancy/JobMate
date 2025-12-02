@@ -4,7 +4,14 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <RouterView />
+  <Suspense>
+    <RouterView />
+
+  <template #fallback>
+    Loading...
+  </template>
+</Suspense>
+
   <van-tabbar
     route
     class="glass-tabbar"
