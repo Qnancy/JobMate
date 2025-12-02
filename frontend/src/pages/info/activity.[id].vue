@@ -85,8 +85,59 @@
         </button>
       </div>
     </main>
-  </div>
 </template>
 <script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import {
+  fetchFairDetail,
+  fetchFavouriteFairIds,
+  addFavouriteFairId,
+  removeFavouriteFairId
+} from '@/utils/mockData';
+
+const route = useRoute();
+
+const selectedFair = ref({
+  id: null,
+  title: '',
+  status: '',
+  date: '',
+  location: '',
+  description: '',
+  notice: '',
+  companies: 0,
+  companyList: []
+});
+
+const favorites = ref({ fairs: [] });
+const isLoading = ref(true);
+
+async function load() {
+  isLoading.value = true;
+  const id = Number(route.params.id);
+  const fair = await fetchFairDetail(id);
+  if (fair) selectedFair.value = fair;
+  const favIds = await fetchFavouriteFairIds();
+  favorites.value.fairs = favIds || [];
+  isLoading.value = false;
+}
+
+function toggleFavorite(type, id) {
+  if (type !== 'fair') return;
+  const numId = Number(id);
+  if (favorites.value.fairs.includes(numId)) {
+    removeFavouriteFairId(numId).then(() => {
+      const idx = favorites.value.fairs.indexOf(numId);
+      if (idx !== -1) favorites.value.fairs.splice(idx, 1);
+    });
+  } else {
+    addFavouriteFairId(numId).then(() => {
+      if (!favorites.value.fairs.includes(numId)) favorites.value.fairs.push(numId);
+    });
+  }
+}
+
+onMounted(load);
 
 </script>

@@ -1,6 +1,14 @@
 // 职位标签
 const jobTags = ['全部', '技术', '产品', '设计', '运营', '市场']
 
+export function fetchJobTags() {
+  return new Promise<string[]>((resolve) => {
+    setTimeout(() => {
+        resolve(jobTags);
+    }, 500);
+  });
+}
+
 // Mock 职位数据
 const jobs = [
   {
@@ -240,6 +248,62 @@ export function fetchFairDetail(id: number) {
   });
 }
 
+// generate similar mocks about fairs
+
+// mock favourites for fairs
+const favouriteFairIds: number[] = [];
+
+export function fetchFavouriteFairIds(): Promise<number[]> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(favouriteFairIds);
+        }, 300);
+    });
+}
+
+export function addFavouriteFairId(id: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            if (!favouriteFairIds.includes(id)) {
+                favouriteFairIds.push(id);
+            }
+            resolve();
+        }, 300);
+    });
+}
+
+export function removeFavouriteFairId(id: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            const index = favouriteFairIds.indexOf(id);
+            if (index !== -1) {
+                favouriteFairIds.splice(index, 1);
+            }
+            resolve();
+        }, 300);
+    });
+}
+
+export function fetchIsFairFavorite(id: number): boolean {
+    return favouriteFairIds.includes(id);
+}
+
+// utilities to query fairs
+export function fetchFairsByType(type: string) {
+    return new Promise<typeof fairs>((resolve) => {
+        setTimeout(() => {
+            resolve(fairs.filter((f) => f.type === type));
+        }, 500);
+    });
+}
+
+export function fetchFairsByStatus(status: string) {
+    return new Promise<typeof fairs>((resolve) => {
+        setTimeout(() => {
+            resolve(fairs.filter((f) => f.status === status));
+        }, 500);
+    });
+}
 
 
 // mock a list of favourite job IDs
