@@ -26,6 +26,7 @@ public enum ErrorCode {
     FORBIDDEN(4030, HttpStatus.FORBIDDEN, "权限不足"),
 
     // General Resource Errors.
+    TOO_MANY_REQUESTS(5001, HttpStatus.TOO_MANY_REQUESTS, "请求过于频繁，请稍后再试"),
     RESOURCE_CONFLICT(4091, HttpStatus.CONFLICT, "资源冲突"),
     
     // User Errors.
@@ -63,4 +64,13 @@ public enum ErrorCode {
     public int getCode() { return code; }
     public HttpStatus getHttpStatus() { return httpStatus; }
     public String getMessage() { return message; }
+
+    @Override
+    public String toString() {
+        return "ErrorCode{" +
+               "code=" + code +
+               ", httpStatus=" + httpStatus +
+               ", message='" + message + '\'' +
+               '}';
+    }
 }

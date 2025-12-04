@@ -21,7 +21,7 @@ spring:
       redis:
         host: localhost
         port: 6379
-        password: JobMate@123
+        password:
         lettuce:
           pool:
             max-active: 8
@@ -33,31 +33,16 @@ spring:
 server:
   port: 8080
 
-web-mvc:
+app:
+  monitor:
+    slow-api:
+      enabled: true
+      threshold-ms: 1000
+    rate-limiter:
+      enabled: true
+      limit-interval-s: 10
+      max-requests-per-interval: 5
   cors:
     allowed-origins: 
       - "https://localhost:3000"
     max-age: 3600
-
-logging:
-  level:
-    root: INFO
-    org.springframework: WARN
-    org.hibernate.SQL: INFO
-    cn.edu.zju.cs.jobmate: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: ../logs/jobmate-test.log
-    path: ../logs/
-  logback:
-    rollingpolicy:
-      max-file-size: 1MB
-      max-history: 10
-      total-size-cap: 10MB
-      file-name-pattern: ../logs/jobmate-test.%d{yyyy-MM-dd}.%i.log
-  charset:
-    file: UTF-8
-
-app:

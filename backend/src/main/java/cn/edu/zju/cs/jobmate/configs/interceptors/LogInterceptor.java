@@ -1,5 +1,7 @@
 package cn.edu.zju.cs.jobmate.configs.interceptors;
 
+import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
+
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -7,12 +9,21 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Interceptor to log requests.
  */
+@Slf4j
 @Component
-public class LogInterceptor implements HandlerInterceptor{
+public class LogInterceptor implements HandlerInterceptor {
+
+    private MonitorProperties.SlowApi slowApi; // Slow API monitoring properties.
+    private static final String timeAttribute = "REQUEST_START_TIME";
+
+    public LogInterceptor(MonitorProperties monitorProperties) {
+        this.slowApi = monitorProperties.getSlowApi();
+    }
 
     @Override
     public boolean preHandle(
@@ -21,10 +32,11 @@ public class LogInterceptor implements HandlerInterceptor{
         @NonNull Object handler
     ) throws Exception {
         long startTime = System.currentTimeMillis();
-        request.setAttribute("REQUEST_START_TIME", startTime);
-        //String uri = request.getRequestURI();
-        //String method = request.getMethod();
-        // TODO: log request info here
+        request.setAttribute(timeAttribute, startTime);
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+        String ip = request.getRemoteAddr();
+        log.info("Receiving request from {} : {} {}", ip, method, uri);
         return true;
     }
 
@@ -35,20 +47,23 @@ public class LogInterceptor implements HandlerInterceptor{
         @NonNull Object handler,
         @Nullable Exception exception
     ) throws Exception {
-        long startTime = (Long) request.getAttribute("REQUEST_START_TIME");
+        long startTime = (Long) request.getAttribute(timeAttribute);
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
-        //String uri = request.getRequestURI();
-        //String method = request.getMethod();
-        //int status = response.getStatus();
-        //String clientIp = request.getRemoteAddr();
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+        int status = response.getStatus();
+        String ip = request.getRemoteAddr();
         // TODO: get user auth info from SecurityContext
         if (exception != null) {
-            // TODO: log exception info here
-        } else if (duration > 1000) {
-            // TODO: log slow requests here
+            log.error("Request from {} : {} {} completed with exception after {} ms",
+                ip, method, uri, duration, exception);
+        } else if (slowApi.isEnabled() && duration > slowApi.getThresholdMs()) {
+            log.warn("Slow request from {} : {} {} completed in {} ms with status {}",
+                ip, method, uri, duration, status);
         } else {
-            // TODO: log normal requests here
+            log.info("Request from {} : {} {} completed in {} ms with status {}",
+                ip, method, uri, duration, status);
         }
     }
 }
