@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.controller;
+package cn.edu.zju.cs.jobmate.controllers;
 
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.dto.common.PageResponse;
@@ -26,7 +26,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -116,7 +115,7 @@ public class JobInfoController {
         logger.info("Updating job info with ID: {}", id);
         
         // Validate company exists using new service method
-        Company company = companyService.getCompanyById(request.getCompany().getId());
+        companyService.getCompanyById(request.getCompany().getId());
         
         // Use the new updateById method that handles ID preservation
         JobInfo savedJobInfo = jobInfoService.updateById(

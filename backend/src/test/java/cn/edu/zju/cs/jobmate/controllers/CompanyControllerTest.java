@@ -1,14 +1,8 @@
-package cn.edu.zju.cs.jobmate.controller;
+package cn.edu.zju.cs.jobmate.controllers;
 
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.*;
-import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
-import cn.edu.zju.cs.jobmate.repositories.JobInfoRepository;
-import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
-import cn.edu.zju.cs.jobmate.repositories.JobSubscriptionRepository;
-import cn.edu.zju.cs.jobmate.repositories.ActivitySubscriptionRepository;
-import cn.edu.zju.cs.jobmate.repositories.UserRepository;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,28 +31,7 @@ class CompanyControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private CompanyService companyService;
-
-    @Autowired
     private CompanyRepository companyRepository;
-
-    @Autowired
-    private JobInfoRepository jobInfoRepository;
-
-    @Autowired
-    private ActivityInfoRepository activityInfoRepository;
-
-    @Autowired
-    private JobSubscriptionRepository jobSubscriptionRepository;
-
-    @Autowired
-    private ActivitySubscriptionRepository activitySubscriptionRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
 

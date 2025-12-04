@@ -1,6 +1,5 @@
 package cn.edu.zju.cs.jobmate.services;
 
-import cn.edu.zju.cs.jobmate.dto.activity.ActivityInfoCreateRequest;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.models.Company;
 import org.springframework.data.domain.Page;

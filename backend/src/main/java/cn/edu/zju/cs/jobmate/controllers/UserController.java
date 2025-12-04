@@ -1,11 +1,9 @@
-package cn.edu.zju.cs.jobmate.controller;
+package cn.edu.zju.cs.jobmate.controllers;
 
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.dto.user.UserMeRequest;
 import cn.edu.zju.cs.jobmate.dto.user.UserResponse;
 import cn.edu.zju.cs.jobmate.dto.user.UserUpdateRequest;
-import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
-import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.services.UserService;
 import jakarta.validation.Valid;
@@ -17,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 /**
  * User REST Controller

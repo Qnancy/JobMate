@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.controller;
+package cn.edu.zju.cs.jobmate.controllers;
 
 import cn.edu.zju.cs.jobmate.enums.UserRole;
 import cn.edu.zju.cs.jobmate.models.User;
@@ -32,13 +32,7 @@ class UserControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
 
