@@ -2,6 +2,9 @@ package cn.edu.zju.cs.jobmate.configs.interceptors;
 
 import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
 
+import java.util.UUID;
+
+import org.slf4j.MDC;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -36,6 +39,8 @@ public class LogInterceptor implements HandlerInterceptor {
         String uri = request.getRequestURI();
         String method = request.getMethod();
         String ip = request.getRemoteAddr();
+        String traceId = UUID.randomUUID().toString();
+        MDC.put("traceId", traceId); // Add trace id to MDC for logging.
         log.info("Receiving request from {} : {} {}", ip, method, uri);
         return true;
     }
@@ -65,5 +70,6 @@ public class LogInterceptor implements HandlerInterceptor {
             log.info("Request from {} : {} {} completed in {} ms with status {}",
                 ip, method, uri, duration, status);
         }
+        MDC.remove("traceId"); // Clean up MDC.
     }
 }
