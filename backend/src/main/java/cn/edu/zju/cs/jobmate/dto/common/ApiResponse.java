@@ -49,8 +49,4 @@ public class ApiResponse<T> {
             null
         );
     }
-
-    public Integer getCode() { return code; }
-    public String getMessage() { return message; }
-    public T getData() { return data; }
 }
