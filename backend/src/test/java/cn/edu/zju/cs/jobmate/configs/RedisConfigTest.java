@@ -1,16 +1,21 @@
 package cn.edu.zju.cs.jobmate.configs;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
-import redis.embedded.RedisServer;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+
+import cn.edu.zju.cs.jobmate.utils.EmbeddedRedisConfigUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@TestPropertySource(properties = {"spring.data.redis.port=6378"})
+@Import(EmbeddedRedisConfigUtil.class)
 class RedisConfigTest {
 
     static class Demo {
@@ -23,21 +28,6 @@ class RedisConfigTest {
         public void setName(String name) { this.name = name; }
         public int getAge() { return age; }
         public void setAge(int age) { this.age = age; }
-    }
-
-    private static RedisServer redisServer;
-
-    @BeforeAll
-    static void startRedis() throws Exception {
-        redisServer = new RedisServer(6378);
-        redisServer.start();
-    }
-
-    @AfterAll
-    static void stopRedis() {
-        if (redisServer != null) {
-            redisServer.stop();
-        }
     }
 
     @Autowired
