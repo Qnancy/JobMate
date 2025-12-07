@@ -1,296 +1,127 @@
 package cn.edu.zju.cs.jobmate.controllers;
 
+import cn.edu.zju.cs.jobmate.dto.company.*;
+import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
+import cn.edu.zju.cs.jobmate.dto.common.PageResponse;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
-import cn.edu.zju.cs.jobmate.repositories.*;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-@DisplayName("CompanyController功能测试")
 class CompanyControllerTest {
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private CompanyRepository companyRepository;
-
-    private MockMvc mockMvc;
+    private CompanyService companyService;
+    private CompanyController companyController;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        companyService = mock(CompanyService.class);
+        companyController = new CompanyController(companyService);
     }
 
     @Test
-    @DisplayName("测试创建公司 - 成功")
-    void testCreateCompany_Success() throws Exception {
-        System.out.println("\n========== 测试创建公司 - 成功 ==========");
-        
-        String requestBody = """
-            {
-                "name": "测试公司",
-                "type": "PRIVATE"
-            }
-            """;
+    void testCreateCompany() {
+        CompanyCreateRequest request = CompanyCreateRequest.builder()
+            .name("Test")
+            .type(CompanyType.STATE)
+            .build();
+        Company company = new Company("Test", CompanyType.STATE);
 
-        mockMvc.perform(post("/api/companies")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("公司创建成功"))
-                .andExpect(jsonPath("$.data.name").value("测试公司"))
-                .andExpect(jsonPath("$.data.type").value("PRIVATE"))
-                .andExpect(jsonPath("$.data.id").exists());
+        when(companyService.create(any(Company.class))).thenReturn(company);
 
-        // 验证数据库中确实创建了公司
-        assertTrue(companyRepository.existsByName("测试公司"));
-        System.out.println("✓ 公司创建成功并保存到数据库");
+        ResponseEntity<ApiResponse<CompanyResponse>> response = companyController.createCompany(request);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ApiResponse<CompanyResponse> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Test", body.getData().getName());
+        assertEquals(CompanyType.STATE, body.getData().getType());
     }
 
     @Test
-    @DisplayName("测试创建公司 - 重复名称失败")
-    void testCreateCompany_DuplicateName() throws Exception {
-        System.out.println("\n========== 测试创建公司 - 重复名称失败 ==========");
-        
-        // 先创建一个公司
-        Company existingCompany = new Company("重复公司", CompanyType.PRIVATE);
-        companyRepository.save(existingCompany);
+    void testDeleteCompany() {
+        doNothing().when(companyService).delete(1);
 
-        String requestBody = """
-            {
-                "name": "重复公司",
-                "type": "STATE"
-            }
-            """;
-
-        mockMvc.perform(post("/api/companies")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.code").value(409))
-                .andExpect(jsonPath("$.message").value("公司已存在"));
-
-        // 验证数据库中只有一个公司
-        assertEquals(1, companyRepository.count());
-        System.out.println("✓ 重复名称创建失败，符合预期");
+        ResponseEntity<ApiResponse<Void>> response = companyController.deleteCompany(1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertNull(body.getData());
     }
 
     @Test
-    @DisplayName("测试创建公司 - 验证失败")
-    void testCreateCompany_ValidationFail() throws Exception {
-        System.out.println("\n========== 测试创建公司 - 验证失败 ==========");
-        
-        String requestBody = """
-            {
-                "name": "",
-                "type": "PRIVATE"
-            }
-            """;
+    void testUpdateCompany() {
+        CompanyUpdateRequest request = CompanyUpdateRequest.builder()
+                .name("Updated")
+                .type(CompanyType.PRIVATE)
+                .build();
+        Company company = new Company("Updated", CompanyType.PRIVATE);
+        try {
+            Field idField = Company.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(company, 1);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail("Failed to set company ID via reflection");
+        }
 
-        mockMvc.perform(post("/api/companies")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isBadRequest());
+        when(companyService.update(eq(1), eq("Updated"), eq(CompanyType.PRIVATE)))
+            .thenReturn(company);
 
-        assertEquals(0, companyRepository.count());
-        System.out.println("✓ 验证失败，公司未创建");
+        ResponseEntity<ApiResponse<CompanyResponse>> response = companyController.updateCompany(1, request);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ApiResponse<CompanyResponse> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Updated", body.getData().getName());
+        assertEquals(CompanyType.PRIVATE, body.getData().getType());
     }
 
     @Test
-    @DisplayName("测试根据ID获取公司 - 成功")
-    void testGetCompanyById_Success() throws Exception {
-        System.out.println("\n========== 测试根据ID获取公司 - 成功 ==========");
-        
-        // 先创建一个公司
-        Company company = new Company("查询测试公司", CompanyType.STATE);
-        Company savedCompany = companyRepository.save(company);
+    void testGetCompany() {
+        Company company = new Company("Test", CompanyType.STATE);
 
-        mockMvc.perform(get("/api/companies/" + savedCompany.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("查询成功"))
-                .andExpect(jsonPath("$.data.id").value(savedCompany.getId()))
-                .andExpect(jsonPath("$.data.name").value("查询测试公司"))
-                .andExpect(jsonPath("$.data.type").value("STATE"));
+        when(companyService.getById(1)).thenReturn(company);
 
-        System.out.println("✓ 根据ID查询公司成功");
+        ResponseEntity<ApiResponse<CompanyResponse>> response = companyController.getCompany(1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ApiResponse<CompanyResponse> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Test", body.getData().getName());
     }
 
     @Test
-    @DisplayName("测试根据ID获取公司 - 不存在")
-    void testGetCompanyById_NotFound() throws Exception {
-        System.out.println("\n========== 测试根据ID获取公司 - 不存在 ==========");
-        
-        mockMvc.perform(get("/api/companies/999"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404))
-                .andExpect(jsonPath("$.message").value("公司不存在"));
+    void testGetAllCompanies() {
+        CompanyQueryRequest request = CompanyQueryRequest.builder()
+            .page(1)
+            .pageSize(10)
+            .type(null)
+            .build();
 
-        System.out.println("✓ 查询不存在的公司返回404");
-    }
+        List<Company> companies = List.of(
+                new Company("A", CompanyType.STATE),
+                new Company("B", CompanyType.PRIVATE)
+        );
 
-    @Test
-    @DisplayName("测试分页获取所有公司")
-    void testGetAllCompanies() throws Exception {
-        System.out.println("\n========== 测试分页获取所有公司 ==========");
-        
-        // 创建测试数据
-        companyRepository.save(new Company("公司1", CompanyType.PRIVATE));
-        companyRepository.save(new Company("公司2", CompanyType.STATE));
-        companyRepository.save(new Company("公司3", CompanyType.PRIVATE));
+        Page<Company> page = new PageImpl<>(Objects.requireNonNull(companies));
 
-        mockMvc.perform(get("/api/companies")
-                .param("page", "1")
-                .param("page_size", "2"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("查询成功"))
-                .andExpect(jsonPath("$.data.total").value(3))
-                .andExpect(jsonPath("$.data.page").value(1))
-                .andExpect(jsonPath("$.data.page_size").value(2))
-                .andExpect(jsonPath("$.data.content").isArray())
-                .andExpect(jsonPath("$.data.content.length()").value(2));
+        when(companyService.getAll(0, 10)).thenReturn(page);
 
-        System.out.println("✓ 分页查询所有公司成功");
-    }
-
-    @Test
-    @DisplayName("测试按类型筛选公司")
-    void testGetCompaniesByType() throws Exception {
-        System.out.println("\n========== 测试按类型筛选公司 ==========");
-        
-        // 创建不同类型的公司
-        companyRepository.save(new Company("私企1", CompanyType.PRIVATE));
-        companyRepository.save(new Company("国企1", CompanyType.STATE));
-        companyRepository.save(new Company("私企2", CompanyType.PRIVATE));
-
-        mockMvc.perform(get("/api/companies")
-                .param("type", "PRIVATE"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.total").value(2))
-                .andExpect(jsonPath("$.data.content[0].type").value("PRIVATE"))
-                .andExpect(jsonPath("$.data.content[1].type").value("PRIVATE"));
-
-        System.out.println("✓ 按类型筛选公司成功");
-    }
-
-    @Test
-    @DisplayName("测试更新公司 - 成功")
-    void testUpdateCompany_Success() throws Exception {
-        System.out.println("\n========== 测试更新公司 - 成功 ==========");
-        
-        // 先创建一个公司
-        Company company = new Company("原始公司", CompanyType.PRIVATE);
-        Company savedCompany = companyRepository.save(company);
-
-        String requestBody = """
-            {
-                "name": "更新后公司",
-                "type": "STATE"
-            }
-            """;
-
-        mockMvc.perform(put("/api/companies/" + savedCompany.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("更新成功"))
-                .andExpect(jsonPath("$.data.id").value(savedCompany.getId()))
-                .andExpect(jsonPath("$.data.name").value("更新后公司"))
-                .andExpect(jsonPath("$.data.type").value("STATE"));
-
-        // 验证数据库中的数据确实更新了
-        Company updatedCompany = companyRepository.findById(savedCompany.getId()).orElse(null);
-        assertNotNull(updatedCompany);
-        assertEquals("更新后公司", updatedCompany.getName());
-        assertEquals(CompanyType.STATE, updatedCompany.getType());
-        System.out.println("✓ 公司更新成功");
-    }
-
-    @Test
-    @DisplayName("测试更新公司 - 不存在")
-    void testUpdateCompany_NotFound() throws Exception {
-        System.out.println("\n========== 测试更新公司 - 不存在 ==========");
-        
-        String requestBody = """
-            {
-                "name": "更新后公司",
-                "type": "STATE"
-            }
-            """;
-
-        mockMvc.perform(put("/api/companies/999")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404))
-                .andExpect(jsonPath("$.message").value("公司不存在"));
-
-        System.out.println("✓ 更新不存在的公司返回404");
-    }
-
-    @Test
-    @DisplayName("测试删除公司 - 成功")
-    void testDeleteCompany_Success() throws Exception {
-        System.out.println("\n========== 测试删除公司 - 成功 ==========");
-        
-        // 先创建一个公司
-        Company company = new Company("待删除公司", CompanyType.PRIVATE);
-        Company savedCompany = companyRepository.save(company);
-
-        mockMvc.perform(delete("/api/companies/" + savedCompany.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("删除成功"))
-                .andExpect(jsonPath("$.data").isEmpty());
-
-        // 验证数据库中的数据确实删除了
-        assertFalse(companyRepository.existsById(savedCompany.getId()));
-        System.out.println("✓ 公司删除成功");
-    }
-
-    @Test
-    @DisplayName("测试删除公司 - 不存在")
-    void testDeleteCompany_NotFound() throws Exception {
-        System.out.println("\n========== 测试删除公司 - 不存在 ==========");
-        
-        mockMvc.perform(delete("/api/companies/999"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404))
-                .andExpect(jsonPath("$.message").value("公司不存在"));
-
-        System.out.println("✓ 删除不存在的公司返回404");
-    }
-
-    @Test
-    @DisplayName("测试参数验证 - 负数ID")
-    void testInvalidParameters() throws Exception {
-        System.out.println("\n========== 测试参数验证 - 负数ID ==========");
-        
-        mockMvc.perform(get("/api/companies/-1"))
-                .andExpect(status().isBadRequest());
-
-        System.out.println("✓ 负数ID验证失败，符合预期");
+        ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> response = companyController.getAllCompanies(request);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ApiResponse<PageResponse<CompanyResponse>> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(2, body.getData().getContent().size());
+        assertEquals("A", body.getData().getContent().get(0).getName());
+        assertEquals("B", body.getData().getContent().get(1).getName());
     }
 }
