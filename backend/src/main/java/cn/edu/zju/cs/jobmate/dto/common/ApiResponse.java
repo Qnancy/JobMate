@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Unified API response wrapper class
+ * Unified API response DTO.
  * 
  * @param <T> Response data type
  * @apiNote This class will be set in HTTP response body as JSON format.
