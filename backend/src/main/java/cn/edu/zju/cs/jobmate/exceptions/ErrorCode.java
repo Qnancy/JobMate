@@ -16,8 +16,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(5000, HttpStatus.INTERNAL_SERVER_ERROR, "服务器内部错误"),
 
     // Argument Errors.
-    INVALID_PARAMETER(4001, HttpStatus.BAD_REQUEST, "参数无效"),
-    MISSING_REQUIRED_PARAMETER(4002, HttpStatus.BAD_REQUEST, "缺少必需参数"),
+    INVALID_PARAMETER(2001, HttpStatus.BAD_REQUEST, "参数无效"),
+    MISSING_PARAMETER(2002, HttpStatus.BAD_REQUEST, "缺少参数"),
 
     // Authentication Errors.
     UNAUTHORIZED(4010, HttpStatus.UNAUTHORIZED, "未授权访问"),

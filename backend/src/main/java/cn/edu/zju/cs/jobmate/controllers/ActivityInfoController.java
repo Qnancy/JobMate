@@ -67,7 +67,7 @@ public class ActivityInfoController {
                    request.getCompany().getName(), request.getTitle());
         
         // Validate company exists using new service method
-        Company company = companyService.getCompanyById(request.getCompany().getId());
+        Company company = companyService.getById(request.getCompany().getId());
         
         // Create ActivityInfo
         ActivityInfo activityInfo = new ActivityInfo(
@@ -114,7 +114,7 @@ public class ActivityInfoController {
         logger.info("Updating activity info with ID: {}", id);
         
         // Validate company exists using new service method
-        companyService.getCompanyById(request.getCompany().getId());
+        companyService.getById(request.getCompany().getId());
         
         // Use the new updateById method that handles ID preservation
         ActivityInfo savedActivityInfo = activityInfoService.updateById(

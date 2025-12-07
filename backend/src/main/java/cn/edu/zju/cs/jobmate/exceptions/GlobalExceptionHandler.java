@@ -39,6 +39,7 @@ public class GlobalExceptionHandler {
      * 
      * @param ex the method argument not valid exception
      * @return a standardized error response with 400 status
+     * TODO: fix
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
@@ -52,6 +53,7 @@ public class GlobalExceptionHandler {
      * 
      * @param ex the constraint violation exception
      * @return a standardized error response with 400 status
+     * TODO: fix
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleConstraintViolationException(ConstraintViolationException ex) {

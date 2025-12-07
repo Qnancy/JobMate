@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Company creation request DTO
+ * Company creation request DTO.
  */
 @Data
 @Builder
@@ -19,4 +19,3 @@ public class CompanyCreateRequest {
     @NotNull(message = "Company type cannot be empty")
     private CompanyType type;
 }
-

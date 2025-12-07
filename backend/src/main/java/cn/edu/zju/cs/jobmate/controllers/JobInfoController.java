@@ -68,7 +68,7 @@ public class JobInfoController {
                    request.getCompany().getName(), request.getPosition());
         
         // Validate company exists using new service method
-        Company company = companyService.getCompanyById(request.getCompany().getId());
+        Company company = companyService.getById(request.getCompany().getId());
         
         // Create JobInfo
         JobInfo jobInfo = new JobInfo(
@@ -115,7 +115,7 @@ public class JobInfoController {
         logger.info("Updating job info with ID: {}", id);
         
         // Validate company exists using new service method
-        companyService.getCompanyById(request.getCompany().getId());
+        companyService.getById(request.getCompany().getId());
         
         // Use the new updateById method that handles ID preservation
         JobInfo savedJobInfo = jobInfoService.updateById(

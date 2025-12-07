@@ -1,24 +1,24 @@
 package cn.edu.zju.cs.jobmate.dto.common;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 /**
- * Pagination response class
+ * Pagination response DTO.
  * 
  * @param <T> List element type
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PageResponse<T> {
     
     private List<T> content;
     private Long total;
     private Integer page;
+
     @JsonProperty("page_size")
     private Integer pageSize;
+
     @JsonProperty("total_pages")
     private Integer totalPages;
 
@@ -34,13 +34,16 @@ public class PageResponse<T> {
     }
 
     /**
-     * Create PageResponse from Spring Data Page object
+     * Create PageResponse from {@link Page} object.
+     * 
+     * @param <T> List element type
+     * @param page Spring Data Page object
      */
     public static <T> PageResponse<T> from(Page<T> page) {
         return new PageResponse<>(
             page.getContent(),
             page.getTotalElements(),
-            page.getNumber(),
+            page.getNumber() + 1, // Convert to 1-based page index.
             page.getSize()
         );
     }
@@ -104,4 +107,3 @@ public class PageResponse<T> {
                 '}';
     }
 }
-

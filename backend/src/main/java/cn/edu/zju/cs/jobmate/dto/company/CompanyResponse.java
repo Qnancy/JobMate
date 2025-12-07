@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Company response DTO
+ * Company response DTO.
  */
 @Data
 @Builder
@@ -30,4 +30,3 @@ public class CompanyResponse {
         );
     }
 }
-

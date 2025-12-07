@@ -2,11 +2,12 @@ package cn.edu.zju.cs.jobmate.services.impl;
 
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
-
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,13 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Service implementation for Company entity.
+ * Company service implementation.
+ * 
+ * @see CompanyService
  */
+@Slf4j
 @Service
-@Transactional
 public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
@@ -30,6 +32,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public Company create(Company company) {
         if (companyRepository.existsByName(company.getName())) {
             throw new BusinessException(ErrorCode.COMPANY_ALREADY_EXISTS);
@@ -38,19 +41,34 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<Company> getById(Integer id) {
+    @Transactional
+    public void delete(Integer id) {
         if (id == null) {
-            return Optional.empty();
+            throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
-        return companyRepository.findById(id);
+        // TODO: add checking for existing if necessary.
+        companyRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public Company update(Integer id, String name, CompanyType type) {
+        // Fetch existing entity.
+        Company company = getById(id);
+
+        // Update entity properties.
+        company.setName(name);
+        company.setType(type);
+
+        // Update.
+        return companyRepository.save(company);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Company getCompanyById(Integer id) {
+    public Company getById(Integer id) {
         if (id == null) {
-            throw new BusinessException(ErrorCode.COMPANY_NOT_FOUND);
+            throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
         return companyRepository.findById(id)
             .orElseThrow(() -> new BusinessException(ErrorCode.COMPANY_NOT_FOUND));
@@ -58,21 +76,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Company> getByName(String name) {
-        return companyRepository.findByName(name);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Company> getAll() {
-        return companyRepository.findAll();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Company> getAll(Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return companyRepository.findAll(pageable);
+    public Company getByName(String name) {
+        return companyRepository.findByName(name)
+            .orElseThrow(() -> new BusinessException(ErrorCode.COMPANY_NOT_FOUND));
     }
 
     @Override
@@ -89,51 +95,15 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Company update(Company company) {
-        Integer id = company.getId();
-        if (id == null || !companyRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.COMPANY_NOT_FOUND);
-        }
-        return companyRepository.save(company);
-    }
-
-    @Override
-    public Company updateById(Integer id, String name, CompanyType type) {
-        Company company = getCompanyById(id);  // Reuse existing method, throws exception if not found
-        
-        // Update entity properties
-        company.setName(name);
-        company.setType(type);
-        
-        // Use standard JPA save - no cache issues
-        return companyRepository.save(company);
-    }
-
-    @Override
-    public void deleteById(Integer id) {
-        if (id != null) {
-            companyRepository.deleteById(id);
-        }
-    }
-
-    @Override
-    public void deleteCompanyById(Integer id) {
-        if (id == null || !companyRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.COMPANY_NOT_FOUND);
-        }
-        companyRepository.deleteById(id);
+    @Transactional(readOnly = true)
+    public List<Company> getAll() {
+        return companyRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existsById(Integer id) {
-        return id != null && companyRepository.existsById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsByName(String name) {
-        return companyRepository.existsByName(name);
+    public Page<Company> getAll(Integer page, Integer pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return companyRepository.findAll(pageable);
     }
 }
-

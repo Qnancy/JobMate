@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository for Company entity.
+ * DAO for {@link Company}.
  */
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
@@ -48,7 +48,4 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
      * @return true if exists
      */
     boolean existsByName(String name);
-
-    // Removed updateCompanyById - using standard JPA save() instead
 }
-
