@@ -71,6 +71,7 @@ class CompanyServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     void testUpdateCompany_Success() {
         Company company = new Company("Old", CompanyType.STATE);
         when(companyRepository.findById(1)).thenReturn(Optional.of(company));
@@ -109,6 +110,7 @@ class CompanyServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     void testGetByTypeWithPagination() {
         List<Company> companies = List.of(
             new Company("A", CompanyType.STATE),
@@ -141,6 +143,7 @@ class CompanyServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     void testGetAllWithPagination() {
         List<Company> companies = List.of(
             new Company("A", CompanyType.STATE),
