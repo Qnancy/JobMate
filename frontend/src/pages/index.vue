@@ -3,11 +3,13 @@
     <main  class="p-4">
         <!-- Logo区域 -->
         <div class="text-center py-8">
-            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-sky-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg mb-4">
+            <div class="w-20 h-20 mx-auto bg-white rounded-2xl flex items-center justify-center shadow-lg mb-4">
                 <!-- <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg> -->
-                <p class="text-white">(校徽)</p>
+                <p class="text-white">
+                    <img src="/Zhejiang_University_Logo.svg.png" alt="浙大Logo" class="w-12 h-12" />
+                </p>
         </div>
         <h2 class="text-2xl font-bold text-blue-800">浙大就业信息平台</h2>
         <p class="text-sky-600 mt-2">助力浙大学子，开启职业未来</p>
@@ -37,7 +39,7 @@
       <div class="space-y-4">
         <button 
           @click="$router.push('/info?tab=job')"
-          class="w-full bg-gradient-tzo-r from-sky-500 to-blue-500 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+          class="w-full bg-gradient-to-r from-sky-200 to-blue-200 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
         
         >
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +50,7 @@
         
         <button 
           @click="$router.push('/info?tab=fair')"
-          class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+          class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
            style="color: white"
         >
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
