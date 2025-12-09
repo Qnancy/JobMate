@@ -1,6 +1,6 @@
 <template>
     <main class="pb-24">
-      <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-4 py-6">
+      <div class="bg-linear-to-r from-blue-600 to-blue-800 text-white px-4 py-6">
         <span 
           :class="[
             'px-3 py-1 text-xs font-medium rounded-full',

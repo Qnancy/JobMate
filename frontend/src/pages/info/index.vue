@@ -85,7 +85,7 @@
           :key="fair.id"
           class="bg-white rounded-xl overflow-hidden shadow-md border border-sky-50 hover:shadow-lg transition"
         >
-          <div class="h-2 bg-gradient-to-r from-sky-400 to-blue-600"></div>
+          <div class="h-2 bg-linear-to-r from-sky-400 to-blue-600"></div>
           <div class="p-4">
             <div class="flex justify-between items-start">
               <div class="flex-1" @click="viewFairDetail(fair)">
