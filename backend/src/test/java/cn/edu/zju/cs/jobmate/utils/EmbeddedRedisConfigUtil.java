@@ -2,6 +2,7 @@ package cn.edu.zju.cs.jobmate.utils;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 
 import jakarta.annotation.PostConstruct;
@@ -14,11 +15,14 @@ import redis.embedded.RedisServer;
 @TestConfiguration
 public class EmbeddedRedisConfigUtil {
 
+    @Value("${spring.data.redis.port}")
+    private int port;
+
     private RedisServer server;
 
     @PostConstruct
     public void startRedis() throws IOException {
-        server = new RedisServer(6378);
+        server = new RedisServer(port);
         server.start();
     }
 
