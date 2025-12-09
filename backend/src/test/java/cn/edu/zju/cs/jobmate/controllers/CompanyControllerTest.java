@@ -1,127 +1,160 @@
 package cn.edu.zju.cs.jobmate.controllers;
 
+import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
 import cn.edu.zju.cs.jobmate.dto.company.*;
-import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
-import cn.edu.zju.cs.jobmate.dto.common.PageResponse;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
-import org.junit.jupiter.api.BeforeEach;
+import cn.edu.zju.cs.jobmate.utils.ControllerTestUtil;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class CompanyControllerTest {
+import java.util.List;
 
+@WebMvcTest(controllers = CompanyController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@Import(value = MonitorProperties.class)
+class CompanyControllerTest extends ControllerTestUtil {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
     private CompanyService companyService;
-    private CompanyController companyController;
 
-    @BeforeEach
-    void setUp() {
-        companyService = mock(CompanyService.class);
-        companyController = new CompanyController(companyService);
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    void testCreateCompany() {
+    @SuppressWarnings("null")
+    void testCreateCompany() throws Exception {
         CompanyCreateRequest request = CompanyCreateRequest.builder()
-            .name("Test")
+            .name("TestCompany")
             .type(CompanyType.STATE)
             .build();
-        Company company = new Company("Test", CompanyType.STATE);
 
+        Company company = new Company("TestCompany", CompanyType.STATE);
         when(companyService.create(any(Company.class))).thenReturn(company);
 
-        ResponseEntity<ApiResponse<CompanyResponse>> response = companyController.createCompany(request);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ApiResponse<CompanyResponse> body = response.getBody();
-        assertNotNull(body);
-        assertEquals("Test", body.getData().getName());
-        assertEquals(CompanyType.STATE, body.getData().getType());
+        mockMvc.perform(post("/api/companies")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("创建成功"))
+            .andExpect(jsonPath("$.data.name").value("TestCompany"))
+            .andExpect(jsonPath("$.data.type").value("STATE"));
     }
 
     @Test
-    void testDeleteCompany() {
+    void testDeleteCompany() throws Exception {
         doNothing().when(companyService).delete(1);
 
-        ResponseEntity<ApiResponse<Void>> response = companyController.deleteCompany(1);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ApiResponse<Void> body = response.getBody();
-        assertNotNull(body);
-        assertNull(body.getData());
+        mockMvc.perform(delete("/api/companies/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("删除成功"))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 
     @Test
-    void testUpdateCompany() {
+    @SuppressWarnings("null")
+    void testUpdateCompany() throws Exception {
         CompanyUpdateRequest request = CompanyUpdateRequest.builder()
-                .name("Updated")
-                .type(CompanyType.PRIVATE)
-                .build();
-        Company company = new Company("Updated", CompanyType.PRIVATE);
-        try {
-            Field idField = Company.class.getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(company, 1);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail("Failed to set company ID via reflection");
-        }
-
-        when(companyService.update(eq(1), eq("Updated"), eq(CompanyType.PRIVATE)))
-            .thenReturn(company);
-
-        ResponseEntity<ApiResponse<CompanyResponse>> response = companyController.updateCompany(1, request);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ApiResponse<CompanyResponse> body = response.getBody();
-        assertNotNull(body);
-        assertEquals("Updated", body.getData().getName());
-        assertEquals(CompanyType.PRIVATE, body.getData().getType());
-    }
-
-    @Test
-    void testGetCompany() {
-        Company company = new Company("Test", CompanyType.STATE);
-
-        when(companyService.getById(1)).thenReturn(company);
-
-        ResponseEntity<ApiResponse<CompanyResponse>> response = companyController.getCompany(1);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ApiResponse<CompanyResponse> body = response.getBody();
-        assertNotNull(body);
-        assertEquals("Test", body.getData().getName());
-    }
-
-    @Test
-    void testGetAllCompanies() {
-        CompanyQueryRequest request = CompanyQueryRequest.builder()
-            .page(1)
-            .pageSize(10)
-            .type(null)
+            .name("UpdatedCompany")
+            .type(CompanyType.PRIVATE)
             .build();
 
-        List<Company> companies = List.of(
-                new Company("A", CompanyType.STATE),
-                new Company("B", CompanyType.PRIVATE)
-        );
+        Company company = new Company("UpdatedCompany", CompanyType.PRIVATE);
+        when(companyService.update(
+            eq(1), eq("UpdatedCompany"), eq(CompanyType.PRIVATE)))
+            .thenReturn(company);
 
-        Page<Company> page = new PageImpl<>(Objects.requireNonNull(companies));
+        mockMvc.perform(put("/api/companies/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("更新成功"))
+            .andExpect(jsonPath("$.data.name").value("UpdatedCompany"))
+            .andExpect(jsonPath("$.data.type").value("PRIVATE"));
+    }
 
-        when(companyService.getAll(0, 10)).thenReturn(page);
+    @Test
+    void testGetCompany() throws Exception {
+        Company company = new Company("TestCompany", CompanyType.STATE);
+        when(companyService.getById(1)).thenReturn(company);
 
-        ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> response = companyController.getAllCompanies(request);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ApiResponse<PageResponse<CompanyResponse>> body = response.getBody();
-        assertNotNull(body);
-        assertEquals(2, body.getData().getContent().size());
-        assertEquals("A", body.getData().getContent().get(0).getName());
-        assertEquals("B", body.getData().getContent().get(1).getName());
+        mockMvc.perform(get("/api/companies/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("查询成功"))
+            .andExpect(jsonPath("$.data.name").value("TestCompany"))
+            .andExpect(jsonPath("$.data.type").value("STATE"));
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    void testGetAllCompanies_NoType() throws Exception {
+        Company company1 = new Company("A", CompanyType.STATE);
+        Company company2 = new Company("B", CompanyType.STATE);
+        Company company3 = new Company("C", CompanyType.PRIVATE);
+        Page<Company> page = new PageImpl<>(List.of(
+            company1, company2, company3
+        ));
+
+        when(companyService.getAll(eq(0), eq(10))).thenReturn(page);
+
+        mockMvc.perform(get("/api/companies")
+            .param("page", "1")
+            .param("pageSize", "10"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("查询成功"))
+            .andExpect(jsonPath("$.data.content[0].name").value("A"))
+            .andExpect(jsonPath("$.data.content[1].name").value("B"))
+            .andExpect(jsonPath("$.data.content[2].name").value("C"))
+            .andExpect(jsonPath("$.data.content[0].type").value("STATE"))
+            .andExpect(jsonPath("$.data.content[1].type").value("STATE"))
+            .andExpect(jsonPath("$.data.content[2].type").value("PRIVATE"));
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    void testGetAllCompanies_WithType() throws Exception {
+        Company company1 = new Company("A", CompanyType.STATE);
+        Company company2 = new Company("B", CompanyType.STATE);
+        Page<Company> page = new PageImpl<>(List.of(company1, company2));
+
+        when(companyService.getByType(eq(CompanyType.STATE), eq(0), eq(10)))
+            .thenReturn(page);
+
+        mockMvc.perform(get("/api/companies")
+            .param("page", "1")
+            .param("pageSize", "10")
+            .param("type", "STATE"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("查询成功"))
+            .andExpect(jsonPath("$.data.content[0].name").value("A"))
+            .andExpect(jsonPath("$.data.content[1].name").value("B"))
+            .andExpect(jsonPath("$.data.content[0].type").value("STATE"))
+            .andExpect(jsonPath("$.data.content[1].type").value("STATE"));
     }
 }
