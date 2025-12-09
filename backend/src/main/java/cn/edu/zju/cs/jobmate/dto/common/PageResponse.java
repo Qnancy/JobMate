@@ -13,14 +13,14 @@ import java.util.List;
 public class PageResponse<T> {
     
     private List<T> content;
-    private Long total;
-    private Integer page;
+    private Long total; // All data count.
+    private Integer page; // Current page number.
 
     @JsonProperty("page_size")
-    private Integer pageSize;
+    private Integer pageSize; // Page size.
 
     @JsonProperty("total_pages")
-    private Integer totalPages;
+    private Integer totalPages; // Total page count.
 
     public PageResponse() {
     }
