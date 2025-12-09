@@ -26,6 +26,13 @@ export async function register(name: string, password: string, role: string): Pr
 }
 
 export async function login(name: string, password: string): Promise<{ code: number; message: string; data: User }> {
+  // 内置管理员账号：本地兜底，无需后端
+  if (name === 'admin' && password === 'admin') {
+    const adminUser: User = { id: 0, name: 'admin', role: 'admin', create_at: new Date().toISOString() }
+    setCurrentUser(adminUser)
+    return { code: 0, message: 'ok', data: adminUser }
+  }
+
   var raw = JSON.stringify({
     name: name,
     password: password,
@@ -36,6 +43,9 @@ export async function login(name: string, password: string): Promise<{ code: num
     body: raw,
   })
   const json = await response.json()
+  if (json?.code === 0 && json?.data) {
+    setCurrentUser(json.data)
+  }
   return json
 }
 
@@ -55,6 +65,14 @@ export async function login(name: string, password: string): Promise<{ code: num
 
 const USERS_KEY = 'jobmate_users'
 const CURRENT_KEY = 'jobmate_current_user'
+
+function setCurrentUser(user: User) {
+  try {
+    localStorage.setItem(CURRENT_KEY, JSON.stringify(user))
+  } catch (e) {
+    // ignore storage errors
+  }
+}
 
 // function readUsers(): User[] {
 //   try {
