@@ -2,7 +2,7 @@
 <configuration scan="true">
 
     <!-- Logging output patterns -->
-    <property name="LOG_PATH" value="../logs/jobmate.log"/>
+    <property name="LOG_PATH" value="../logs/jobmate-test.log"/>
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId}] %logger{36} - %msg%n"/>
 
     <!-- Console output settings -->
@@ -22,8 +22,8 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>../logs/jobmate-test.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>5</maxHistory>
-            <totalSizeCap>10MB</totalSizeCap>
+            <maxHistory>1</maxHistory>
+            <totalSizeCap>2MB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
