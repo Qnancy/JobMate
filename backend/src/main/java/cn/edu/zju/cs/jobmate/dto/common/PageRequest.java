@@ -3,6 +3,7 @@ package cn.edu.zju.cs.jobmate.dto.common;
 import jakarta.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,6 +15,7 @@ import jakarta.validation.constraints.Max;
  */
 @Data
 @SuperBuilder
+@NoArgsConstructor
 public class PageRequest {
 
     @Builder.Default
