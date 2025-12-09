@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
 import cn.edu.zju.cs.jobmate.utils.DummyControllerUtil;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,10 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = DummyControllerUtil.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import({
-    cn.edu.zju.cs.jobmate.configs.properties.CorsProperties.class,
-    cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties.class
-})
+@Import(value = MonitorProperties.class)
 class GlobalExceptionHandlerTest {
 
     @Autowired
