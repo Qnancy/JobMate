@@ -26,11 +26,18 @@ export async function register(name: string, password: string, role: string): Pr
 }
 
 export async function login(name: string, password: string): Promise<{ code: number; message: string; data: User }> {
-  // 内置管理员账号：本地兜底，无需后端
+  // 内置管理员账号
   if (name === 'admin' && password === 'admin') {
     const adminUser: User = { id: 0, name: 'admin', role: 'admin', create_at: new Date().toISOString() }
     setCurrentUser(adminUser)
     return { code: 0, message: 'ok', data: adminUser }
+  }
+
+  // 内置访客账号
+  if (name === 'guest' && password === 'guest') {
+    const guestUser: User = { id: -1, name: 'guest', role: 'guest', create_at: new Date().toISOString() }
+    setCurrentUser(guestUser)
+    return { code: 0, message: 'ok', data: guestUser }
   }
 
   var raw = JSON.stringify({

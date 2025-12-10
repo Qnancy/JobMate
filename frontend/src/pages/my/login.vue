@@ -136,7 +136,8 @@ async function onSubmit() {
   localStorage.removeItem(STORAGE_KEY);
   localStorage.setItem(CURRENT_KEY, JSON.stringify(res.data));
   showToast("登录成功");
-  router.push({ path: "/my" });
+  const target = res?.data?.role === 'admin' ? '/admin' : '/my';
+  router.push({ path: target });
 }
 </script>
 
