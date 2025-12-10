@@ -46,7 +46,6 @@ public class CompanyServiceImpl implements CompanyService {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
-        // TODO: add checking for existing if necessary.
         companyRepository.deleteById(id);
     }
 
