@@ -7,11 +7,15 @@ import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
 import cn.edu.zju.cs.jobmate.services.impl.CompanyServiceImpl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,33 +23,32 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(SpringExtension.class)
+@Import(CompanyServiceImpl.class)
 class CompanyServiceTest {
 
-    private CompanyRepository companyRepository;
-    private CompanyServiceImpl companyService;
+    @MockitoBean
+    private CompanyRepository companyRepo;
 
-    @BeforeEach
-    void setUp() {
-        companyRepository = mock(CompanyRepository.class);
-        companyService = new CompanyServiceImpl(companyRepository);
-    }
+    @Autowired
+    private CompanyService companyService;
 
     @Test
     void testCreateCompany_Success() {
         Company company = new Company("Test", CompanyType.STATE);
-        when(companyRepository.existsByName("Test")).thenReturn(false);
-        when(companyRepository.save(company)).thenReturn(company);
+        when(companyRepo.existsByName("Test")).thenReturn(false);
+        when(companyRepo.save(company)).thenReturn(company);
 
         Company result = companyService.create(company);
         assertEquals("Test", result.getName());
         assertEquals(CompanyType.STATE, result.getType());
-        verify(companyRepository).save(company);
+        verify(companyRepo).save(company);
     }
 
     @Test
     void testCreateCompany_AlreadyExists() {
         Company company = new Company("Test", CompanyType.STATE);
-        when(companyRepository.existsByName("Test")).thenReturn(true);
+        when(companyRepo.existsByName("Test")).thenReturn(true);
 
         BusinessException ex = assertThrows(BusinessException.class,
             () -> companyService.create(company));
@@ -53,41 +56,10 @@ class CompanyServiceTest {
     }
 
     @Test
-    void testGetById_Success() {
-        Company company = new Company("Test", CompanyType.STATE);
-        when(companyRepository.findById(1)).thenReturn(Optional.of(company));
-
-        Company result = companyService.getById(1);
-        assertEquals("Test", result.getName());
-    }
-
-    @Test
-    void testGetById_NotFound() {
-        when(companyRepository.findById(1)).thenReturn(Optional.empty());
-
-        BusinessException ex = assertThrows(BusinessException.class,
-            () -> companyService.getById(1));
-        assertEquals(ErrorCode.COMPANY_NOT_FOUND, ex.getErrorCode());
-    }
-
-    @Test
-    @SuppressWarnings("null")
-    void testUpdateCompany_Success() {
-        Company company = new Company("Old", CompanyType.STATE);
-        when(companyRepository.findById(1)).thenReturn(Optional.of(company));
-        when(companyRepository.save(any(Company.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
-
-        Company updated = companyService.update(1, "New", CompanyType.PRIVATE);
-        assertEquals("New", updated.getName());
-        assertEquals(CompanyType.PRIVATE, updated.getType());
-    }
-
-    @Test
     void testDeleteCompany_Success() {
-        doNothing().when(companyRepository).deleteById(1);
+        doNothing().when(companyRepo).deleteById(1);
         companyService.delete(1);
-        verify(companyRepository).deleteById(1);
+        verify(companyRepo).deleteById(1);
     }
 
     @Test
@@ -98,12 +70,78 @@ class CompanyServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
+    void testUpdateCompany_Success() {
+        Company company = new Company("Old", CompanyType.STATE);
+        when(companyRepo.findById(1)).thenReturn(Optional.of(company));
+        when(companyRepo.save(any(Company.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+        Company updated = companyService.update(1, "New", CompanyType.PRIVATE);
+        assertEquals("New", updated.getName());
+        assertEquals(CompanyType.PRIVATE, updated.getType());
+    }
+
+    @Test
+    void testUpdateCompany_NoUpdates() {
+        Company company = new Company("Old", CompanyType.STATE);
+        when(companyRepo.findById(1)).thenReturn(Optional.of(company));
+
+        BusinessException ex = assertThrows(BusinessException.class,
+            () -> companyService.update(1, null, null));
+        assertEquals(ErrorCode.NO_UPDATES, ex.getErrorCode());
+    }
+
+    @Test
+    void testGetById_Success() {
+        Company company = new Company("Test", CompanyType.STATE);
+        when(companyRepo.findById(1)).thenReturn(Optional.of(company));
+
+        Company result = companyService.getById(1);
+        assertEquals("Test", result.getName());
+    }
+
+    @Test
+    void testGetById_MissingParameter() {
+        BusinessException ex = assertThrows(BusinessException.class,
+            () -> companyService.getById(null));
+        assertEquals(ErrorCode.MISSING_PARAMETER, ex.getErrorCode());
+    }
+
+    @Test
+    void testGetById_NotFound() {
+        when(companyRepo.findById(1)).thenReturn(Optional.empty());
+
+        BusinessException ex = assertThrows(BusinessException.class,
+            () -> companyService.getById(1));
+        assertEquals(ErrorCode.COMPANY_NOT_FOUND, ex.getErrorCode());
+    }
+
+    @Test
+    void testGetByName_Success() {
+        Company company = new Company("Test", CompanyType.STATE);
+        when(companyRepo.findByName("Test")).thenReturn(Optional.of(company));
+
+        Company result = companyService.getByName("Test");
+        assertEquals("Test", result.getName());
+    }
+
+    @Test
+    void testGetByName_NotFound() {
+        when(companyRepo.findByName("Test")).thenReturn(Optional.empty());
+
+        BusinessException ex = assertThrows(BusinessException.class,
+            () -> companyService.getByName("Test"));
+        assertEquals(ErrorCode.COMPANY_NOT_FOUND, ex.getErrorCode());
+    }
+
+    @Test
     void testGetByType() {
         List<Company> companies = List.of(
             new Company("A", CompanyType.STATE),
             new Company("B", CompanyType.STATE)
         );
-        when(companyRepository.findByType(CompanyType.STATE)).thenReturn(companies);
+        when(companyRepo.findByType(CompanyType.STATE)).thenReturn(companies);
 
         List<Company> result = companyService.getByType(CompanyType.STATE);
         assertEquals(2, result.size());
@@ -120,7 +158,7 @@ class CompanyServiceTest {
             companies,
             PageRequest.of(0, 2), 2
         );
-        when(companyRepository.findByType(
+        when(companyRepo.findByType(
             eq(CompanyType.STATE),
             any(PageRequest.class))
         ).thenReturn(page);
@@ -136,7 +174,7 @@ class CompanyServiceTest {
             new Company("A", CompanyType.STATE),
             new Company("B", CompanyType.PRIVATE)
         );
-        when(companyRepository.findAll()).thenReturn(companies);
+        when(companyRepo.findAll()).thenReturn(companies);
 
         List<Company> result = companyService.getAll();
         assertEquals(2, result.size());
@@ -153,7 +191,7 @@ class CompanyServiceTest {
             companies,
             PageRequest.of(0, 2), 2
         );
-        when(companyRepository.findAll(any(PageRequest.class))).thenReturn(page);
+        when(companyRepo.findAll(any(PageRequest.class))).thenReturn(page);
 
         Page<Company> result = companyService.getAll(0, 2);
         assertEquals(2, result.getTotalElements());
