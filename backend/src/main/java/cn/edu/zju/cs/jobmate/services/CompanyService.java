@@ -16,6 +16,7 @@ public interface CompanyService {
      *
      * @param company company to create
      * @return created company
+     * @throws BusinessException if company with the same name already exists
      */
     Company create(Company company);
 
@@ -33,6 +34,7 @@ public interface CompanyService {
      * @param name new company name
      * @param type new company type
      * @return updated company
+     * @throws BusinessException if no update is made or company not found
      */
     Company update(Integer id, String name, CompanyType type);
 
