@@ -16,6 +16,6 @@ public class CompanyCreateRequest {
     @NotBlank(message = "Company name cannot be empty")
     private String name;
 
-    @NotNull(message = "Company type cannot be empty")
+    @NotNull(message = "Company type cannot be null")
     private CompanyType type;
 }
