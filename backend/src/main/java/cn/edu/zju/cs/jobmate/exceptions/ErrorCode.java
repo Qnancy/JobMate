@@ -18,6 +18,7 @@ public enum ErrorCode {
     // Argument Errors.
     INVALID_PARAMETER(2001, HttpStatus.BAD_REQUEST, "参数无效"),
     MISSING_PARAMETER(2002, HttpStatus.BAD_REQUEST, "缺少参数"),
+    NO_UPDATES(2003, HttpStatus.BAD_REQUEST, "没有更新"),
 
     // Authentication Errors.
     UNAUTHORIZED(4010, HttpStatus.UNAUTHORIZED, "未授权访问"),

@@ -53,6 +53,11 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     @Transactional
     public Company update(Integer id, String name, CompanyType type) {
+        // Check if no update needed.
+        if (name == null && type == null) {
+            throw new BusinessException(ErrorCode.NO_UPDATES);
+        }
+
         // Fetch existing entity.
         Company company = getById(id);
 
