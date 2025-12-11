@@ -44,13 +44,15 @@ class CompanyControllerTest extends ControllerTestUtil {
     @Test
     @SuppressWarnings("null")
     void testCreateCompany() throws Exception {
+        String name = "TestCompany";
+        CompanyType type = CompanyType.STATE;
         CompanyCreateRequest request = CompanyCreateRequest.builder()
-            .name("TestCompany")
-            .type(CompanyType.STATE)
+            .name(name)
+            .type(type)
             .build();
 
-        Company company = new Company("TestCompany", CompanyType.STATE);
-        when(companyService.create(any(Company.class))).thenReturn(company);
+        Company company = new Company(name, type);
+        when(companyService.create(any(CompanyCreateRequest.class))).thenReturn(company);
 
         mockMvc.perform(post("/api/companies")
             .contentType(MediaType.APPLICATION_JSON)
@@ -82,8 +84,7 @@ class CompanyControllerTest extends ControllerTestUtil {
             .build();
 
         Company company = new Company("UpdatedCompany", CompanyType.PRIVATE);
-        when(companyService.update(
-            eq(1), eq("UpdatedCompany"), eq(CompanyType.PRIVATE)))
+        when(companyService.update(eq(1), any(CompanyUpdateRequest.class)))
             .thenReturn(company);
 
         mockMvc.perform(put("/api/companies/1")
@@ -119,11 +120,15 @@ class CompanyControllerTest extends ControllerTestUtil {
             company1, company2, company3
         ));
 
-        when(companyService.getAll(eq(0), eq(10))).thenReturn(page);
+        CompanyQueryRequest request = CompanyQueryRequest.builder()
+            .page(1)
+            .pageSize(10)
+            .build();
+        when(companyService.getAll(eq(request))).thenReturn(page);
 
         mockMvc.perform(get("/api/companies")
             .param("page", "1")
-            .param("pageSize", "10"))
+            .param("page_size", "10"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.code").value(200))
             .andExpect(jsonPath("$.message").value("查询成功"))
@@ -142,13 +147,17 @@ class CompanyControllerTest extends ControllerTestUtil {
         Company company2 = new Company("B", CompanyType.STATE);
         Page<Company> page = new PageImpl<>(List.of(company1, company2));
 
-        when(companyService.getByType(eq(CompanyType.STATE), eq(0), eq(10)))
-            .thenReturn(page);
+        CompanyQueryRequest request = CompanyQueryRequest.builder()
+            .type(CompanyType.STATE)
+            .page(1)
+            .pageSize(10)
+            .build();
+        when(companyService.getAll(eq(request))).thenReturn(page);
 
         mockMvc.perform(get("/api/companies")
+            .param("type", "STATE")
             .param("page", "1")
-            .param("pageSize", "10")
-            .param("type", "STATE"))
+            .param("page_size", "10"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.code").value(200))
             .andExpect(jsonPath("$.message").value("查询成功"))

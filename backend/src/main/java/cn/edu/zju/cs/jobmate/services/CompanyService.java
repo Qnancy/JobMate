@@ -1,5 +1,6 @@
 package cn.edu.zju.cs.jobmate.services;
 
+import cn.edu.zju.cs.jobmate.dto.company.*;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import org.springframework.data.domain.Page;
@@ -14,11 +15,11 @@ public interface CompanyService {
     /**
      * Create a new company.
      *
-     * @param company company to create
+     * @param dto company creation request dto
      * @return created company
      * @throws BusinessException if company with the same name already exists
      */
-    Company create(Company company);
+    Company create(CompanyCreateRequest dto);
 
     /**
      * Delete company.
@@ -31,12 +32,11 @@ public interface CompanyService {
      * Update company.
      *
      * @param id company id
-     * @param name new company name
-     * @param type new company type
+     * @param dto company update request dto
      * @return updated company
      * @throws BusinessException if no update is made or company not found
      */
-    Company update(Integer id, String name, CompanyType type);
+    Company update(Integer id, CompanyUpdateRequest dto);
 
     /**
      * Get company by id.
@@ -65,16 +65,6 @@ public interface CompanyService {
     List<Company> getByType(CompanyType type);
 
     /**
-     * Get companies by type with pagination.
-     *
-     * @param type company type
-     * @param page page number (0-based)
-     * @param pageSize page size
-     * @return page of companies
-     */
-    Page<Company> getByType(CompanyType type, Integer page, Integer pageSize);
-
-    /**
      * Get all companies.
      *
      * @return list of companies
@@ -82,11 +72,10 @@ public interface CompanyService {
     List<Company> getAll();
 
     /**
-     * Get all companies with pagination.
+     * Get all companies matching query conditions with pagination.
      *
-     * @param page page number (0-based)
-     * @param pageSize page size
+     * @param dto company query request dto
      * @return page of companies
      */
-    Page<Company> getAll(Integer page, Integer pageSize);
+    Page<Company> getAll(CompanyQueryRequest dto);
 }

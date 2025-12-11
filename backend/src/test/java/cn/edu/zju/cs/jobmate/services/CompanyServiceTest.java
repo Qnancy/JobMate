@@ -1,5 +1,6 @@
 package cn.edu.zju.cs.jobmate.services;
 
+import cn.edu.zju.cs.jobmate.dto.company.*;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
@@ -34,24 +35,35 @@ class CompanyServiceTest {
     private CompanyService companyService;
 
     @Test
+    @SuppressWarnings("null")
     void testCreateCompany_Success() {
-        Company company = new Company("Test", CompanyType.STATE);
-        when(companyRepo.existsByName("Test")).thenReturn(false);
-        when(companyRepo.save(company)).thenReturn(company);
+        String name = "Test";
+        CompanyType type = CompanyType.STATE;
+        CompanyCreateRequest dto = CompanyCreateRequest.builder()
+            .name(name)
+            .type(type)
+            .build();
+        Company company = new Company(name, type);
+        when(companyRepo.existsByName(name)).thenReturn(false);
+        when(companyRepo.save(any(Company.class))).thenReturn(company);
 
-        Company result = companyService.create(company);
-        assertEquals("Test", result.getName());
-        assertEquals(CompanyType.STATE, result.getType());
-        verify(companyRepo).save(company);
+        Company result = companyService.create(dto);
+        assertEquals(name, result.getName());
+        assertEquals(type, result.getType());
+        verify(companyRepo).save(any(Company.class));
     }
 
     @Test
     void testCreateCompany_AlreadyExists() {
-        Company company = new Company("Test", CompanyType.STATE);
-        when(companyRepo.existsByName("Test")).thenReturn(true);
+        String name = "Test";
+        CompanyCreateRequest dto = CompanyCreateRequest.builder()
+            .name(name)
+            .type(CompanyType.STATE)
+            .build();
+        when(companyRepo.existsByName(name)).thenReturn(true);
 
         BusinessException ex = assertThrows(BusinessException.class,
-            () -> companyService.create(company));
+            () -> companyService.create(dto));
         assertEquals(ErrorCode.COMPANY_ALREADY_EXISTS, ex.getErrorCode());
     }
 
@@ -73,11 +85,15 @@ class CompanyServiceTest {
     @SuppressWarnings("null")
     void testUpdateCompany_Success() {
         Company company = new Company("Old", CompanyType.STATE);
+        CompanyUpdateRequest dto = CompanyUpdateRequest.builder()
+            .name("New")
+            .type(CompanyType.PRIVATE)
+            .build();
         when(companyRepo.findById(1)).thenReturn(Optional.of(company));
         when(companyRepo.save(any(Company.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Company updated = companyService.update(1, "New", CompanyType.PRIVATE);
+        Company updated = companyService.update(1, dto);
         assertEquals("New", updated.getName());
         assertEquals(CompanyType.PRIVATE, updated.getType());
     }
@@ -85,10 +101,11 @@ class CompanyServiceTest {
     @Test
     void testUpdateCompany_NoUpdates() {
         Company company = new Company("Old", CompanyType.STATE);
+        CompanyUpdateRequest dto = CompanyUpdateRequest.builder().build();
         when(companyRepo.findById(1)).thenReturn(Optional.of(company));
 
         BusinessException ex = assertThrows(BusinessException.class,
-            () -> companyService.update(1, null, null));
+            () -> companyService.update(1, dto));
         assertEquals(ErrorCode.NO_UPDATES, ex.getErrorCode());
     }
 
@@ -148,27 +165,6 @@ class CompanyServiceTest {
     }
 
     @Test
-    @SuppressWarnings("null")
-    void testGetByTypeWithPagination() {
-        List<Company> companies = List.of(
-            new Company("A", CompanyType.STATE),
-            new Company("B", CompanyType.STATE)
-        );
-        Page<Company> page = new PageImpl<>(
-            companies,
-            PageRequest.of(0, 2), 2
-        );
-        when(companyRepo.findByType(
-            eq(CompanyType.STATE),
-            any(PageRequest.class))
-        ).thenReturn(page);
-
-        Page<Company> result = companyService.getByType(CompanyType.STATE, 0, 2);
-        assertEquals(2, result.getTotalElements());
-        assertEquals(2, result.getContent().size());
-    }
-
-    @Test
     void testGetAll() {
         List<Company> companies = List.of(
             new Company("A", CompanyType.STATE),
@@ -182,7 +178,7 @@ class CompanyServiceTest {
 
     @Test
     @SuppressWarnings("null")
-    void testGetAllWithPagination() {
+    void testGetAllWithPagination_NoType() {
         List<Company> companies = List.of(
             new Company("A", CompanyType.STATE),
             new Company("B", CompanyType.PRIVATE)
@@ -191,10 +187,39 @@ class CompanyServiceTest {
             companies,
             PageRequest.of(0, 2), 2
         );
+        CompanyQueryRequest dto = CompanyQueryRequest.builder()
+            .page(1)
+            .pageSize(2)
+            .build();
         when(companyRepo.findAll(any(PageRequest.class))).thenReturn(page);
 
-        Page<Company> result = companyService.getAll(0, 2);
+        Page<Company> result = companyService.getAll(dto);
         assertEquals(2, result.getTotalElements());
         assertEquals(2, result.getContent().size());
     }
+
+    @Test
+    @SuppressWarnings("null")
+    void testGetAllWithPagination_WithType() {
+        List<Company> companies = List.of(
+            new Company("A", CompanyType.STATE),
+            new Company("B", CompanyType.STATE)
+        );
+        Page<Company> page = new PageImpl<>(
+            companies,
+            PageRequest.of(0, 2), 2
+        );
+        CompanyQueryRequest dto = CompanyQueryRequest.builder()
+            .type(CompanyType.STATE)
+            .page(1)
+            .pageSize(2)
+            .build();
+        when(companyRepo.findByType(eq(CompanyType.STATE), any(PageRequest.class)))
+            .thenReturn(page);
+
+        Page<Company> result = companyService.getAll(dto);
+        assertEquals(2, result.getTotalElements());
+        assertEquals(2, result.getContent().size());
+    }
+
 }

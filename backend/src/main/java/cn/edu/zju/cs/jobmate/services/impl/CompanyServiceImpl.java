@@ -2,6 +2,7 @@ package cn.edu.zju.cs.jobmate.services.impl;
 
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
+import cn.edu.zju.cs.jobmate.dto.company.*;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Company service implementation.
@@ -33,11 +35,11 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional
-    public Company create(Company company) {
-        if (companyRepository.existsByName(company.getName())) {
+    public Company create(CompanyCreateRequest dto) {
+        if (companyRepository.existsByName(dto.getName())) {
             throw new BusinessException(ErrorCode.COMPANY_ALREADY_EXISTS);
         }
-        return companyRepository.save(company);
+        return companyRepository.save(Objects.requireNonNull(dto.toModel()));
     }
 
     @Override
@@ -51,9 +53,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional
-    public Company update(Integer id, String name, CompanyType type) {
+    public Company update(Integer id, CompanyUpdateRequest dto) {
         // Check if no update needed.
-        if (name == null && type == null) {
+        if (!dto.isUpdatable()) {
             throw new BusinessException(ErrorCode.NO_UPDATES);
         }
 
@@ -61,11 +63,10 @@ public class CompanyServiceImpl implements CompanyService {
         Company company = getById(id);
 
         // Update entity properties.
-        company.setName(name);
-        company.setType(type);
+        dto.apply(company);
 
         // Update.
-        return companyRepository.save(company);
+        return companyRepository.save(Objects.requireNonNull(company));
     }
 
     @Override
@@ -93,21 +94,18 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Company> getByType(CompanyType type, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return companyRepository.findByType(type, pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Company> getAll() {
         return companyRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Company> getAll(Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return companyRepository.findAll(pageable);
+    public Page<Company> getAll(CompanyQueryRequest dto) {
+        Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getPageSize());
+        Page<Company> results = dto.getType() == null ?
+            companyRepository.findAll(pageable) :
+            companyRepository.findByType(dto.getType(), pageable);
+        log.info("Totally retrieved {} companies", results.getTotalElements());
+        return results;
     }
 }
