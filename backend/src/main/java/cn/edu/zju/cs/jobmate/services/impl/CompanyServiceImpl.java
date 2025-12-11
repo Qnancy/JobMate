@@ -105,7 +105,7 @@ public class CompanyServiceImpl implements CompanyService {
         Page<Company> results = dto.getType() == null ?
             companyRepository.findAll(pageable) :
             companyRepository.findByType(dto.getType(), pageable);
-        log.info("Totally retrieved {} companies", results.getTotalElements());
+        log.info("Totally retrieved {} Companies", results.getTotalElements());
         return results;
     }
 }

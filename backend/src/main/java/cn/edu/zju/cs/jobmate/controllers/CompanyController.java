@@ -48,10 +48,10 @@ public class CompanyController {
     public ResponseEntity<ApiResponse<CompanyResponse>> createCompany(
         @Valid @RequestBody CompanyCreateRequest request
     ) {
-        log.info("Creating company with {}", request);
+        log.info("Creating Company with {}", request);
         Company company = companyService.create(request);
         CompanyResponse response = CompanyResponse.from(company);
-        log.info("Successfully created company, assigned ID: {}", company.getId());
+        log.info("Successfully created Company(id={})", company.getId());
         return ResponseEntity.ok(ApiResponse.ok("创建成功", response));
     }
 
@@ -64,9 +64,9 @@ public class CompanyController {
     public ResponseEntity<ApiResponse<Void>> deleteCompany(
         @PathVariable @NotNull @Positive Integer id
     ) {
-        log.info("Deleting company (ID: {})", id);
+        log.info("Deleting Company(id={})", id);
         companyService.delete(id);
-        log.info("Successfully deleted company (ID: {})", id);
+        log.info("Successfully deleted Company(id={})", id);
         return ResponseEntity.ok(ApiResponse.ok("删除成功"));
     }
 
@@ -80,10 +80,10 @@ public class CompanyController {
         @PathVariable @NotNull @Positive Integer id,
         @Valid @RequestBody CompanyUpdateRequest request
     ) {
-        log.info("Updating company (ID: {}) with {}", id, request);
+        log.info("Updating Company(id={}) with {}", id, request);
         Company company = companyService.update(id, request);
         CompanyResponse response = CompanyResponse.from(company);
-        log.info("Successfully updated company (ID: {})", id);
+        log.info("Successfully updated Company(id={})", id);
         return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
     }
 
@@ -96,10 +96,10 @@ public class CompanyController {
     public ResponseEntity<ApiResponse<CompanyResponse>> getCompany(
         @PathVariable @NotNull @Positive Integer id
     ) {
-        log.info("Retrieving company (ID: {})", id);
+        log.info("Retrieving Company(id={})", id);
         Company company = companyService.getById(id);
         CompanyResponse response = CompanyResponse.from(company);
-        log.info("Successfully retrieved company (ID: {})", company.getId());
+        log.info("Successfully retrieved Company(id={})", company.getId());
         return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 
@@ -112,7 +112,7 @@ public class CompanyController {
     public ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> getAllCompanies(
         @Valid CompanyQueryRequest request
     ) {
-        log.info("Retrieving companies with {}", request);
+        log.info("Retrieving Companies with {}", request);
 
         // Fetch query results.
         Page<Company> results = companyService.getAll(request);
@@ -121,7 +121,7 @@ public class CompanyController {
         Page<CompanyResponse> dtos = results.map(CompanyResponse::from);
         PageResponse<CompanyResponse> response = PageResponse.from(dtos);
 
-        log.info("Successfully retrieved companies");
+        log.info("Successfully retrieved Companies");
         return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 }
