@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,13 +34,9 @@ class QuerySpecBuilderTest {
     private JobInfo job3;
     private JobInfo job4;
 
-    private List<String> fields = List.of(
-        "company.name",
-        "position",
-        "city",
-        "location"
-    );
-    private Map<String, Enum<?>> filter;
+    private static QuerySpecBuilder.Fields fields = QuerySpecBuilder.Fields.of(
+        "company.name", "position", "city", "location");
+    private QuerySpecBuilder.Filter filter;
 
     @BeforeEach
     @SuppressWarnings("null")
@@ -100,13 +94,11 @@ class QuerySpecBuilderTest {
         );
         job4.setCompany(company1);
         job4 = jobInfoRepository.save(job4);
-
-        filter = new HashMap<>();
     }
 
     @Test
     void testKeywordQuery() {
-        filter.put("recruitType", null);
+        filter = QuerySpecBuilder.Filter.of("recruitType", null);
         Specification<JobInfo> spec = QuerySpecBuilder.build(
             "Hangzhou dev",
             fields,
@@ -120,7 +112,7 @@ class QuerySpecBuilderTest {
 
     @Test
     void testFilterQuery() {
-        filter.put("recruitType", RecruitType.CAMPUS);
+        filter = QuerySpecBuilder.Filter.of("recruitType", RecruitType.CAMPUS);
         Specification<JobInfo> spec = QuerySpecBuilder.build(
             null,
             fields,
@@ -134,7 +126,7 @@ class QuerySpecBuilderTest {
 
     @Test
     void testKeywordAndFilterQuery() {
-        filter.put("recruitType", RecruitType.CAMPUS);
+        filter = QuerySpecBuilder.Filter.of("recruitType", RecruitType.CAMPUS);
         Specification<JobInfo> spec = QuerySpecBuilder.build(
             "Hangzhou dev",
             fields,

@@ -2,7 +2,6 @@ package cn.edu.zju.cs.jobmate.utils.query;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -17,19 +16,45 @@ import jakarta.persistence.criteria.Predicate;
 public class QuerySpecBuilder {
 
     /**
+     * Fields to search the keyword in.
+     */
+    public static class Fields {
+        private List<String> fields; // List of field names.
+        public Fields(String... fields) { this.fields = List.of(fields); }
+        public static Fields of(String... fields) { return new Fields(fields); }
+        public List<String> getFields() { return fields; }
+    }
+
+    /**
+     * Filter to apply in the query.
+     */
+    public static class Filter {
+        private String field; // Filter field name.
+        private Enum<?> value; // Filter value.
+        public Filter(String field, Enum<?> value) {
+            this.field = field;
+            this.value = value;
+        }
+        public static Filter of(String field, Enum<?> value) {
+            return new Filter(field, value);
+        }
+        public String getField() { return field; }
+        public Enum<?> getFilter() { return value; }
+    }
+    /**
      * Build a {@link Specification} for JPA query.
      * @param <T> the entity type
      * @param keyword the keyword to search for
-     * @param fields the fields for keyword to search in
-     * @param filters the filters to apply
+     * @param fields the {@link Fields} to search the keyword in
+     * @param filters the {@link Filter}s to apply
      * @return the JPA specification
      * @throws BusinessException if field is not of type String
      */
     @SuppressWarnings("unchecked")
     public static <T> Specification<T> build(
         String keyword,
-        List<String> fields,
-        Map<String, Enum<?>> filters
+        Fields fields,
+        Filter... filters
     ) throws BusinessException {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -42,7 +67,7 @@ public class QuerySpecBuilder {
                 for (String token : tokens) {
                     String pattern = "%" + token.toLowerCase() + "%";
                     List<Predicate> fieldPredicates = new ArrayList<>();
-                    for (String field : fields) {
+                    for (String field : fields.getFields()) {
                         Path<T> path = getPath(root, field);
                         if (path.getJavaType() != String.class) {
                             throw new BusinessException(ErrorCode.INVALID_PARAMETER);
@@ -57,14 +82,17 @@ public class QuerySpecBuilder {
             }
 
             // Filters predicates.
-            if (filters != null && !filters.isEmpty()) {
+            if (filters.length > 0) {
                 List<Predicate> filterPredicates = new ArrayList<>();
                 // Apply each filter.
-                filters.forEach((field, filter) -> {
-                    if (filter != null) {
-                        filterPredicates.add(cb.equal(getPath(root, field), filter));
+                for (Filter filter : filters) {
+                    if (filter.getFilter() != null) {
+                        filterPredicates.add(cb.equal(
+                            getPath(root, filter.getField()),
+                            filter.getFilter()
+                        ));
                     }
-                });
+                }
                 // All filters must match (AND).
                 predicates.add(cb.and(filterPredicates.toArray(new Predicate[0])));
             }
