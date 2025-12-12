@@ -221,5 +221,4 @@ class CompanyServiceTest {
         assertEquals(2, result.getTotalElements());
         assertEquals(2, result.getContent().size());
     }
-
 }
