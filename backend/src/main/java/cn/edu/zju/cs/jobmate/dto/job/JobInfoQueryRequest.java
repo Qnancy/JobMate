@@ -4,27 +4,25 @@ import cn.edu.zju.cs.jobmate.dto.common.PageRequest;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 /**
- * Job information query request DTO
- * Supports optional parameter queries
+ * JobInfo pagination query request DTO.
  */
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class JobInfoQueryRequest extends PageRequest {
-    
+
     /**
-     * Keyword search (searches in company_name, position, location)
+     * Search keyword (searches in company_name, position, city, location).
      */
     private String keyword;
-    
+
     /**
-     * Recruitment type
+     * Recruitment type filter.
      */
     private RecruitType recruitType;
 }

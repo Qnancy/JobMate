@@ -1,41 +1,54 @@
 package cn.edu.zju.cs.jobmate.dto.job;
 
-import cn.edu.zju.cs.jobmate.dto.company.CompanyResponse;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import cn.edu.zju.cs.jobmate.dto.common.UpdateRequest;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import cn.edu.zju.cs.jobmate.models.JobInfo;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
 /**
- * Job information update request DTO
+ * JobInfo update request DTO.
  */
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class JobInfoUpdateRequest {
-    
-    @Valid
-    @NotNull(message = "Company information cannot be empty")
-    private CompanyResponse company;
-    
-    @NotNull(message = "Recruitment type cannot be empty")
-    private RecruitType recruitType;
-    
-    @NotBlank(message = "Job position name cannot be empty")
-    @Size(max = 128, message = "Job position name length cannot exceed 128")
-    private String position;
-    
-    @NotBlank(message = "Link cannot be empty")
-    private String link;
-    
-    @NotBlank(message = "Location cannot be empty")
-    private String location;
-    
-    @NotBlank(message = "Extra information cannot be empty")
-    private String extra;
-}
+public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
 
+    @JsonProperty("company_id")
+    private Integer companyId;
+
+    @JsonProperty("recruit_type")
+    private RecruitType recruitType;
+
+    @Size(max = 128, message = "Position length cannot exceed 128")
+    private String position;
+
+    private String link;
+    private String city;
+    private String location;
+    private String extra;
+
+    @Override
+    public boolean isUpdatable() {
+        return companyId != null ||
+            recruitType != null ||
+            position != null ||
+            link != null ||
+            city != null ||
+            location != null ||
+            extra != null;
+    }
+
+    @Override
+    public void apply(JobInfo jobInfo) {
+        // Update Company field in Service layer.
+        jobInfo.setRecruitType(recruitType);
+        jobInfo.setPosition(position);
+        jobInfo.setLink(link);
+        jobInfo.setCity(city);
+        jobInfo.setLocation(location);
+        jobInfo.setExtra(extra);
+    }
+}

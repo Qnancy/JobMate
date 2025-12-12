@@ -72,7 +72,7 @@ public class JobSubscriptionController {
         
         // Validate user and job info exist using new service methods
         User user = userService.getUserById(request.getUser().getId());
-        JobInfo jobInfo = jobInfoService.getJobInfoById(request.getJobInfo().getId());
+        JobInfo jobInfo = jobInfoService.getById(request.getJobInfo().getId());
         
         // Check if subscription already exists
         if (jobSubscriptionService.existsByUserIdAndJobInfoId(user.getId(), jobInfo.getId())) {

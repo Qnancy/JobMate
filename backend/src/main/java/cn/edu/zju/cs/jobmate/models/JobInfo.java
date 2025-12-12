@@ -28,11 +28,21 @@ public class JobInfo extends Info {
     protected JobInfo() {
     }
 
-    public JobInfo(Company company, RecruitType recruitType, String position, String recruitLink) {
-        setCompany(company);
-        setLink(recruitLink);
+    public JobInfo(
+        RecruitType recruitType,
+        String position,
+        String link,
+        String city,
+        String location,
+        String extra
+    ) {
+        setLink(link);
         this.recruitType = recruitType;
         this.position = position;
+        setLink(link);
+        setCity(city);
+        setLocation(location);
+        setExtra(extra);
     }
 
     public RecruitType getRecruitType() {

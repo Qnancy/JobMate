@@ -7,12 +7,12 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Job information response DTO
+ * Job information response DTO.
  */
 @Data
 @Builder
 public class JobInfoResponse {
-    
+
     private Integer id;
     private CompanyResponse company;
     private RecruitType recruitType;
@@ -23,7 +23,7 @@ public class JobInfoResponse {
     private String extra;
 
     /**
-     * Convert from JobInfo entity to JobInfoResponse
+     * Convert from JobInfo entity to JobInfoResponse.
      */
     public static JobInfoResponse from(JobInfo jobInfo) {
         if (jobInfo == null) {
@@ -41,4 +41,3 @@ public class JobInfoResponse {
         );
     }
 }
-
