@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,14 @@ class QuerySpecBuilderTest {
     private JobInfo job2;
     private JobInfo job3;
     private JobInfo job4;
+
+    private List<String> fields = List.of(
+        "company.name",
+        "position",
+        "city",
+        "location"
+    );
+    private Map<String, Enum<?>> filter;
 
     @BeforeEach
     @SuppressWarnings("null")
@@ -91,19 +100,17 @@ class QuerySpecBuilderTest {
         );
         job4.setCompany(company1);
         job4 = jobInfoRepository.save(job4);
+
+        filter = new HashMap<>();
     }
 
     @Test
     void testKeywordQuery() {
+        filter.put("recruitType", null);
         Specification<JobInfo> spec = QuerySpecBuilder.build(
             "Hangzhou dev",
-            List.of(
-                "company.name",
-                "position",
-                "city",
-                "location"
-            ),
-            null
+            fields,
+            filter
         );
         List<JobInfo> result = jobInfoRepository.findAll(spec);
         assertEquals(2, result.size());
@@ -113,15 +120,11 @@ class QuerySpecBuilderTest {
 
     @Test
     void testFilterQuery() {
+        filter.put("recruitType", RecruitType.CAMPUS);
         Specification<JobInfo> spec = QuerySpecBuilder.build(
             null,
-            List.of(
-                "company.name",
-                "position",
-                "city",
-                "location"
-            ),
-            Map.of("recruitType", RecruitType.CAMPUS)
+            fields,
+            filter
         );
         List<JobInfo> result = jobInfoRepository.findAll(spec);
         assertEquals(2, result.size());
@@ -131,15 +134,11 @@ class QuerySpecBuilderTest {
 
     @Test
     void testKeywordAndFilterQuery() {
+        filter.put("recruitType", RecruitType.CAMPUS);
         Specification<JobInfo> spec = QuerySpecBuilder.build(
             "Hangzhou dev",
-            List.of(
-                "company.name",
-                "position",
-                "city",
-                "location"
-            ),
-            Map.of("recruitType", RecruitType.CAMPUS)
+            fields,
+            filter
         );
         List<JobInfo> result = jobInfoRepository.findAll(spec);
         assertEquals(2, result.size());

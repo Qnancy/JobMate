@@ -61,7 +61,9 @@ public class QuerySpecBuilder {
                 List<Predicate> filterPredicates = new ArrayList<>();
                 // Apply each filter.
                 filters.forEach((field, filter) -> {
-                    filterPredicates.add(cb.equal(getPath(root, field), filter));
+                    if (filter != null) {
+                        filterPredicates.add(cb.equal(getPath(root, field), filter));
+                    }
                 });
                 // All filters must match (AND).
                 predicates.add(cb.and(filterPredicates.toArray(new Predicate[0])));
