@@ -50,7 +50,7 @@ public interface JobInfoService {
     /**
      * Get job infos with pagination.
      *
-     * @param dto job info query request dto
+     * @param dto page request dto
      * @return page of job infos
      */
     Page<JobInfo> getAll(PageRequest dto);
