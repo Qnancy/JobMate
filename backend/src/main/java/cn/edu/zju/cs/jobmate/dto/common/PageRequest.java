@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.validation.constraints.Max;
 
 /**
@@ -19,12 +17,10 @@ import jakarta.validation.constraints.Max;
 public class PageRequest {
 
     @Builder.Default
-    @JsonProperty("page")
-    @Min(value = 0, message = "Page number cannot be less than 0")
-    private Integer page = 0;
+    @Min(value = 1, message = "Page number cannot be less than 1")
+    private Integer page = 1;
 
     @Builder.Default
-    @JsonProperty("page_size")
     @Min(value = 1, message = "Page size cannot be less than 1")
     @Max(value = 100, message = "Page size cannot exceed 100")
     private Integer pageSize = 10;
