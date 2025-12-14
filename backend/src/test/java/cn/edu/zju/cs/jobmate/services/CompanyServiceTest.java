@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -135,50 +136,8 @@ class CompanyServiceTest {
     }
 
     @Test
-    void testGetByName_Success() {
-        Company company = new Company("Test", CompanyType.STATE);
-        when(companyRepo.findByName("Test")).thenReturn(Optional.of(company));
-
-        Company result = companyService.getByName("Test");
-        assertEquals("Test", result.getName());
-    }
-
-    @Test
-    void testGetByName_NotFound() {
-        when(companyRepo.findByName("Test")).thenReturn(Optional.empty());
-
-        BusinessException ex = assertThrows(BusinessException.class,
-            () -> companyService.getByName("Test"));
-        assertEquals(ErrorCode.COMPANY_NOT_FOUND, ex.getErrorCode());
-    }
-
-    @Test
-    void testGetByType() {
-        List<Company> companies = List.of(
-            new Company("A", CompanyType.STATE),
-            new Company("B", CompanyType.STATE)
-        );
-        when(companyRepo.findByType(CompanyType.STATE)).thenReturn(companies);
-
-        List<Company> result = companyService.getByType(CompanyType.STATE);
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    void testGetAll() {
-        List<Company> companies = List.of(
-            new Company("A", CompanyType.STATE),
-            new Company("B", CompanyType.PRIVATE)
-        );
-        when(companyRepo.findAll()).thenReturn(companies);
-
-        List<Company> result = companyService.getAll();
-        assertEquals(2, result.size());
-    }
-
-    @Test
     @SuppressWarnings("null")
-    void testGetAllWithPagination_NoType() {
+    void testGetAll() {
         List<Company> companies = List.of(
             new Company("A", CompanyType.STATE),
             new Company("B", CompanyType.PRIVATE)
@@ -199,26 +158,36 @@ class CompanyServiceTest {
     }
 
     @Test
-    @SuppressWarnings("null")
-    void testGetAllWithPagination_WithType() {
-        List<Company> companies = List.of(
-            new Company("A", CompanyType.STATE),
-            new Company("B", CompanyType.STATE)
-        );
-        Page<Company> page = new PageImpl<>(
-            companies,
-            PageRequest.of(0, 2), 2
-        );
-        CompanyQueryRequest dto = CompanyQueryRequest.builder()
-            .type(CompanyType.STATE)
-            .page(1)
-            .pageSize(2)
-            .build();
-        when(companyRepo.findByType(eq(CompanyType.STATE), any(PageRequest.class)))
-            .thenReturn(page);
+    @SuppressWarnings({"null", "unchecked"})
+    void testQuery() {
+        int page = 1;
+        int pageSize = 2;
+        CompanyType type = CompanyType.PRIVATE;
 
-        Page<Company> result = companyService.getAll(dto);
+        CompanyQueryRequest dto = CompanyQueryRequest.builder()
+            .page(page)
+            .pageSize(pageSize)
+            .type(type)
+            .build();
+        
+        List<Company> companies = List.of(
+            new Company("B", CompanyType.PRIVATE),
+            new Company("C", CompanyType.PRIVATE)
+        );
+        Page<Company> pageResult = new PageImpl<>(
+            companies,
+            PageRequest.of(page - 1, pageSize),
+            2
+        );
+
+        when(companyRepo.findAll(any(Specification.class), any(PageRequest.class)))
+            .thenReturn(pageResult);
+        
+        Page<Company> result = companyService.query(dto);
+
+        assertNotNull(result);
         assertEquals(2, result.getTotalElements());
         assertEquals(2, result.getContent().size());
+        verify(companyRepo).findAll(any(Specification.class), any(PageRequest.class));
     }
 }

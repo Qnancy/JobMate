@@ -1,6 +1,7 @@
 package cn.edu.zju.cs.jobmate.controllers;
 
 import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
+import cn.edu.zju.cs.jobmate.dto.common.PageRequest;
 import cn.edu.zju.cs.jobmate.dto.company.*;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
@@ -112,7 +113,7 @@ class CompanyControllerTest extends ControllerTestUtil {
 
     @Test
     @SuppressWarnings("null")
-    void testGetAllCompanies_NoType() throws Exception {
+    void testGetAllCompanies() throws Exception {
         Company company1 = new Company("A", CompanyType.STATE);
         Company company2 = new Company("B", CompanyType.STATE);
         Company company3 = new Company("C", CompanyType.PRIVATE);
@@ -120,7 +121,7 @@ class CompanyControllerTest extends ControllerTestUtil {
             company1, company2, company3
         ));
 
-        CompanyQueryRequest request = CompanyQueryRequest.builder()
+        PageRequest request = PageRequest.builder()
             .page(1)
             .pageSize(10)
             .build();
@@ -142,28 +143,32 @@ class CompanyControllerTest extends ControllerTestUtil {
 
     @Test
     @SuppressWarnings("null")
-    void testGetAllCompanies_WithType() throws Exception {
-        Company company1 = new Company("A", CompanyType.STATE);
-        Company company2 = new Company("B", CompanyType.STATE);
-        Page<Company> page = new PageImpl<>(List.of(company1, company2));
+    void testSearchCompanies() throws Exception {
+        Company company1 = new Company("AlphaTech", CompanyType.PRIVATE);
+        Company company2 = new Company("BetaSolutions", CompanyType.STATE);
+        Page<Company> page = new PageImpl<>(List.of(
+            company1, company2
+        ));
 
         CompanyQueryRequest request = CompanyQueryRequest.builder()
-            .type(CompanyType.STATE)
+            .keyword("Tech")
+            .type(CompanyType.PRIVATE)
             .page(1)
             .pageSize(10)
             .build();
-        when(companyService.getAll(eq(request))).thenReturn(page);
+        when(companyService.query(eq(request))).thenReturn(page);
 
-        mockMvc.perform(get("/api/companies")
-            .param("type", "STATE")
+        mockMvc.perform(get("/api/companies/search")
+            .param("keyword", "Tech")
+            .param("type", "PRIVATE")
             .param("page", "1")
             .param("page_size", "10"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.code").value(200))
             .andExpect(jsonPath("$.message").value("查询成功"))
-            .andExpect(jsonPath("$.data.content[0].name").value("A"))
-            .andExpect(jsonPath("$.data.content[1].name").value("B"))
-            .andExpect(jsonPath("$.data.content[0].type").value("STATE"))
+            .andExpect(jsonPath("$.data.content[0].name").value("AlphaTech"))
+            .andExpect(jsonPath("$.data.content[0].type").value("PRIVATE"))
+            .andExpect(jsonPath("$.data.content[1].name").value("BetaSolutions"))
             .andExpect(jsonPath("$.data.content[1].type").value("STATE"));
     }
 }
