@@ -129,6 +129,7 @@ public class ActivitySubscriptionController {
             PageResponse<ActivitySubscriptionResponse> pageResponse = new PageResponse<>(
                 responses, 
                 activitySubscriptionPage.getTotalElements(),
+                activitySubscriptionPage.getTotalPages(),
                 page,  // Return 1-based page to frontend
                 pageSize
             );

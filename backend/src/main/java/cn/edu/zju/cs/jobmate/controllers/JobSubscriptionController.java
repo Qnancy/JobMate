@@ -129,6 +129,7 @@ public class JobSubscriptionController {
             PageResponse<JobSubscriptionResponse> pageResponse = new PageResponse<>(
                 responses, 
                 jobSubscriptionPage.getTotalElements(),
+                jobSubscriptionPage.getTotalPages(),
                 page,  // Return 1-based page to frontend
                 pageSize
             );

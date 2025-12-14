@@ -12,8 +12,9 @@ import java.util.List;
  */
 public class PageResponse<T> {
     
-    private List<T> content;
+    private List<T> content; // Data items.
     private Long total; // All data count.
+    private Integer count; // Current page data count.
     private Integer page; // Current page number.
 
     @JsonProperty("page_size")
@@ -25,9 +26,16 @@ public class PageResponse<T> {
     public PageResponse() {
     }
 
-    public PageResponse(List<T> content, Long total, Integer page, Integer pageSize) {
+    public PageResponse(
+        List<T> content,
+        Long total,
+        Integer count,
+        Integer page,
+        Integer pageSize
+    ) {
         this.content = content;
         this.total = total;
+        this.count = count;
         this.page = page;
         this.pageSize = pageSize;
         this.totalPages = pageSize > 0 ? (int) Math.ceil((double) total / pageSize) : 0;
@@ -43,6 +51,7 @@ public class PageResponse<T> {
         return new PageResponse<>(
             page.getContent(),
             page.getTotalElements(),
+            page.getNumberOfElements(),
             page.getNumber() + 1, // Convert to 1-based page index.
             page.getSize()
         );
@@ -54,6 +63,14 @@ public class PageResponse<T> {
 
     public void setContent(List<T> content) {
         this.content = content;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 
     public Long getTotal() {
@@ -101,6 +118,7 @@ public class PageResponse<T> {
         return "PageResponse{" +
                 "content=" + content +
                 ", total=" + total +
+                ", count=" + count +
                 ", page=" + page +
                 ", pageSize=" + pageSize +
                 ", totalPages=" + totalPages +

@@ -170,6 +170,7 @@ public class ActivityInfoController {
             PageResponse<ActivityInfoResponse> pageResponse = new PageResponse<>(
                 responses, 
                 activityInfoPage.getTotalElements(),
+                activityInfoPage.getTotalPages(),
                 page,  // Return 1-based page to frontend
                 pageSize
             );
@@ -212,6 +213,7 @@ public class ActivityInfoController {
             PageResponse<ActivityInfoResponse> pageResponse = new PageResponse<>(
                 responses, 
                 activityInfoPage.getTotalElements(),
+                activityInfoPage.getTotalPages(),
                 page,  // Return 1-based page to frontend
                 pageSize
             );
