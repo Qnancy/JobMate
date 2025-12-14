@@ -23,7 +23,7 @@ public class CompanyUpdateRequest implements UpdateRequest<Company> {
 
     @Override
     public void apply(Company company) {
-        company.setName(name);
-        company.setType(type);
+        if (name != null) { company.setName(name); }
+        if (type != null) { company.setType(type); }
     }
 }

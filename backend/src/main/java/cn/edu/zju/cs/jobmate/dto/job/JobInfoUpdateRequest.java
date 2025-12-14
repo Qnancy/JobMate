@@ -44,11 +44,11 @@ public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
     @Override
     public void apply(JobInfo jobInfo) {
         // Update Company field in Service layer.
-        jobInfo.setRecruitType(recruitType);
-        jobInfo.setPosition(position);
-        jobInfo.setLink(link);
-        jobInfo.setCity(city);
-        jobInfo.setLocation(location);
-        jobInfo.setExtra(extra);
+        if (recruitType != null) { jobInfo.setRecruitType(recruitType); }
+        if (position != null) { jobInfo.setPosition(position); }
+        if (link != null) { jobInfo.setLink(link); }
+        if (city != null) { jobInfo.setCity(city); }
+        if (location != null) { jobInfo.setLocation(location); }
+        if (extra != null) { jobInfo.setExtra(extra); }
     }
 }
