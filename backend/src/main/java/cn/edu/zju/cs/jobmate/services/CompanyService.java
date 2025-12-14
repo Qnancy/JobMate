@@ -1,11 +1,9 @@
 package cn.edu.zju.cs.jobmate.services;
 
+import cn.edu.zju.cs.jobmate.dto.common.PageRequest;
 import cn.edu.zju.cs.jobmate.dto.company.*;
-import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
 
 /**
  * Company service interface.
@@ -48,34 +46,18 @@ public interface CompanyService {
     Company getById(Integer id);
 
     /**
-     * Get company by name.
+     * Get all companies with pagination.
      *
-     * @param name company name
-     * @return retrieved company
-     * @throws BusinessException if company not found
+     * @param dto page request dto
+     * @return page of companies
      */
-    Company getByName(String name);
+    Page<Company> getAll(PageRequest dto);
 
     /**
-     * Get companies by type.
-     *
-     * @param type company type
-     * @return list of companies
-     */
-    List<Company> getByType(CompanyType type);
-
-    /**
-     * Get all companies.
-     *
-     * @return list of companies
-     */
-    List<Company> getAll();
-
-    /**
-     * Get all companies matching query conditions with pagination.
+     * Query companies with pagination.
      *
      * @param dto company query request dto
      * @return page of companies
      */
-    Page<Company> getAll(CompanyQueryRequest dto);
+    Page<Company> query(CompanyQueryRequest dto);
 }

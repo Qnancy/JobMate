@@ -1,6 +1,7 @@
 package cn.edu.zju.cs.jobmate.controllers;
 
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
+import cn.edu.zju.cs.jobmate.dto.common.PageRequest;
 import cn.edu.zju.cs.jobmate.dto.common.PageResponse;
 import cn.edu.zju.cs.jobmate.dto.company.*;
 import cn.edu.zju.cs.jobmate.models.Company;
@@ -40,7 +41,7 @@ public class CompanyController {
     }
 
     /**
-     * Create a new company.
+     * Create a new Company.
      * 
      * @apiNote POST /api/companies
      */
@@ -56,7 +57,7 @@ public class CompanyController {
     }
 
     /**
-     * Delete company.
+     * Delete Company.
      * 
      * @apiNote DELETE /api/companies/{id}
      */
@@ -71,7 +72,7 @@ public class CompanyController {
     }
 
     /**
-     * Update company.
+     * Update Company.
      * 
      * @apiNote PUT /api/companies/{id}
      */
@@ -88,7 +89,7 @@ public class CompanyController {
     }
 
     /**
-     * Retrieves a company by ID.
+     * Retrieves a Company by ID.
      * 
      * @apiNote GET /api/companies/{id}
      */
@@ -104,13 +105,13 @@ public class CompanyController {
     }
 
     /**
-     * Retrieves companies matching query conditions with pagination.
+     * Retrieves Companies with pagination.
      * 
      * @apiNote GET /api/companies
      */
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> getAllCompanies(
-        @Valid CompanyQueryRequest request
+        @Valid PageRequest request
     ) {
         log.info("Retrieving Companies with {}", request);
 
@@ -121,7 +122,29 @@ public class CompanyController {
         Page<CompanyResponse> dtos = results.map(CompanyResponse::from);
         PageResponse<CompanyResponse> response = PageResponse.from(dtos);
 
-        log.info("Successfully retrieved Companies");
+        log.info("Successfully retrieved {} Companies", response.getCount());
+        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
+    }
+
+    /**
+     * Search Companies with query conditions.
+     * 
+     * @apiNote GET /api/companies/search
+     */
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> searchCompanies(
+        @Valid CompanyQueryRequest request
+    ) {
+        log.info("Searching Companies with {}", request);
+
+        // Fetch query results.
+        Page<Company> results = companyService.query(request);
+
+        // Query results -> response DTOs -> final response.
+        Page<CompanyResponse> dtos = results.map(CompanyResponse::from);
+        PageResponse<CompanyResponse> response = PageResponse.from(dtos);
+
+        log.info("Successfully searched {} Companies", response.getCount());
         return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 }

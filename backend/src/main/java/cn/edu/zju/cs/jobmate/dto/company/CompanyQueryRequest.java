@@ -16,5 +16,13 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class CompanyQueryRequest extends PageRequest {
 
+    /**
+     * Search keyword (searches in name).
+     */
+    private String keyword;
+
+    /**
+     * Company type filter.
+     */
     private CompanyType type;
 }
