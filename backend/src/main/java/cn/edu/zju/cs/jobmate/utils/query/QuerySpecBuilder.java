@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
-import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
@@ -69,9 +68,6 @@ public class QuerySpecBuilder {
                     List<Predicate> fieldPredicates = new ArrayList<>();
                     for (String field : fields.getFields()) {
                         Path<T> path = getPath(root, field);
-                        if (path.getJavaType() != String.class) {
-                            throw new BusinessException(ErrorCode.INVALID_PARAMETER);
-                        }
                         fieldPredicates.add(cb.like(cb.lower((Path<String>) path), pattern));
                     }
                     // Each token must match at least one field (OR).
