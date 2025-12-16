@@ -9,14 +9,15 @@ spring:
     driver-class-name: org.h2.Driver
     username: jobmate-test
     password:
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+    show-sql: false
+    properties:
       hibernate:
-        ddl-auto: create-drop
-      show-sql: false
-      properties:
-        hibernate:
-          format_sql: true
-          use_sql_comments: false
+        format_sql: true
+        use_sql_comments: true
   data:
     redis:
       host: localhost

@@ -15,18 +15,18 @@ spring:
       idle-timeout: 30000
       max-lifetime: 600000
       connection-timeout: 30000
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+    properties:
       hibernate:
-        ddl-auto: update
-      show-sql: false
-      properties:
-        hibernate:
-          format_sql: true
-          use_sql_comments: false
-          connection:
-            characterEncoding: utf8
-            useUnicode: true
-      open-in-view: false
+        format_sql: true
+        use_sql_comments: false
+        connection:
+          characterEncoding: utf8
+          useUnicode: true
   data:
     redis:
       host: localhost

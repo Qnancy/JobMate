@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 @Table(name = "activity_subscriptions")
 public class ActivitySubscription extends Subscription {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "activity_info_id", nullable = false)
     private ActivityInfo activityInfo;
 
