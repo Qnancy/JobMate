@@ -20,7 +20,7 @@
         <input 
           v-model="searchQuery"
           type="text" 
-          placeholder="搜索职位、公司、招聘会..."
+          placeholder="搜索职位、招聘会..."
           class="w-full px-4 py-3 pl-12 rounded-xl border-2 border-sky-200 focus:border-sky-400 focus:outline-none shadow-sm text-gray-700"
           @keyup.enter="handleSearch"
         />
@@ -29,7 +29,7 @@
         </svg>
         <button 
         @click="handleSearch"
-          class="absolute right-2 top-1/2 -translate-y-1/2 bg-sky-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-sky-600 transition"
+          class="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-300 text-gray-700 px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-sky-600 hover:text-white transition"
           >
           搜索
         </button>
@@ -39,8 +39,7 @@
       <div class="space-y-4">
         <button 
           @click="$router.push('/info?tab=job')"
-          class="w-full bg-gradient-to-r from-sky-200 to-blue-200 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
-        
+          class="w-full bg-gradient-to-r from-sky-100 to-blue-100 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
         >
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -50,8 +49,7 @@
         
         <button 
           @click="$router.push('/info?tab=fair')"
-          class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
-           style="color: white"
+          class="w-full bg-gradient-to-r from-blue-100 to-blue-100 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
         >
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
