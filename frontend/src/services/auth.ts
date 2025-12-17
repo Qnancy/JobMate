@@ -1,3 +1,5 @@
+import { api } from "@/utils/request";
+
 export type User = {
   id: number
   name: string
@@ -5,28 +7,16 @@ export type User = {
   create_at?: string
 }
 
-
-function apiUrl(path: string): string {
-  return `http://localhost:3000${path}`
+export async function register(name: string, password: string, role: string) {
+  return api.post<User>('/users/register', {
+    name,
+    password,
+    role,
+  });
 }
 
-export async function register(name: string, password: string, role: string): Promise<{ code: number; message: string; data: User }> {
-  var raw = JSON.stringify({
-    name: name,
-    password: password,
-    role: role,
-  })
-  const response = await fetch(apiUrl('/api/users/register'), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: raw,
-  })
-  const json = await response.json()
-  return json
-}
-
-export async function login(name: string, password: string): Promise<{ code: number; message: string; data: User }> {
-  // 内置管理员账号
+export async function login(name: string, password: string) {
+  // 内置管理员账号 (Mock逻辑，实际项目中应由后端处理)
   if (name === 'admin' && password === 'admin') {
     const adminUser: User = { id: 0, name: 'admin', role: 'admin', create_at: new Date().toISOString() }
     setCurrentUser(adminUser)
@@ -40,20 +30,16 @@ export async function login(name: string, password: string): Promise<{ code: num
     return { code: 0, message: 'ok', data: guestUser }
   }
 
-  var raw = JSON.stringify({
-    name: name,
-    password: password,
-  })
-  const response = await fetch(apiUrl('/api/users/login'), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: raw,
-  })
-  const json = await response.json()
-  if (json?.code === 0 && json?.data) {
-    setCurrentUser(json.data)
+  // 真实 API 调用
+  const res = await api.post<User>('/users/login', {
+    name,
+    password,
+  });
+  
+  if (res.code === 0 && res.data) {
+    setCurrentUser(res.data);
   }
-  return json
+  return res;
 }
 
 
