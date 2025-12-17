@@ -85,7 +85,7 @@
           :key="fair.id"
           class="bg-white rounded-xl overflow-hidden shadow-md border border-sky-50 hover:shadow-lg transition"
         >
-          <div class="h-2 bg-linear-to-r from-sky-400 to-blue-600"></div>
+          <div class="h-2 bg-white"></div>
           <div class="p-4">
             <div class="flex justify-between items-start">
               <div class="flex-1" @click="viewFairDetail(fair)">
@@ -140,12 +140,15 @@
                 </svg>
               </button>
             </div>
+            <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+              <span></span>
             <button 
-              @click="$router.push({ path: `/info/activity/${fair.id}` })"
-              class="w-full mt-4 py-2.5 bg-gradient-to-r from-sky-500 to-blue-500 text-white rounded-lg font-medium hover:from-sky-600 hover:to-blue-600 transition"
+              @click="$router.push({ path: `/info/activity/${fair.id}` })"              
+              class="text-sky-500 text-sm font-medium hover:text-sky-600"
             >
-              查看详情
+              查看详情 →
             </button>
+            </div>
           </div>
         </div>
       </div>

@@ -4,8 +4,8 @@
     <!-- Logo区域优化 - 调整大小和间距 -->
     <div class="logo-container">
       <div class="logo">
-        <img src="@/assets/vue.svg" alt="Logo" class="logo-img" />
-        <p class="logo-text">(logo)</p>
+        <img src="/Zhejiang_University_Logo.svg.png" alt="Logo" class="logo-img" />
+        <p class="logo-text">注册页</p>
       </div>
     </div>
 
@@ -97,7 +97,7 @@
 // 原有逻辑保持不变，仅增加返回按钮功能
 import { ref, onMounted, watch } from 'vue'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
-import { showToast, Toast } from 'vant'
+import { showToast, showSuccessToast, showFailToast } from 'vant'
 import * as auth from '@/services/auth'
 
 const router = useRouter()
@@ -164,11 +164,11 @@ async function onSubmit() {
     return { code: 500, message: '网络错误，请稍后重试' }
   })
 
-  if (res.code !== 94) return Toast.fail(res.message || '注册失败')
+  if (res.code !== 94) return showFailToast(res.message || '注册失败')
 
   localStorage.removeItem(STORAGE_KEY);
 
-  Toast.success({
+  showSuccessToast({
     message: '注册成功，请登录',
     duration: 800,
   })

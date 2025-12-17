@@ -71,7 +71,7 @@
 // 原有逻辑保持不变，无需修改
 import { ref, onMounted, watchEffect } from "vue";
 import { useRouter, onBeforeRouteLeave } from "vue-router";
-import { showToast, Toast } from "vant";
+import { showToast } from "vant";
 import * as auth from "@/services/auth";
 import { Divider as AnDivider } from "ant-design-vue";
 import ZjuLoginButton from "@/components/zju-login-button.vue";

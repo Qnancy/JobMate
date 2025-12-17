@@ -1,5 +1,5 @@
 <template>
-    <main class="pb-24">
+    <main class="pb-4">
       <div class="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 py-6">
         <h2 class="text-xl font-bold">{{ job.title }}</h2>
         <p class="text-sky-100 mt-1">{{ job.company }}</p>
@@ -44,8 +44,8 @@
         </div>
       </div>
 
-      <!-- 底部操作栏 -->
-      <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex gap-3">
+      <!-- 操作栏 -->
+      <div class="bg-white border-t border-gray-100 p-4 flex gap-3 mt-4">
         <button 
           @click="toggleFavorite('job', job.id)"
           class="flex-1 py-3 border-2 border-sky-500 text-sky-500 rounded-xl font-medium flex items-center justify-center gap-2"
