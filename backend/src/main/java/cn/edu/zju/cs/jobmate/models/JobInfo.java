@@ -36,7 +36,6 @@ public class JobInfo extends Info {
         String location,
         String extra
     ) {
-        setLink(link);
         this.recruitType = recruitType;
         this.position = position;
         setLink(link);
