@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.controllers;
+package cn.edu.zju.cs.jobmate.integrations;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class JobInfoControllerIntegrationTest {
+public class JobInfoIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

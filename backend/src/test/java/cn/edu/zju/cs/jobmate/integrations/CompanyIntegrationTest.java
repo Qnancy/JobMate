@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.controllers;
+package cn.edu.zju.cs.jobmate.integrations;
 
 import cn.edu.zju.cs.jobmate.dto.company.*;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-class CompanyControllerIntegrationTest {
+class CompanyIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
