@@ -72,7 +72,7 @@ public class JobInfoController {
         @PathVariable @NotNull @Positive Integer id,
         @Valid @RequestBody JobInfoUpdateRequest request
     ) {
-        log.info("Updating JobInfo(id={})", id);
+        log.info("Updating JobInfo(id={}) with {}", id, request);
         JobInfo jobInfo = jobInfoService.update(id, request);
         JobInfoResponse response = JobInfoResponse.from(jobInfo);
         log.info("Successfully updated JobInfo(id={})", id);
@@ -113,7 +113,7 @@ public class JobInfoController {
         Page<JobInfoResponse> dtos = results.map(JobInfoResponse::from);
         PageResponse<JobInfoResponse> response = PageResponse.from(dtos);
 
-        log.info("Successfully retrieved JobInfos");
+        log.info("Successfully retrieved {} JobInfos", response.getCount());
         return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 
@@ -135,7 +135,7 @@ public class JobInfoController {
         Page<JobInfoResponse> dtos = results.map(JobInfoResponse::from);
         PageResponse<JobInfoResponse> response = PageResponse.from(dtos);
 
-        log.info("Successfully searched JobInfos");
+        log.info("Successfully searched {} JobInfos", response.getCount());
         return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 }
