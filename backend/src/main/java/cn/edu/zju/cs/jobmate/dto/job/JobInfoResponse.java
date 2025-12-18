@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Job information response DTO.
+ * JobInf response DTO.
  */
 @Data
 @Builder
