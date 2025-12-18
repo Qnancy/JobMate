@@ -30,6 +30,19 @@ export async function request<T = any>(url: string, options: RequestInit = {}): 
     headers.set('Content-Type', 'application/json');
   }
 
+  // 开发环境下打印请求日志
+  if (import.meta.env.DEV) {
+    console.group(`[Request] ${options.method || 'GET'} ${url}`);
+    if (options.body) {
+      try {
+        console.log('Body:', typeof options.body === 'string' ? JSON.parse(options.body) : options.body);
+      } catch (e) {
+        console.log('Body:', options.body);
+      }
+    }
+    console.groupEnd();
+  }
+
   try {
     // 2. 发送请求
     const response = await fetch(`${BASE_URL}${url}`, {

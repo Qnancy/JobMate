@@ -121,7 +121,7 @@
           <div class="flex-1 overflow-y-auto">
             <van-cell-group>
               <van-swipe-cell v-for="job in jobList" :key="job.id">
-                <van-cell :title="job.title" :label="job.company" :value="job.salary" />
+                <van-cell :title="job.position" :label="`ID: ${job.company_id} | ${job.city}`" :value="recruitTypeMap[job.recruit_type] || job.recruit_type" />
                 <template #right>
                   <van-button square text="编辑" type="primary" class="h-full" @click="openJobEdit(job)" />
                   <van-button square text="删除" type="danger" class="h-full" @click="handleDeleteJob(job.id)" />
@@ -158,11 +158,30 @@
       <!-- Job Edit Dialog -->
       <van-dialog v-model:show="showJobEdit" :title="editingJob?.id ? '编辑职位' : '发布职位'" show-cancel-button @confirm="saveJob">
         <van-form class="p-4">
-          <van-field v-model="jobForm.title" label="职位名称" placeholder="请输入职位名称" />
-          <van-field v-model="jobForm.company" label="公司名称" placeholder="请输入公司名称" />
-          <van-field v-model="jobForm.salary" label="薪资范围" placeholder="例如: 15-25K" />
-          <van-field v-model="jobForm.location" label="工作地点" placeholder="例如: 杭州" />
-          <van-field v-model="jobForm.type" label="职位类型" placeholder="例如: 全职" />
+          <van-field v-model="jobForm.position" label="职位名称" placeholder="请输入职位名称" />
+          <van-field v-model.number="jobForm.company_id" type="digit" label="公司ID" placeholder="请输入公司ID" />
+          
+          <van-field
+            v-model="recruitTypeMap[jobForm.recruit_type]"
+            is-link
+            readonly
+            name="recruit_type"
+            label="招聘类型"
+            placeholder="点击选择招聘类型"
+            @click="showRecruitTypePicker = true"
+          />
+          <van-popup v-model:show="showRecruitTypePicker" position="bottom">
+            <van-picker
+              :columns="recruitTypeColumns"
+              @confirm="onConfirmRecruitType"
+              @cancel="showRecruitTypePicker = false"
+            />
+          </van-popup>
+
+          <van-field v-model="jobForm.city" label="工作城市" placeholder="例如: 杭州市" />
+          <van-field v-model="jobForm.location" label="工作地点" placeholder="请输入工作地点" />
+          <van-field v-model="jobForm.link" label="投递链接" placeholder="请输入投递链接" />
+          <van-field v-model="jobForm.extra" label="备注" placeholder="其他信息" />
         </van-form>
       </van-dialog>
 
@@ -207,7 +226,32 @@ const activityList = ref<activityService.Activity[]>([]);
 // Edit State
 const showJobEdit = ref(false);
 const editingJob = ref<jobService.Job | null>(null);
-const jobForm = reactive({ title: '', company: '', salary: '', location: '', type: '' });
+const jobForm = reactive({
+  company_id: 0,
+  recruit_type: '',
+  position: '',
+  link: '',
+  city: '',
+  location: '',
+  extra: ''
+});
+
+const recruitTypeMap: Record<string, string> = {
+  INTERN: '实习',
+  CAMPUS: '校招',
+  EXPERIENCED: '社招'
+};
+
+const showRecruitTypePicker = ref(false);
+const recruitTypeColumns = [
+  { text: '实习', value: 'INTERN' },
+  { text: '校招', value: 'CAMPUS' },
+  { text: '社招', value: 'EXPERIENCED' },
+];
+const onConfirmRecruitType = ({ selectedOptions }: any) => {
+  jobForm.recruit_type = selectedOptions[0].value;
+  showRecruitTypePicker.value = false;
+};
 
 const showActivityEdit = ref(false);
 const editingActivity = ref<activityService.Activity | null>(null);
@@ -259,20 +303,44 @@ async function fetchActivities() {
 function openJobEdit(job: jobService.Job | null) {
   editingJob.value = job;
   if (job) {
-    Object.assign(jobForm, job);
+    Object.assign(jobForm, {
+      company_id: job.company_id,
+      recruit_type: job.recruit_type,
+      position: job.position,
+      link: job.link,
+      city: job.city,
+      location: job.location || '',
+      extra: job.extra || ''
+    });
   } else {
-    Object.assign(jobForm, { title: '', company: '', salary: '', location: '', type: '' });
+    Object.assign(jobForm, {
+      company_id: undefined,
+      recruit_type: 'INTERN',
+      position: '',
+      link: '',
+      city: '',
+      location: '',
+      extra: ''
+    });
   }
   showJobEdit.value = true;
 }
 
 async function saveJob() {
   try {
+    // Convert empty strings to null for optional fields if needed, or keep as is.
+    // Based on curl example, location can be null.
+    const payload = {
+        ...jobForm,
+        location: jobForm.location || null,
+        extra: jobForm.extra || null
+    };
+
     if (editingJob.value) {
-      await jobService.updateJob(editingJob.value.id, jobForm);
+      await jobService.updateJob(editingJob.value.id, payload);
       showSuccessToast('更新成功');
     } else {
-      await jobService.createJob(jobForm);
+      await jobService.createJob(payload);
       showSuccessToast('发布成功');
     }
     fetchJobs();

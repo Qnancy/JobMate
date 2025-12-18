@@ -2,12 +2,13 @@ import { api } from "@/utils/request";
 
 export interface Job {
   id: number;
-  title: string;
-  company: string;
-  location: string;
-  type: string;
-  salary: string;
-  // add other fields
+  company_id: number; 
+  recruit_type: string; //招聘类型
+  position: string; //岗位名称
+  link: string; //投递链接
+  city: string; //工作城市
+  location?: string | null; //工作地点
+  extra?: string | null; //备注信息
 }
 
 export async function getJobs() {
