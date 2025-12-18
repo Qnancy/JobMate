@@ -1,5 +1,6 @@
 package cn.edu.zju.cs.jobmate.services.impl;
 
+import cn.edu.zju.cs.jobmate.dto.common.PageRequest;
 import cn.edu.zju.cs.jobmate.dto.job.*;
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
@@ -15,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,9 +94,8 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<JobInfo> getAll(cn.edu.zju.cs.jobmate.dto.common.PageRequest dto) {
-        Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getPageSize());
-        return jobInfoRepository.findAll(pageable);
+    public Page<JobInfo> getAll(PageRequest dto) {
+        return jobInfoRepository.findAll(dto.toPageable());
     }
 
     @Override
@@ -108,7 +106,6 @@ public class JobInfoServiceImpl implements JobInfoService {
             QuerySpecBuilder.Fields.of("company.name", "position", "city", "location"),
             QuerySpecBuilder.Filter.of("recruitType", dto.getRecruitType())
         );
-        Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getPageSize());
-        return jobInfoRepository.findAll(spec, pageable);
+        return jobInfoRepository.findAll(spec, dto.toPageable());
     }
 }

@@ -2,6 +2,7 @@ package cn.edu.zju.cs.jobmate.services.impl;
 
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
+import cn.edu.zju.cs.jobmate.dto.common.PageRequest;
 import cn.edu.zju.cs.jobmate.dto.company.*;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
@@ -10,8 +11,6 @@ import cn.edu.zju.cs.jobmate.utils.query.QuerySpecBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,9 +80,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Company> getAll(cn.edu.zju.cs.jobmate.dto.common.PageRequest dto) {
-        Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getPageSize());
-        return companyRepository.findAll(pageable);
+    public Page<Company> getAll(PageRequest dto) {
+        return companyRepository.findAll(dto.toPageable());
     }
 
     @Override
@@ -94,7 +92,6 @@ public class CompanyServiceImpl implements CompanyService {
             QuerySpecBuilder.Fields.of("name"),
             QuerySpecBuilder.Filter.of("type", dto.getType())
         );
-        Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getPageSize());
-        return companyRepository.findAll(spec, pageable);
+        return companyRepository.findAll(spec, dto.toPageable());
     }
 }
