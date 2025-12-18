@@ -46,7 +46,7 @@ public class CompanyController {
      * @apiNote POST /api/companies
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<CompanyResponse>> createCompany(
+    public ResponseEntity<ApiResponse<CompanyResponse>> create(
         @Valid @RequestBody CompanyCreateRequest request
     ) {
         log.info("Creating Company with {}", request);
@@ -62,7 +62,7 @@ public class CompanyController {
      * @apiNote DELETE /api/companies/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteCompany(
+    public ResponseEntity<ApiResponse<Void>> delete(
         @PathVariable @NotNull @Positive Integer id
     ) {
         log.info("Deleting Company(id={})", id);
@@ -77,7 +77,7 @@ public class CompanyController {
      * @apiNote PUT /api/companies/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<CompanyResponse>> updateCompany(
+    public ResponseEntity<ApiResponse<CompanyResponse>> update(
         @PathVariable @NotNull @Positive Integer id,
         @Valid @RequestBody CompanyUpdateRequest request
     ) {
@@ -94,7 +94,7 @@ public class CompanyController {
      * @apiNote GET /api/companies/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<CompanyResponse>> getCompany(
+    public ResponseEntity<ApiResponse<CompanyResponse>> get(
         @PathVariable @NotNull @Positive Integer id
     ) {
         log.info("Retrieving Company(id={})", id);
@@ -110,7 +110,7 @@ public class CompanyController {
      * @apiNote GET /api/companies
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> getAllCompanies(
+    public ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> getAll(
         @Valid PageRequest request
     ) {
         log.info("Retrieving Companies with {}", request);
@@ -132,7 +132,7 @@ public class CompanyController {
      * @apiNote GET /api/companies/search
      */
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> searchCompanies(
+    public ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> search(
         @Valid CompanyQueryRequest request
     ) {
         log.info("Searching Companies with {}", request);

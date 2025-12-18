@@ -37,7 +37,7 @@ public class JobInfoController {
      * @apiNote POST /api/jobs
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<JobInfoResponse>> createJobInfo(
+    public ResponseEntity<ApiResponse<JobInfoResponse>> create(
         @Valid @RequestBody JobInfoCreateRequest request
     ) {
         log.info("Creating JobInfo with {}", request);
@@ -53,7 +53,7 @@ public class JobInfoController {
      * @apiNote DELETE /api/jobs/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteJobInfo(
+    public ResponseEntity<ApiResponse<Void>> delete(
         @PathVariable @NotNull @Positive Integer id
     ) {
         log.info("Deleting JobInfo(id={})", id);
@@ -68,7 +68,7 @@ public class JobInfoController {
      * @apiNote PUT /api/jobs/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<JobInfoResponse>> updateJobInfo(
+    public ResponseEntity<ApiResponse<JobInfoResponse>> update(
         @PathVariable @NotNull @Positive Integer id,
         @Valid @RequestBody JobInfoUpdateRequest request
     ) {
@@ -85,7 +85,7 @@ public class JobInfoController {
      * @apiNote GET /api/jobs/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<JobInfoResponse>> getJobInfo(
+    public ResponseEntity<ApiResponse<JobInfoResponse>> get(
         @PathVariable @NotNull @Positive Integer id
     ) {
         log.info("Retrieving JobInfo(id={})", id);
@@ -101,7 +101,7 @@ public class JobInfoController {
      * @apiNote GET /api/jobs
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<JobInfoResponse>>> getAllJobInfos(
+    public ResponseEntity<ApiResponse<PageResponse<JobInfoResponse>>> getAll(
         @Valid PageRequest request
     ) {
         log.info("Retrieving JobInfos with {}", request);
@@ -123,7 +123,7 @@ public class JobInfoController {
      * @apiNote GET /api/jobs/search
      */
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<PageResponse<JobInfoResponse>>> searchJobInfos(
+    public ResponseEntity<ApiResponse<PageResponse<JobInfoResponse>>> search(
         @Valid JobInfoQueryRequest request
     ) {
         log.info("Searching JobInfos with {}", request);
