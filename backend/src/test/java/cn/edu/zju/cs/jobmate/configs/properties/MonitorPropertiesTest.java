@@ -24,8 +24,8 @@ class MonitorPropertiesTest {
     void testRateLimiterConfigBinding() {
         MonitorProperties.RateLimiter rateLimiter = monitorProperties.getRateLimiter();
         assertNotNull(rateLimiter, "RateLimiter config should not be null");
-        assertTrue(rateLimiter.isEnabled());
+        assertFalse(rateLimiter.isEnabled());
         assertEquals(10, rateLimiter.getLimitIntervalS());
-        assertEquals(5, rateLimiter.getMaxRequestsPerInterval());
+        assertEquals(50, rateLimiter.getMaxRequestsPerInterval());
     }
 }

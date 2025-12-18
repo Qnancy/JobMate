@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,6 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = DummyControllerUtil.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(value = MonitorProperties.class)
+@TestPropertySource(properties = {
+    "app.monitor.rate-limiter.enabled=true",
+    "app.monitor.rate-limiter.limit-interval-s=10",
+    "app.monitor.rate-limiter.max-requests-per-interval=5"
+})
 class WebMvcConfigTest {
 
     @Autowired

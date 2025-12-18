@@ -4,15 +4,15 @@ import cn.edu.zju.cs.jobmate.dto.company.*;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
-import cn.edu.zju.cs.jobmate.utils.EmbeddedRedisConfigUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@Import(value = EmbeddedRedisConfigUtil.class)
 class CompanyControllerIntegrationTest {
 
     @Autowired
@@ -38,9 +37,13 @@ class CompanyControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        companyRepository.deleteAll();
         companyRepository.save(new Company("Company1", CompanyType.PRIVATE));
         companyRepository.save(new Company("Company2", CompanyType.STATE));
+    }
+
+    @AfterEach
+    void clean() {
+        companyRepository.deleteAll();
     }
 
     @Test

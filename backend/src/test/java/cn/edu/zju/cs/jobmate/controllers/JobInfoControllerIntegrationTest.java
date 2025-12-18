@@ -1,11 +1,11 @@
 package cn.edu.zju.cs.jobmate.controllers;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -18,7 +18,6 @@ import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
 import cn.edu.zju.cs.jobmate.repositories.JobInfoRepository;
-import cn.edu.zju.cs.jobmate.utils.EmbeddedRedisConfigUtil;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -27,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@Import(value = EmbeddedRedisConfigUtil.class)
 public class JobInfoControllerIntegrationTest {
 
     @Autowired
@@ -47,9 +45,6 @@ public class JobInfoControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        jobInfoRepository.deleteAll();
-        companyRepository.deleteAll();
-
         company1 = companyRepository.save(new Company(
             "Company 1",
             CompanyType.FOREIGN
@@ -89,6 +84,12 @@ public class JobInfoControllerIntegrationTest {
         );
         jobInfo3.setCompany(company2);
         jobInfoRepository.save(jobInfo3);
+    }
+
+    @AfterEach
+    void clean() {
+        jobInfoRepository.deleteAll();
+        companyRepository.deleteAll();
     }
 
     @Test
