@@ -26,10 +26,18 @@ public class ActivityInfo extends Info {
     protected ActivityInfo() {
     }
 
-    public ActivityInfo(Company company, String title, LocalDateTime time) {
-        setCompany(company);
+    public ActivityInfo(
+        String title,
+        LocalDateTime time,
+        String link,
+        String location,
+        String extra
+    ) {
         this.title = title;
         this.time = time;
+        setLink(link);
+        setLocation(location);
+        setExtra(extra);
     }
 
     public String getTitle() {
@@ -55,7 +63,6 @@ public class ActivityInfo extends Info {
                 ", company=" + getCompany() +
                 ", title='" + title + '\'' +
                 ", time=" + time +
-                ", city='" + getCity() + '\'' +
                 ", location='" + getLocation() + '\'' +
                 ", link='" + getLink() + '\'' +
                 ", extra='" + getExtra() + '\'' +

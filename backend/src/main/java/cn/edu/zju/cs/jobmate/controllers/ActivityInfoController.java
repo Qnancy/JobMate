@@ -1,229 +1,143 @@
 package cn.edu.zju.cs.jobmate.controllers;
 
-import cn.edu.zju.cs.jobmate.dto.activity.ActivityInfoCreateRequest;
-import cn.edu.zju.cs.jobmate.dto.activity.ActivityInfoResponse;
-import cn.edu.zju.cs.jobmate.dto.activity.ActivityInfoUpdateRequest;
+import cn.edu.zju.cs.jobmate.dto.activity.*;
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
+import cn.edu.zju.cs.jobmate.dto.common.PageRequest;
 import cn.edu.zju.cs.jobmate.dto.common.PageResponse;
-import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
-import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
-import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.services.ActivityInfoService;
-import cn.edu.zju.cs.jobmate.services.CompanyService;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Max;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
- * ActivityInfo REST Controller
- * 
- * Provides RESTful APIs for activity information management operations
- * 
- * @author JobMate Team
- * @version 1.0
+ * ActivityInfo REST Controller.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/activities")
-@CrossOrigin(originPatterns = "*")
 @Validated
 public class ActivityInfoController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ActivityInfoController.class);
-
     private final ActivityInfoService activityInfoService;
-    private final CompanyService companyService;
 
-    /**
-     * Constructor injection for services
-     */
-    @Autowired
-    public ActivityInfoController(ActivityInfoService activityInfoService, CompanyService companyService) {
+    public ActivityInfoController(ActivityInfoService activityInfoService) {
         this.activityInfoService = activityInfoService;
-        this.companyService = companyService;
     }
 
     /**
-     * Creates a new activity info
-     * POST /api/activities
+     * Creates a new ActivityInfo.
+     * 
+     * @apiNote POST /api/activities
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<ActivityInfoResponse>> createActivityInfo(
-            @Valid @RequestBody ActivityInfoCreateRequest request) {
-        
-        logger.info("Creating activity info for company: {}, title: {}", 
-                   request.getCompany().getName(), request.getTitle());
-        
-        // Validate company exists using new service method
-        Company company = companyService.getById(request.getCompany().getId());
-        
-        // Create ActivityInfo
-        ActivityInfo activityInfo = new ActivityInfo(
-            company,
-            request.getTitle(),
-            request.getTime()
-        );
-        activityInfo.setLink(request.getLink());
-        activityInfo.setLocation(request.getLocation());
-        activityInfo.setExtra(request.getExtra());
-        
-        ActivityInfo savedActivityInfo = activityInfoService.create(activityInfo);
-        ActivityInfoResponse response = ActivityInfoResponse.from(savedActivityInfo);
-        
-        logger.info("Successfully created activity info with ID: {}", savedActivityInfo.getId());
-        return ResponseEntity.ok(ApiResponse.ok("宣讲会信息创建成功", response));
-    }
-
-    /**
-     * Retrieves an activity info by its ID
-     * GET /api/activities/{id}
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ActivityInfoResponse>> getActivityInfo(
-            @PathVariable @NotNull @Positive Integer id) {
-        
-        logger.info("Retrieving activity info with ID: {}", id);
-        
-        ActivityInfo activityInfo = activityInfoService.getActivityInfoById(id);
+    public ResponseEntity<ApiResponse<ActivityInfoResponse>> create(
+        @Valid @RequestBody ActivityInfoCreateRequest request
+    ) {
+        log.info("Creating ActivityInfo with {}", request);
+        ActivityInfo activityInfo = activityInfoService.create(request);
         ActivityInfoResponse response = ActivityInfoResponse.from(activityInfo);
-        logger.info("Successfully retrieved activity info: {}", activityInfo.getTitle());
-        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
+        log.info("Successfully created ActivityInfo(id={})", activityInfo.getId());
+        return ResponseEntity.ok(ApiResponse.ok("创建成功", response));
     }
 
     /**
-     * Update activity info
-     * PUT /api/activities/{id}
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ActivityInfoResponse>> updateActivityInfo(
-            @PathVariable @NotNull @Positive Integer id,
-            @Valid @RequestBody ActivityInfoUpdateRequest request) {
-        
-        logger.info("Updating activity info with ID: {}", id);
-        
-        // Validate company exists using new service method
-        companyService.getById(request.getCompany().getId());
-        
-        // Use the new updateById method that handles ID preservation
-        ActivityInfo savedActivityInfo = activityInfoService.updateById(
-            id, 
-            request.getCompany().getId(), 
-            request.getTitle(), 
-            request.getTime(), 
-            request.getLink(), 
-            request.getLocation(), 
-            request.getExtra()
-        );
-        ActivityInfoResponse response = ActivityInfoResponse.from(savedActivityInfo);
-        
-        logger.info("Successfully updated activity info with ID: {}", id);
-        return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
-    }
-
-    /**
-     * Delete activity info
-     * DELETE /api/activities/{id}
+     * Delete ActivityInfo.
+     * 
+     * @apiNote DELETE /api/activities/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteActivityInfo(@PathVariable @NotNull @Positive Integer id) {
-        
-        logger.info("Deleting activity info with ID: {}", id);
-        
-        activityInfoService.deleteActivityInfoById(id);
-        logger.info("Successfully deleted activity info with ID: {}", id);
+    public ResponseEntity<ApiResponse<Void>> delete(
+        @PathVariable @NotNull @Positive Integer id
+    ) {
+        log.info("Deleting ActivityInfo(id={})", id);
+        activityInfoService.delete(id);
+        log.info("Successfully deleted ActivityInfo(id={})", id);
         return ResponseEntity.ok(ApiResponse.ok("删除成功"));
     }
 
     /**
-     * Retrieves activity infos with pagination
-     * GET /api/activities
+     * Update ActivityInfo.
+     * 
+     * @apiNote PUT /api/activities/{id}
      */
-    @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ActivityInfoResponse>>> getAllActivityInfos(
-            @RequestParam(defaultValue = "1") @Min(1) Integer page,
-            @RequestParam(name = "page_size", defaultValue = "10") @Min(1) @Max(100) Integer pageSize) {
-        
-        logger.info("Retrieving activity infos - page: {}, page_size: {}", page, pageSize);
-        
-        try {
-            // Convert to 0-based page for Spring Data
-            int springPage = page - 1;
-            
-            Page<ActivityInfo> activityInfoPage = activityInfoService.getAll(springPage, pageSize);
-            
-            List<ActivityInfoResponse> responses = activityInfoPage.getContent().stream()
-                    .map(ActivityInfoResponse::from)
-                    .collect(Collectors.toList());
-            
-            PageResponse<ActivityInfoResponse> pageResponse = new PageResponse<>(
-                responses, 
-                activityInfoPage.getTotalElements(),
-                activityInfoPage.getTotalPages(),
-                page,  // Return 1-based page to frontend
-                pageSize
-            );
-            
-            logger.info("Successfully retrieved {} activity infos", responses.size());
-            return ResponseEntity.ok(ApiResponse.ok("查询成功", pageResponse));
-            
-        } catch (Exception e) {
-            logger.error("Error retrieving activity infos: {}", e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<ActivityInfoResponse>> update(
+        @PathVariable @NotNull @Positive Integer id,
+        @Valid @RequestBody ActivityInfoUpdateRequest request
+    ) {
+        log.info("Updating ActivityInfo(id={}) with {}", id, request);
+        ActivityInfo activityInfo = activityInfoService.update(id, request);
+        ActivityInfoResponse response = ActivityInfoResponse.from(activityInfo);
+        log.info("Successfully updated ActivityInfo(id={})", id);
+        return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
     }
 
     /**
-     * Search activity infos with conditions
-     * GET /api/activities/search
+     * Retrieves an ActivityInfo.
+     * 
+     * @apiNote GET /api/activities/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ActivityInfoResponse>> get(
+        @PathVariable @NotNull @Positive Integer id
+    ) {
+        log.info("Retrieving ActivityInfo(id={})", id);
+        ActivityInfo activityInfo = activityInfoService.getById(id);
+        ActivityInfoResponse response = ActivityInfoResponse.from(activityInfo);
+        log.info("Successfully retrieved ActivityInfo(id={})", id);
+        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
+    }
+
+    /**
+     * Retrieves ActivityInfos with pagination.
+     * 
+     * @apiNote GET /api/activities
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<ActivityInfoResponse>>> getAll(
+        @Valid PageRequest request
+    ) {
+        log.info("Retrieving ActivityInfos with {}", request);
+
+        // Fetch results.
+        Page<ActivityInfo> results = activityInfoService.getAll(request);
+
+        // Fetch results -> response DTOs -> final response.
+        Page<ActivityInfoResponse> dtos = results.map(ActivityInfoResponse::from);
+        PageResponse<ActivityInfoResponse> response = PageResponse.from(dtos);
+
+        log.info("Successfully retrieved {} ActivityInfos", response.getCount());
+        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
+    }
+
+    /**
+     * Search ActivityInfos with query conditions.
+     * 
+     * @apiNote GET /api/activities/search
      */
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<PageResponse<ActivityInfoResponse>>> searchActivityInfos(
-            @RequestParam(defaultValue = "1") @Min(1) Integer page,
-            @RequestParam(name = "page_size", defaultValue = "10") @Min(1) @Max(100) Integer pageSize,
-            @RequestParam(required = false) String keyword) {
-        
-        logger.info("Searching activity infos - page: {}, page_size: {}, keyword: {}", 
-                   page, pageSize, keyword);
-        
-        try {
-            // Convert to 0-based page for Spring Data
-            int springPage = page - 1;
-            
-            // Service's query method handles all condition combinations automatically:
-            // - keyword=null → all records with pagination
-            // - keyword=value → keyword search in title and company_name
-            Page<ActivityInfo> activityInfoPage = activityInfoService.query(keyword, springPage, pageSize);
-            
-            List<ActivityInfoResponse> responses = activityInfoPage.getContent().stream()
-                    .map(ActivityInfoResponse::from)
-                    .collect(Collectors.toList());
-            
-            PageResponse<ActivityInfoResponse> pageResponse = new PageResponse<>(
-                responses, 
-                activityInfoPage.getTotalElements(),
-                activityInfoPage.getTotalPages(),
-                page,  // Return 1-based page to frontend
-                pageSize
-            );
-            
-            logger.info("Successfully retrieved {} activity infos", responses.size());
-            return ResponseEntity.ok(ApiResponse.ok("查询成功", pageResponse));
-            
-        } catch (Exception e) {
-            logger.error("Error searching activity infos: {}", e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<ApiResponse<PageResponse<ActivityInfoResponse>>> search(
+        @Valid ActivityInfoQueryRequest request
+    ) {
+        log.info("Searching ActivityInfos with {}", request);
+
+        // Fetch results.
+        Page<ActivityInfo> results = activityInfoService.query(request);
+
+        // Fetch results -> response DTOs -> final response.
+        Page<ActivityInfoResponse> dtos = results.map(ActivityInfoResponse::from);
+        PageResponse<ActivityInfoResponse> response = PageResponse.from(dtos);
+
+        log.info("Successfully searched {} ActivityInfos", response.getCount());
+        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
     }
 }

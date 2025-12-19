@@ -1,63 +1,92 @@
 package cn.edu.zju.cs.jobmate.services.impl;
 
+import cn.edu.zju.cs.jobmate.dto.activity.*;
+import cn.edu.zju.cs.jobmate.dto.common.PageRequest;
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
-
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
 import cn.edu.zju.cs.jobmate.services.ActivityInfoService;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import cn.edu.zju.cs.jobmate.services.CompanyService;
+import cn.edu.zju.cs.jobmate.utils.query.QuerySpecBuilder;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
- * Service implementation for ActivityInfo entity.
+ * ActivityInfo service implementation.
+ * 
+ * @see ActivityInfoService
  */
+@Slf4j
 @Service
-@Transactional
 public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     private final ActivityInfoRepository activityInfoRepository;
+    private final CompanyService companyService;
 
-    public ActivityInfoServiceImpl(ActivityInfoRepository activityInfoRepository) {
+    public ActivityInfoServiceImpl(
+        ActivityInfoRepository activityInfoRepository,
+        CompanyService companyService
+    ) {
         this.activityInfoRepository = activityInfoRepository;
+        this.companyService = companyService;
     }
 
     @Override
-    @SuppressWarnings("null")
-    public ActivityInfo create(ActivityInfo activityInfo) {
+    @Transactional
+    public ActivityInfo create(ActivityInfoCreateRequest dto) {
+        // Validate company existence.
+        Company company = companyService.getById(dto.getCompanyId());
+
+        ActivityInfo activityInfo = dto.toModel();
+        activityInfo.setCompany(company);
         return activityInfoRepository.save(activityInfo);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<ActivityInfo> getById(Integer id) {
+    @Transactional
+    public void delete(Integer id) {
         if (id == null) {
-            return Optional.empty();
+            throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
-        return activityInfoRepository.findById(id);
+        activityInfoRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public ActivityInfo update(Integer id, ActivityInfoUpdateRequest dto) {
+        // Check if no updates needed.
+        if (!dto.isUpdatable()) {
+            throw new BusinessException(ErrorCode.NO_UPDATES);
+        }
+
+        // Fetch existing ActivityInfo.
+        ActivityInfo activityInfo = getById(id);
+
+        // Update company.
+        if (dto.getCompanyId() != null) {
+            Company company = companyService.getById(dto.getCompanyId());
+            activityInfo.setCompany(company);
+        }
+
+        // Update and save.
+        dto.apply(activityInfo);
+        return activityInfoRepository.save(Objects.requireNonNull(activityInfo));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ActivityInfo getActivityInfoById(Integer id) {
+    public ActivityInfo getById(Integer id) {
         if (id == null) {
-            throw new BusinessException(ErrorCode.ACTIVITY_INFO_NOT_FOUND);
+            throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
         return activityInfoRepository.findById(id)
             .orElseThrow(() -> new BusinessException(ErrorCode.ACTIVITY_INFO_NOT_FOUND));
@@ -65,186 +94,17 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ActivityInfo> getAll() {
-        return activityInfoRepository.findAll();
+    public Page<ActivityInfo> getAll(PageRequest dto) {
+        return activityInfoRepository.findAll(dto.toPageable());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ActivityInfo> getAll(Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return activityInfoRepository.findAll(pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ActivityInfo> getByCompany(Company company) {
-        return activityInfoRepository.findByCompany(company);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ActivityInfo> getByCompanyId(Integer companyId) {
-        return activityInfoRepository.findByCompanyId(companyId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ActivityInfo> getByCompany(Company company, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return activityInfoRepository.findByCompany(company, pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ActivityInfo> getByCompanyId(Integer companyId, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return activityInfoRepository.findByCompanyId(companyId, pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ActivityInfo> getByCity(String city) {
-        return activityInfoRepository.findByCity(city);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ActivityInfo> getByCity(String city, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return activityInfoRepository.findByCity(city, pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ActivityInfo> getByTimeAfter(LocalDateTime time) {
-        return activityInfoRepository.findByTimeAfter(time);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ActivityInfo> getByTimeAfter(LocalDateTime time, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return activityInfoRepository.findByTimeAfter(time, pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ActivityInfo> getByTimeBefore(LocalDateTime time) {
-        return activityInfoRepository.findByTimeBefore(time);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ActivityInfo> getByTimeBefore(LocalDateTime time, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return activityInfoRepository.findByTimeBefore(time, pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ActivityInfo> getByTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
-        return activityInfoRepository.findByTimeBetween(startTime, endTime);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ActivityInfo> getByTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return activityInfoRepository.findByTimeBetween(startTime, endTime, pageable);
-    }
-
-    @Override
-    public ActivityInfo update(ActivityInfo activityInfo) {
-        Integer id = activityInfo.getId();
-        if (id == null || !activityInfoRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.ACTIVITY_INFO_NOT_FOUND);
-        }
-        return activityInfoRepository.save(activityInfo);
-    }
-
-    @Override
-    public ActivityInfo updateById(Integer id, Integer companyId, String title, LocalDateTime time, 
-                                  String link, String location, String extra) {
-        ActivityInfo activityInfo = getActivityInfoById(id);  // Reuse existing method, throws exception if not found
-        
-        // Update entity properties
-        activityInfo.setTitle(title);
-        activityInfo.setTime(time);
-        activityInfo.setLink(link);
-        activityInfo.setLocation(location);
-        activityInfo.setExtra(extra);
-        
-        // Note: Company update is omitted for simplicity
-        // In practice, you would inject CompanyService to handle company changes
-        
-        // Use standard JPA save - no cache issues
-        return activityInfoRepository.save(activityInfo);
-    }
-
-    @Override
-    public void deleteById(Integer id) {
-        if (id != null) {
-            activityInfoRepository.deleteById(id);
-        }
-    }
-
-    @Override
-    public void deleteActivityInfoById(Integer id) {
-        if (id == null || !activityInfoRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.ACTIVITY_INFO_NOT_FOUND);
-        }
-        activityInfoRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsById(Integer id) {
-        return id != null && activityInfoRepository.existsById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ActivityInfo> query(String keyword, Integer page, Integer pageSize) {
-        Specification<ActivityInfo> spec = buildSpecification(keyword);
-        Pageable pageable = PageRequest.of(
-            page != null ? page : 0,
-            pageSize != null ? pageSize : 10
+    public Page<ActivityInfo> query(ActivityInfoQueryRequest dto) {
+        Specification<ActivityInfo> spec = QuerySpecBuilder.build(
+            dto.getKeyword(),
+            QuerySpecBuilder.Fields.of("company.name", "title", "location")
         );
-        return activityInfoRepository.findAll(spec, pageable);
-    }
-
-    private Specification<ActivityInfo> buildSpecification(String keyword) {
-        return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            // Keyword search with space-separated tokens
-            // Each token must appear in at least one of: title, company_name
-            if (StringUtils.hasText(keyword)) {
-                Join<ActivityInfo, Company> companyJoin = root.join("company", JoinType.LEFT);
-                
-                // Split keyword by spaces and filter out empty strings
-                List<String> tokens = Arrays.stream(keyword.trim().split("\\s+"))
-                        .filter(StringUtils::hasText)
-                        .collect(Collectors.toList());
-                
-                if (!tokens.isEmpty()) {
-                    // For each token, create an OR condition: token in title OR company_name
-                    List<Predicate> tokenPredicates = new ArrayList<>();
-                    for (String token : tokens) {
-                        String tokenPattern = "%" + token + "%";
-                        Predicate titlePredicate = cb.like(cb.lower(root.get("title")), tokenPattern.toLowerCase());
-                        Predicate companyNamePredicate = cb.like(cb.lower(companyJoin.get("name")), tokenPattern.toLowerCase());
-                        // Each token must appear in at least one field
-                        tokenPredicates.add(cb.or(titlePredicate, companyNamePredicate));
-                    }
-                    // All tokens must be matched (AND logic)
-                    predicates.add(cb.and(tokenPredicates.toArray(new Predicate[0])));
-                }
-            }
-
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
+        return activityInfoRepository.findAll(spec, dto.toPageable());
     }
 }
-

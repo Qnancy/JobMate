@@ -72,7 +72,7 @@ public class ActivitySubscriptionController {
         
         // Validate user and activity info exist using new service methods
         User user = userService.getUserById(request.getUser().getId());
-        ActivityInfo activityInfo = activityInfoService.getActivityInfoById(request.getActivityInfo().getId());
+        ActivityInfo activityInfo = activityInfoService.getById(request.getActivityInfo().getId());
         
         // Check if subscription already exists
         if (activitySubscriptionService.existsByUserIdAndActivityInfoId(user.getId(), activityInfo.getId())) {
