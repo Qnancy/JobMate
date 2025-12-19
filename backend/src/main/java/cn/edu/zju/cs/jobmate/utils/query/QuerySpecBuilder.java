@@ -10,7 +10,7 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
 /**
- * JPA specification cb used in keyword and filter query.
+ * JPA {@link Specification} builder used in keyword and filter query.
  */
 public class QuerySpecBuilder {
 

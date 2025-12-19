@@ -28,9 +28,6 @@ public abstract class Info {
     @Column(name = "link")
     private String link;
 
-    @Column(name = "city")
-    private String city;
-
     @Column(name = "location")
     private String location;
 
@@ -52,10 +49,6 @@ public abstract class Info {
         return link;
     }
 
-    public String getCity() {
-        return city;
-    }
-
     public String getLocation() {
         return location;
     }
@@ -70,10 +63,6 @@ public abstract class Info {
 
     public void setLink(String link) {
         this.link = link;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
     }
 
     public void setLocation(String location) {

@@ -103,7 +103,7 @@ public class JobInfoServiceImpl implements JobInfoService {
     public Page<JobInfo> query(JobInfoQueryRequest dto) {
         Specification<JobInfo> spec = QuerySpecBuilder.build(
             dto.getKeyword(),
-            QuerySpecBuilder.Fields.of("company.name", "position", "city", "location"),
+            QuerySpecBuilder.Fields.of("company.name", "position", "location"),
             QuerySpecBuilder.Filter.of("recruitType", dto.getRecruitType())
         );
         return jobInfoRepository.findAll(spec, dto.toPageable());

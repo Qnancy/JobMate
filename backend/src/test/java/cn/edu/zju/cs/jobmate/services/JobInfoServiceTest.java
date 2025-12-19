@@ -49,15 +49,13 @@ class JobInfoServiceTest {
         RecruitType type = RecruitType.CAMPUS;
         String position = "Java developer";
         String link = "https://job.example.com";
-        String city = "Hangzhou";
-        String location = "Binjiang";
+        String location = "Hangzhou";
         String extra = "Five insurances and one fund";
         JobInfoCreateRequest dto = JobInfoCreateRequest.builder()
             .companyId(companyId)
             .recruitType(type)
             .position(position)
             .link(link)
-            .city(city)
             .location(location)
             .extra(extra)
             .build();
@@ -72,7 +70,7 @@ class JobInfoServiceTest {
 
         assertNotNull(result);
         assertEquals(position, result.getPosition());
-        assertEquals(city, result.getCity());
+        assertEquals(location, result.getLocation());
         assertEquals(company, result.getCompany());
         verify(jobInfoRepository).save(any(JobInfo.class));
         verify(companyService).getById(companyId);
@@ -118,7 +116,6 @@ class JobInfoServiceTest {
             RecruitType.CAMPUS,
             "Old position",
             "https://old.link",
-            "Old City",
             "Old Location",
             null
         );
@@ -147,7 +144,6 @@ class JobInfoServiceTest {
             RecruitType.CAMPUS,
             "Old position",
             "https://old.link",
-            "Old City",
             "Old Location",
             null
         );
@@ -168,7 +164,6 @@ class JobInfoServiceTest {
             RecruitType.CAMPUS,
             "Old position",
             "https://old.link",
-            "Old City",
             "Old Location",
             null
         );
@@ -192,7 +187,6 @@ class JobInfoServiceTest {
             RecruitType.CAMPUS,
             "Position",
             "https://link",
-            "City",
             "Location",
             null
         );
@@ -227,7 +221,6 @@ class JobInfoServiceTest {
                 RecruitType.CAMPUS,
                 "Position1",
                 "https://link1",
-                "City1",
                 "Location1",
                 null
             ),
@@ -235,7 +228,6 @@ class JobInfoServiceTest {
                 RecruitType.INTERN,
                 "Position2",
                 "https://link2",
-                "City2",
                 "Location2",
                 null
             )
@@ -276,7 +268,6 @@ class JobInfoServiceTest {
                 RecruitType.CAMPUS,
                 "Position1",
                 "https://link1",
-                "City1",
                 "Location1",
                 null
             ),
@@ -284,7 +275,6 @@ class JobInfoServiceTest {
                 RecruitType.CAMPUS,
                 "Position2",
                 "https://link2",
-                "City2",
                 "Location2",
                 null
             )

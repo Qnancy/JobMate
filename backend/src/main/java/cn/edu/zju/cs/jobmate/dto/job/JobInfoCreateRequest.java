@@ -31,12 +31,11 @@ public class JobInfoCreateRequest implements CreateRequest<JobInfo> {
     private String position;
 
     private String link;
-    private String city;
     private String location;
     private String extra;
 
     @Override
     public JobInfo toModel() {
-        return new JobInfo(recruitType, position, link, city, location, extra);
+        return new JobInfo(recruitType, position, link, location, extra);
     }
 }

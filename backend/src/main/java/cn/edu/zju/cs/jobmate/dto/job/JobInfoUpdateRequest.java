@@ -26,7 +26,6 @@ public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
     private String position;
 
     private String link;
-    private String city;
     private String location;
     private String extra;
 
@@ -36,7 +35,6 @@ public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
             recruitType != null ||
             position != null ||
             link != null ||
-            city != null ||
             location != null ||
             extra != null;
     }
@@ -47,7 +45,6 @@ public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
         if (recruitType != null) { jobInfo.setRecruitType(recruitType); }
         if (position != null) { jobInfo.setPosition(position); }
         if (link != null) { jobInfo.setLink(link); }
-        if (city != null) { jobInfo.setCity(city); }
         if (location != null) { jobInfo.setLocation(location); }
         if (extra != null) { jobInfo.setExtra(extra); }
     }

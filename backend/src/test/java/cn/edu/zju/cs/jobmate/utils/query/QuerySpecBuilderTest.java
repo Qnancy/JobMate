@@ -35,7 +35,7 @@ class QuerySpecBuilderTest {
     private JobInfo job4;
 
     private static QuerySpecBuilder.Fields fields = QuerySpecBuilder.Fields.of(
-        "company.name", "position", "city", "location");
+        "company.name", "position", "location");
     private QuerySpecBuilder.Filter filter;
 
     @BeforeEach
@@ -59,7 +59,6 @@ class QuerySpecBuilderTest {
             "Software Engineer Intern",
             null,
             "Hangzhou",
-            null,
             null
         );
         job1.setCompany(company1);
@@ -69,7 +68,6 @@ class QuerySpecBuilderTest {
             "Backend Developer",
             null,
             "Beijing",
-            null,
             null
         );
         job2.setCompany(company2);
@@ -79,7 +77,6 @@ class QuerySpecBuilderTest {
             "Frontend Developer",
             null,
             "Hangzhou",
-            null,
             null
         );
         job3.setCompany(company3);
@@ -89,7 +86,6 @@ class QuerySpecBuilderTest {
             "Fullstack Developer",
             null,
             "Hangzhou",
-            null,
             null
         );
         job4.setCompany(company1);

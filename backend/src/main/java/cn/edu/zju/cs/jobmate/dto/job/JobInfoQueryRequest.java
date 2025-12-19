@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 public class JobInfoQueryRequest extends PageRequest {
 
     /**
-     * Search keyword (searches in company_name, position, city, location).
+     * Search keyword (searches in company_name, position, location).
      */
     private String keyword;
 

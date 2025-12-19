@@ -59,7 +59,6 @@ public class JobInfoIntegrationTest {
             "Position 1",
             "https://example.com/1",
             "City 1",
-            null,
             null
         );
         jobInfo1.setCompany(company1);
@@ -69,7 +68,6 @@ public class JobInfoIntegrationTest {
             "Position 2",
             "https://example.com/2",
             "City 2",
-            null,
             null
         );
         jobInfo2.setCompany(company1);
@@ -79,7 +77,6 @@ public class JobInfoIntegrationTest {
             "Position 3",
             "https://example.com/3",
             "City 3",
-            null,
             null
         );
         jobInfo3.setCompany(company2);
@@ -100,8 +97,7 @@ public class JobInfoIntegrationTest {
             .recruitType(RecruitType.CAMPUS)
             .position("Test Position")
             .link(null)
-            .city("Hangzhou")
-            .location(null)
+            .location("Hangzhou")
             .extra(null)
             .build();
 
@@ -116,8 +112,7 @@ public class JobInfoIntegrationTest {
             .andExpect(jsonPath("$.data.company.type").value(company1.getType().toString()))
             .andExpect(jsonPath("$.data.position").value("Test Position"))
             .andExpect(jsonPath("$.data.link").isEmpty())
-            .andExpect(jsonPath("$.data.city").value("Hangzhou"))
-            .andExpect(jsonPath("$.data.location").isEmpty())
+            .andExpect(jsonPath("$.data.location").value("Hangzhou"))
             .andExpect(jsonPath("$.data.extra").isEmpty());
     }
 
@@ -129,7 +124,6 @@ public class JobInfoIntegrationTest {
             .recruitType(RecruitType.CAMPUS)
             .position("Test Position")
             .link(null)
-            .city(null)
             .location(null)
             .extra(null)
             .build();
@@ -168,7 +162,6 @@ public class JobInfoIntegrationTest {
             .recruitType(null)
             .position("Updated Position")
             .link("https://updated-link.com")
-            .city(null)
             .location(null)
             .extra(null)
             .build();
@@ -186,7 +179,6 @@ public class JobInfoIntegrationTest {
             .andExpect(jsonPath("$.data.recruitType").value(jobInfo.getRecruitType().toString()))
             .andExpect(jsonPath("$.data.position").value("Updated Position"))
             .andExpect(jsonPath("$.data.link").value("https://updated-link.com"))
-            .andExpect(jsonPath("$.data.city").value(jobInfo.getCity()))
             .andExpect(jsonPath("$.data.location").value(jobInfo.getLocation()))
             .andExpect(jsonPath("$.data.extra").value(jobInfo.getExtra()));
     }
@@ -200,7 +192,6 @@ public class JobInfoIntegrationTest {
             .recruitType(null)
             .position(null)
             .link(null)
-            .city(null)
             .location(null)
             .extra(null)
             .build();
@@ -224,7 +215,6 @@ public class JobInfoIntegrationTest {
             .recruitType(null)
             .position("Updated Position")
             .link("https://updated-link.com")
-            .city(null)
             .location(null)
             .extra(null)
             .build();
@@ -269,7 +259,6 @@ public class JobInfoIntegrationTest {
             .andExpect(jsonPath("$.data.recruitType").value(jobInfo.getRecruitType().toString()))
             .andExpect(jsonPath("$.data.position").value(jobInfo.getPosition()))
             .andExpect(jsonPath("$.data.link").value(jobInfo.getLink()))
-            .andExpect(jsonPath("$.data.city").value(jobInfo.getCity()))
             .andExpect(jsonPath("$.data.location").value(jobInfo.getLocation()))
             .andExpect(jsonPath("$.data.extra").value(jobInfo.getExtra()));
     }

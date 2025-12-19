@@ -32,14 +32,12 @@ public class JobInfo extends Info {
         RecruitType recruitType,
         String position,
         String link,
-        String city,
         String location,
         String extra
     ) {
         this.recruitType = recruitType;
         this.position = position;
         setLink(link);
-        setCity(city);
         setLocation(location);
         setExtra(extra);
     }
@@ -67,7 +65,6 @@ public class JobInfo extends Info {
                 ", company=" + getCompany() +
                 ", recruitType=" + recruitType +
                 ", position='" + position + "\'" +
-                ", city='" + getCity() + '\'' +
                 ", location='" + getLocation() + "\'" +
                 ", link='" + getLink() + "\'" +
                 ", extra='" + getExtra() + "\'" +

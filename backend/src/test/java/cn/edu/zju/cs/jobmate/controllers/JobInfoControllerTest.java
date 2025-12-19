@@ -51,8 +51,7 @@ class JobInfoControllerTest extends ControllerTestUtil {
             .recruitType(RecruitType.CAMPUS)
             .position("Java Developer")
             .link("https://job.example.com")
-            .city("Hangzhou")
-            .location(null)
+            .location("Hangzhou")
             .extra(null)
             .build();
 
@@ -71,7 +70,7 @@ class JobInfoControllerTest extends ControllerTestUtil {
             .andExpect(jsonPath("$.data.company.name").value("Test Company"))
             .andExpect(jsonPath("$.data.company.type").value("FOREIGN"))
             .andExpect(jsonPath("$.data.position").value("Java Developer"))
-            .andExpect(jsonPath("$.data.city").value("Hangzhou"))
+            .andExpect(jsonPath("$.data.location").value("Hangzhou"))
             .andExpect(jsonPath("$.data.extra").isEmpty());
     }
 
@@ -91,7 +90,7 @@ class JobInfoControllerTest extends ControllerTestUtil {
     void testUpdateJobInfo() throws Exception {
         JobInfoUpdateRequest request = JobInfoUpdateRequest.builder()
             .position("New Position")
-            .city("New York")
+            .location("New York")
             .build();
 
         Company company = new Company("Test Company", CompanyType.FOREIGN);
@@ -100,7 +99,6 @@ class JobInfoControllerTest extends ControllerTestUtil {
             "New Position",
             "https://example.com",
             "New York",
-            null,
             null
         );
         jobInfo.setCompany(company);
@@ -115,7 +113,7 @@ class JobInfoControllerTest extends ControllerTestUtil {
             .andExpect(jsonPath("$.message").value("更新成功"))
             .andExpect(jsonPath("$.data.position").value("New Position"))
             .andExpect(jsonPath("$.data.link").value("https://example.com"))
-            .andExpect(jsonPath("$.data.city").value("New York"));
+            .andExpect(jsonPath("$.data.location").value("New York"));
     }
 
     @Test
@@ -127,7 +125,6 @@ class JobInfoControllerTest extends ControllerTestUtil {
             "Test Position",
             null,
             "Test City",
-            null,
             null
         );
         jobInfo.setCompany(company);
@@ -139,9 +136,8 @@ class JobInfoControllerTest extends ControllerTestUtil {
             .andExpect(jsonPath("$.code").value(200))
             .andExpect(jsonPath("$.message").value("查询成功"))
             .andExpect(jsonPath("$.data.position").value("Test Position"))
-            .andExpect(jsonPath("$.data.city").value("Test City"))
-            .andExpect(jsonPath("$.data.extra").isEmpty())
-            ;
+            .andExpect(jsonPath("$.data.location").value("Test City"))
+            .andExpect(jsonPath("$.data.extra").isEmpty());
     }
 
     @Test
@@ -153,7 +149,6 @@ class JobInfoControllerTest extends ControllerTestUtil {
             "Position 1",
             null,
             "City 1",
-            null,
             null
         );
         job1.setCompany(company);
@@ -162,7 +157,6 @@ class JobInfoControllerTest extends ControllerTestUtil {
             "Position 2",
             null,
             "City 2",
-            null,
             "null"
         );
 
@@ -189,7 +183,6 @@ class JobInfoControllerTest extends ControllerTestUtil {
             "Test Position",
             null,
             "Test City",
-            null,
             null
         );
         jobInfo.setCompany(company);
@@ -206,7 +199,7 @@ class JobInfoControllerTest extends ControllerTestUtil {
             .andExpect(jsonPath("$.code").value(200))
             .andExpect(jsonPath("$.message").value("查询成功"))
             .andExpect(jsonPath("$.data.content[0].position").value("Test Position"))
-            .andExpect(jsonPath("$.data.content[0].city").value("Test City"))
+            .andExpect(jsonPath("$.data.content[0].location").value("Test City"))
             .andExpect(jsonPath("$.data.content[0].extra").isEmpty());
     }
 }

@@ -18,7 +18,6 @@ public class JobInfoResponse {
     private RecruitType recruitType;
     private String position;
     private String link;
-    private String city;
     private String location;
     private String extra;
 
@@ -35,7 +34,6 @@ public class JobInfoResponse {
             jobInfo.getRecruitType(),
             jobInfo.getPosition(),
             jobInfo.getLink(),
-            jobInfo.getCity(),
             jobInfo.getLocation(),
             jobInfo.getExtra()
         );

@@ -15,8 +15,8 @@ public interface JobInfoService {
     /**
      * Create a new job info.
      *
-     * @return created job info
      * @param dto job info creation request dto
+     * @return created job info
      * @throws BusinessException if company not found
      */
     JobInfo create(JobInfoCreateRequest dto);
