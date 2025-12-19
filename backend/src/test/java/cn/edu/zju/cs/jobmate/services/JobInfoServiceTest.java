@@ -120,7 +120,6 @@ class JobInfoServiceTest {
             null
         );
         jobInfo.setCompany(new Company("Old Company", CompanyType.STATE));
-        jobInfo.setPosition("Old Position");
 
         JobInfoUpdateRequest dto = JobInfoUpdateRequest.builder()
             .companyId(companyId)

@@ -117,7 +117,6 @@ class JobInfoControllerTest extends ControllerTestUtil {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testGetJobInfo() throws Exception {
         Company company = new Company("Test Company", null);
         JobInfo jobInfo = new JobInfo(
