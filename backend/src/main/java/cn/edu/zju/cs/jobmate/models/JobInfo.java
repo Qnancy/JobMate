@@ -2,7 +2,7 @@ package cn.edu.zju.cs.jobmate.models;
 
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.bases.Info;
-
+import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -64,10 +64,10 @@ public class JobInfo extends Info {
                 "id=" + getId() +
                 ", company=" + getCompany() +
                 ", recruitType=" + recruitType +
-                ", position='" + position + "\'" +
-                ", location='" + getLocation() + "\'" +
-                ", link='" + getLink() + "\'" +
-                ", extra='" + getExtra() + "\'" +
+                ", position=" + ToStringUtil.wrap(position) +
+                ", location=" + ToStringUtil.wrap(getLocation()) +
+                ", link=" + ToStringUtil.wrap(getLink()) +
+                ", extra=" + ToStringUtil.wrap(getExtra()) +
                 '}';
     }
 }

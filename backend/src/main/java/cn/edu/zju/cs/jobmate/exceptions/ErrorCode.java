@@ -2,6 +2,8 @@ package cn.edu.zju.cs.jobmate.exceptions;
 
 import org.springframework.http.HttpStatus;
 
+import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
+
 /**
  * Custom error codes for {@link BusinessException} in JobMate.
  * 
@@ -60,8 +62,8 @@ public enum ErrorCode {
     public String toString() {
         return "ErrorCode{" +
                "code=" + code +
-               ", httpStatus=" + httpStatus +
-               ", message='" + message + '\'' +
+               ", httpStatus=" + httpStatus.value() +
+               ", message=" + ToStringUtil.wrap(message) +
                '}';
     }
 }

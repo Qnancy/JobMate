@@ -1,6 +1,7 @@
 package cn.edu.zju.cs.jobmate.models;
 
 import cn.edu.zju.cs.jobmate.models.bases.Info;
+import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 
 import java.time.LocalDateTime;
 
@@ -61,11 +62,11 @@ public class ActivityInfo extends Info {
         return "ActivityInfo {" +
                 "id=" + getId() +
                 ", company=" + getCompany() +
-                ", title='" + title + '\'' +
+                ", title=" + ToStringUtil.wrap(title) +
                 ", time=" + time +
-                ", location='" + getLocation() + '\'' +
-                ", link='" + getLink() + '\'' +
-                ", extra='" + getExtra() + '\'' +
+                ", location=" + ToStringUtil.wrap(getLocation()) +
+                ", link=" + ToStringUtil.wrap(getLink()) +
+                ", extra=" + ToStringUtil.wrap(getExtra()) +
                 '}';
     }
 }

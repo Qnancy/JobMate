@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import cn.edu.zju.cs.jobmate.dto.common.CreateRequest;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
+import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -37,5 +38,17 @@ public class JobInfoCreateRequest implements CreateRequest<JobInfo> {
     @Override
     public JobInfo toModel() {
         return new JobInfo(recruitType, position, link, location, extra);
+    }
+
+    @Override
+    public String toString() {
+        return "JobInfoCreateRequest{" +
+                "companyId=" + companyId +
+                ", recruitType=" + recruitType +
+                ", position=" + ToStringUtil.wrap(position) +
+                ", link=" + ToStringUtil.wrap(link) +
+                ", location=" + ToStringUtil.wrap(location) +
+                ", extra=" + ToStringUtil.wrap(extra) +
+                '}';
     }
 }

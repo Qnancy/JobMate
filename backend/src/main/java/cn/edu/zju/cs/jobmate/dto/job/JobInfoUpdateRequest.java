@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import cn.edu.zju.cs.jobmate.dto.common.UpdateRequest;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
+import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
@@ -47,5 +48,17 @@ public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
         if (link != null) { jobInfo.setLink(link); }
         if (location != null) { jobInfo.setLocation(location); }
         if (extra != null) { jobInfo.setExtra(extra); }
+    }
+
+    @Override
+    public String toString() {
+        return "JobInfoUpdateRequest{" +
+            "companyId=" + companyId +
+            ", recruitType=" + recruitType +
+            ", position=" + ToStringUtil.wrap(position) +
+            ", link=" + ToStringUtil.wrap(link) +
+            ", location=" + ToStringUtil.wrap(location) +
+            ", extra=" + ToStringUtil.wrap(extra) +
+            '}';
     }
 }

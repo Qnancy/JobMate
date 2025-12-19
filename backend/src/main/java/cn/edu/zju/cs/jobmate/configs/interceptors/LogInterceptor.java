@@ -41,7 +41,7 @@ public class LogInterceptor implements HandlerInterceptor {
         String ip = request.getRemoteAddr();
         String traceId = UUID.randomUUID().toString();
         MDC.put("traceId", traceId); // Add trace id to MDC for logging.
-        log.info("Receiving request from {} : {} {}", ip, method, uri);
+        log.info("Receiving request from {}: {} {}", ip, method, uri);
         return true;
     }
 
@@ -61,13 +61,13 @@ public class LogInterceptor implements HandlerInterceptor {
         String ip = request.getRemoteAddr();
         // TODO: get user auth info from SecurityContext
         if (exception != null) {
-            log.error("Request from {} : {} {} completed with exception after {} ms",
+            log.error("Request from {}: {} {} completed with exception after {} ms",
                 ip, method, uri, duration, exception);
         } else if (slowApi.isEnabled() && duration > slowApi.getThresholdMs()) {
-            log.warn("Slow request from {} : {} {} completed in {} ms with status {}",
+            log.warn("Slow request from {}: {} {} completed in {} ms with status {}",
                 ip, method, uri, duration, status);
         } else {
-            log.info("Request from {} : {} {} completed in {} ms with status {}",
+            log.info("Request from {}: {} {} completed in {} ms with status {}",
                 ip, method, uri, duration, status);
         }
         MDC.remove("traceId"); // Clean up MDC.

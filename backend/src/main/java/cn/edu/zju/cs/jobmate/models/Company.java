@@ -1,7 +1,7 @@
 package cn.edu.zju.cs.jobmate.models;
 
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
-
+import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -61,7 +61,7 @@ public class Company {
     public String toString() {
         return "Company{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name=" + ToStringUtil.wrap(name) +
                 ", type=" + type +
                 '}';
     }

@@ -2,6 +2,7 @@ package cn.edu.zju.cs.jobmate.dto.activity;
 
 import cn.edu.zju.cs.jobmate.dto.common.UpdateRequest;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
+import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,5 +49,17 @@ public class ActivityInfoUpdateRequest implements UpdateRequest<ActivityInfo> {
         if (link != null) { activityInfo.setLink(link); }
         if (location != null) { activityInfo.setLocation(location); }
         if (extra != null) { activityInfo.setExtra(extra); }
+    }
+
+    @Override
+    public String toString() {
+        return "ActivityInfoUpdateRequest{" +
+            "companyId=" + companyId +
+            ", title=" + ToStringUtil.wrap(title) +
+            ", time=" + time +
+            ", link=" + ToStringUtil.wrap(link) +
+            ", location=" + ToStringUtil.wrap(location) +
+            ", extra=" + ToStringUtil.wrap(extra) +
+            '}';
     }
 }

@@ -107,7 +107,7 @@ public class ActivityInfoIntegrationTest {
             .andExpect(jsonPath("$.message").value("创建成功"))
             .andExpect(jsonPath("$.data.company.id").value(company1.getId()))
             .andExpect(jsonPath("$.data.company.name").value(company1.getName()))
-            .andExpect(jsonPath("$.data.company.type").value(company1.getType().toString()))
+            .andExpect(jsonPath("$.data.company.type").value(company1.getType().name()))
             .andExpect(jsonPath("$.data.title").value("Test Activity"))
             .andExpect(jsonPath("$.data.link").value("https://activity.example.com"))
             .andExpect(jsonPath("$.data.location").value("Hangzhou"))

@@ -18,6 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import cn.edu.zju.cs.jobmate.enums.UserRole;
+import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 
 /**
  * User entity.
@@ -147,7 +148,7 @@ public class User implements UserDetails {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name=" + ToStringUtil.wrap(name) +
                 ", role=" + role +
                 ", createdAt=" + createdAt +
                 '}';

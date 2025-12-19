@@ -20,4 +20,9 @@ public enum CompanyType {
     String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "CompanyType." + this.name();
+    }
 }
