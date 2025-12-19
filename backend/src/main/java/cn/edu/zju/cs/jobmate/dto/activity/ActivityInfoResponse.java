@@ -5,8 +5,6 @@ import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import lombok.Builder;
 import lombok.Data;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.time.LocalDateTime;
 
 /**
@@ -20,7 +18,6 @@ public class ActivityInfoResponse {
     private CompanyResponse company;
     private String title;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
 
     private String link;

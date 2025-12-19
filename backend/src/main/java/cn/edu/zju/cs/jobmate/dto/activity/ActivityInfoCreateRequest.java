@@ -8,9 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.time.LocalDateTime;
 
 /**
@@ -20,7 +17,6 @@ import java.time.LocalDateTime;
 @Builder
 public class ActivityInfoCreateRequest implements CreateRequest<ActivityInfo> {
 
-    @JsonProperty("company_id")
     @NotNull(message = "Company id cannot be null")
     private Integer companyId;
 
@@ -28,7 +24,6 @@ public class ActivityInfoCreateRequest implements CreateRequest<ActivityInfo> {
     private String title;
 
     @NotNull(message = "Time cannot be null")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
 
     private String link;

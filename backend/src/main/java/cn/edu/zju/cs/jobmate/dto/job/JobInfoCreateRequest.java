@@ -1,7 +1,5 @@
 package cn.edu.zju.cs.jobmate.dto.job;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import cn.edu.zju.cs.jobmate.dto.common.CreateRequest;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
@@ -19,11 +17,9 @@ import lombok.Data;
 @Builder
 public class JobInfoCreateRequest implements CreateRequest<JobInfo> {
 
-    @JsonProperty("company_id")
     @NotNull(message = "Company id cannot be null")
     private Integer companyId;
 
-    @JsonProperty("recruit_type")
     @NotNull(message = "Recruitment type cannot be null")
     private RecruitType recruitType;
 

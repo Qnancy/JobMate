@@ -1,7 +1,5 @@
 package cn.edu.zju.cs.jobmate.dto.job;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import cn.edu.zju.cs.jobmate.dto.common.UpdateRequest;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
@@ -17,10 +15,7 @@ import lombok.Data;
 @Builder
 public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
 
-    @JsonProperty("company_id")
     private Integer companyId;
-
-    @JsonProperty("recruit_type")
     private RecruitType recruitType;
 
     @Size(max = 128, message = "Position length cannot exceed 128")

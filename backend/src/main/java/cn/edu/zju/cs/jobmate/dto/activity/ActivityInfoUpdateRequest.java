@@ -4,9 +4,6 @@ import cn.edu.zju.cs.jobmate.dto.common.UpdateRequest;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,12 +16,10 @@ import java.time.LocalDateTime;
 @Builder
 public class ActivityInfoUpdateRequest implements UpdateRequest<ActivityInfo> {
 
-    @JsonProperty("company_id")
     private Integer companyId;
 
     private String title;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
 
     private String link;

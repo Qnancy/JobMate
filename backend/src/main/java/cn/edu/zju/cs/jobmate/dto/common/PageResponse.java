@@ -1,6 +1,5 @@
 package cn.edu.zju.cs.jobmate.dto.common;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -16,11 +15,7 @@ public class PageResponse<T> {
     private Long total; // All data count.
     private Integer count; // Current page data count.
     private Integer page; // Current page number.
-
-    @JsonProperty("page_size")
     private Integer pageSize; // Page size.
-
-    @JsonProperty("total_pages")
     private Integer totalPages; // Total page count.
 
     public PageResponse() {
