@@ -6,12 +6,9 @@ import cn.edu.zju.cs.jobmate.dto.company.*;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
 import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
-import cn.edu.zju.cs.jobmate.utils.ControllerTestUtil;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cn.edu.zju.cs.jobmate.testing.ControllerTestStartUp;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -19,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -31,16 +27,10 @@ import java.util.List;
 @WebMvcTest(controllers = CompanyController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(value = MonitorProperties.class)
-class CompanyControllerTest extends ControllerTestUtil {
-
-    @Autowired
-    private MockMvc mockMvc;
+class CompanyControllerTest extends ControllerTestStartUp {
 
     @MockitoBean
     private CompanyService companyService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     @SuppressWarnings("null")

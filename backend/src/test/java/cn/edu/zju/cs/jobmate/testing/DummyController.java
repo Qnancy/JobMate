@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.utils;
+package cn.edu.zju.cs.jobmate.testing;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,7 +10,7 @@ import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
  * A dummy controller for testing.
  */
 @RestController
-public class DummyControllerUtil {
+public class DummyController {
 
     @GetMapping("/business-ex")
     public void throwBusinessException() {

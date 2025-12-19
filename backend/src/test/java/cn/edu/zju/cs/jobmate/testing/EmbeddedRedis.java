@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.utils;
+package cn.edu.zju.cs.jobmate.testing;
 
 import java.io.IOException;
 
@@ -10,10 +10,10 @@ import jakarta.annotation.PreDestroy;
 import redis.embedded.RedisServer;
 
 /**
- * Embedded Redis configuration for testing purposes.
+ * Embedded Redis for testing purposes.
  */
 @TestConfiguration
-public class EmbeddedRedisConfigUtil {
+public class EmbeddedRedis {
 
     @Value("${spring.data.redis.port}")
     private int port;

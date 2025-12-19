@@ -10,12 +10,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
-import cn.edu.zju.cs.jobmate.utils.DummyControllerUtil;
+import cn.edu.zju.cs.jobmate.testing.DummyController;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = DummyControllerUtil.class)
+@WebMvcTest(controllers = DummyController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(value = MonitorProperties.class)
 class GlobalExceptionHandlerTest {

@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import cn.edu.zju.cs.jobmate.utils.EmbeddedRedisConfigUtil;
-
+import cn.edu.zju.cs.jobmate.testing.EmbeddedRedis;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Import(value = EmbeddedRedisConfigUtil.class)
+@Import(value = EmbeddedRedis.class)
 class RedisConfigTest {
 
     @Data
