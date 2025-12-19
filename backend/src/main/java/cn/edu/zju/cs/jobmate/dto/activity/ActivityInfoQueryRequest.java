@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 public class ActivityInfoQueryRequest extends PageRequest {
 
     /**
-     * Search keyword (searches in title, company_name, title, location).
+     * Search keyword (searches in title, company_name, location).
      */
     private String keyword;
 
