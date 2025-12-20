@@ -17,9 +17,7 @@ public class ActivityInfoResponse {
     private Integer id;
     private CompanyResponse company;
     private String title;
-
     private LocalDateTime time;
-
     private String link;
     private String location;
     private String extra;
