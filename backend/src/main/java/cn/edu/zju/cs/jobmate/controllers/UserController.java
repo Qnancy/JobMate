@@ -53,7 +53,7 @@ public class UserController {
         
         logger.info("Retrieving user with ID: {}", id);
         
-        User user = userService.getUserById(id);
+        User user = userService.getById(id);
         UserResponse response = UserResponse.from(user);
         logger.info("Successfully retrieved user: {}", user.getUsername());
         return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
@@ -69,7 +69,7 @@ public class UserController {
         
         logger.info("Retrieving current user with ID: {}", request.getId());
         
-        User user = userService.getUserById(request.getId());
+        User user = userService.getById(request.getId());
         UserResponse response = UserResponse.from(user);
         logger.info("Successfully retrieved current user: {}", user.getUsername());
         return ResponseEntity.ok(ApiResponse.ok("查询成功", response));

@@ -20,12 +20,7 @@ public class ActivitySubscription extends Subscription {
     @JoinColumn(name = "activity_info_id", nullable = false)
     private ActivityInfo activityInfo;
 
-    protected ActivitySubscription() {
-    }
-
-    public ActivitySubscription(User user, ActivityInfo activityInfo) {
-        setUser(user);
-        this.activityInfo = activityInfo;
+    public ActivitySubscription() {
     }
 
     @Override

@@ -23,18 +23,9 @@ public interface UserService {
      * Get user by id.
      *
      * @param id user id
-     * @return optional user
+     * @return retrieved user
      */
-    Optional<User> getById(Integer id);
-
-    /**
-     * Get user by id, throw exception if not found.
-     *
-     * @param id user id
-     * @return user
-     * @throws BusinessException if user not found
-     */
-    User getUserById(Integer id);
+    User getById(Integer id);
 
     /**
      * Get user by name.
@@ -100,4 +91,3 @@ public interface UserService {
      */
     boolean existsByName(String name);
 }
-

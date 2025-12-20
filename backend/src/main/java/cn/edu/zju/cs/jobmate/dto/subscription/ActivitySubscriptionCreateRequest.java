@@ -1,24 +1,34 @@
 package cn.edu.zju.cs.jobmate.dto.subscription;
 
-import cn.edu.zju.cs.jobmate.dto.activity.ActivityInfoResponse;
-import cn.edu.zju.cs.jobmate.dto.user.UserResponse;
-import jakarta.validation.Valid;
+import cn.edu.zju.cs.jobmate.dto.common.CreateRequest;
+import cn.edu.zju.cs.jobmate.models.ActivitySubscription;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
 /**
- * Activity subscription creation request DTO
+ * ActivitySubscription creation request DTO.
  */
 @Data
 @Builder
-public class ActivitySubscriptionCreateRequest {
-    
-    @Valid
-    @NotNull(message = "User information cannot be empty")
-    private UserResponse user;
-    
-    @Valid
-    @NotNull(message = "Activity information cannot be empty")
-    private ActivityInfoResponse activityInfo;
+public class ActivitySubscriptionCreateRequest implements CreateRequest<ActivitySubscription> {
+
+    @NotNull(message = "User id cannot be null")
+    private Integer userId;
+
+    @NotNull(message = "Activity information id cannot be null")
+    private Integer activityInfoId;
+
+    @Override
+    public ActivitySubscription toModel() {
+        return new ActivitySubscription();
+    }
+
+    @Override
+    public String toString() {
+        return "ActivitySubscriptionCreateRequest{" +
+                "userId=" + userId +
+                ", activityInfoId=" + activityInfoId +
+                '}';
+    }
 }

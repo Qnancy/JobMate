@@ -21,12 +21,7 @@ public class JobSubscription extends Subscription {
     @JoinColumn(name = "job_info_id", nullable = false)
     private JobInfo jobInfo;
 
-    protected JobSubscription() {
-    }
-
-    public JobSubscription(User user, JobInfo jobInfo) {
-        setUser(user);
-        this.jobInfo = jobInfo;
+    public JobSubscription() {
     }
 
     @Override

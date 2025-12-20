@@ -36,18 +36,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> getById(Integer id) {
+    public User getById(Integer id) {
         if (id == null) {
-            return Optional.empty();
-        }
-        return userRepository.findById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public User getUserById(Integer id) {
-        if (id == null) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+            throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
         return userRepository.findById(id)
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
@@ -76,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateById(Integer id, String name, UserRole role) {
-        User user = getUserById(id);  // Reuse existing method, throws exception if not found
+        User user = getById(id);  // Reuse existing method, throws exception if not found
         
         // Update entity properties
         user.setUsername(name);

@@ -1,24 +1,36 @@
 package cn.edu.zju.cs.jobmate.dto.subscription;
 
-import cn.edu.zju.cs.jobmate.dto.job.JobInfoResponse;
-import cn.edu.zju.cs.jobmate.dto.user.UserResponse;
-import jakarta.validation.Valid;
+import cn.edu.zju.cs.jobmate.dto.common.CreateRequest;
+import cn.edu.zju.cs.jobmate.models.JobSubscription;
+
 import jakarta.validation.constraints.NotNull;
+
 import lombok.Builder;
 import lombok.Data;
 
 /**
- * Job subscription creation request DTO
+ * JobSubscription creation request DTO.
  */
 @Data
 @Builder
-public class JobSubscriptionCreateRequest {
-    
-    @Valid
-    @NotNull(message = "User information cannot be empty")
-    private UserResponse user;
-    
-    @Valid
-    @NotNull(message = "Job information cannot be empty")
-    private JobInfoResponse jobInfo;
+public class JobSubscriptionCreateRequest implements CreateRequest<JobSubscription> {
+
+    @NotNull(message = "User id cannot be null")
+    private Integer userId;
+
+    @NotNull(message = "Job information id cannot be null")
+    private Integer jobInfoId;
+
+    @Override
+    public JobSubscription toModel() {
+        return new JobSubscription();
+    }
+
+    @Override
+    public String toString() {
+        return "JobSubscriptionCreateRequest{" +
+                "userId=" + userId +
+                ", jobInfoId=" + jobInfoId +
+                '}';
+    }
 }
