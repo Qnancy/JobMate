@@ -51,8 +51,8 @@
           class="flex-1 py-3 border-2 border-sky-500 text-sky-500 rounded-xl font-medium flex items-center justify-center gap-2"
         >
           <svg 
-            class="w-5 h-5" 
-            :class="isFavorite ? 'fill-sky-500' : ''"
+            class="w-5 h-5 transition-transform duration-150" 
+            :class="[isFavorite ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300', heartAnimating ? 'scale-125' : '']"
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
@@ -72,6 +72,7 @@
 import { ref, onMounted } from 'vue';
 import { fetchJobDetail,fetchIsJobFavorite } from '@/utils/mockData';
 import { useRoute } from 'vue-router';
+import { subscribe, unsubscribe } from '@/services/subscription';
 
 // const props = defineProps({
 //   params: {
@@ -91,11 +92,26 @@ console.log(route.params.id);
 const job = await fetchJobDetail(route.params.id);
 console.log(job);
 const isFavorite = ref(await fetchIsJobFavorite(route.params.id));
+const heartAnimating = ref(false);
 
 
 onMounted(async () => {
 
 });
+
+function toggleFavorite(type, id) {
+  if (type !== 'job') return;
+  heartAnimating.value = true;
+  setTimeout(() => heartAnimating.value = false, 180);
+  const numId = Number(id);
+  if (isFavorite.value) {
+    isFavorite.value = false;
+    unsubscribe({ type: 'job', id: numId }).catch(() => {});
+  } else {
+    isFavorite.value = true;
+    subscribe({ type: 'job', id: numId }).catch(() => {});
+  }
+}
 </script>
 
 <style scoped>

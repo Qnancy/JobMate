@@ -35,10 +35,11 @@
         <div 
           v-for="job in filteredJobs" 
           :key="job.id"
-          class="bg-white rounded-xl p-4 shadow-md border border-sky-50 hover:shadow-lg transition"
+          class="bg-white rounded-xl p-4 shadow-md border border-sky-50 hover:shadow-lg transition cursor-pointer"
+          @click="viewJobDetail(job)"
         >
           <div class="flex justify-between items-start">
-            <div class="flex-1" @click="viewJobDetail(job)">
+            <div class="flex-1">
               <h3 class="font-bold text-gray-800 text-lg">{{ job.title }}</h3>
               <p class="text-sky-600 font-medium mt-1">{{ job.company }}</p>
               <div class="flex flex-wrap gap-2 mt-2">
@@ -53,8 +54,11 @@
               class="p-2 ml-2"
             >
               <svg 
-                class="w-6 h-6 transition" 
-                :class="favorites.jobs.includes(job.id) ? 'text-red-500 fill-red-500' : 'text-gray-300'"
+                class="w-6 h-6 transition-transform duration-150" 
+                :class="[
+                  favorites.jobs.includes(job.id) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300',
+                  animatingJobs.has(job.id) ? 'scale-125' : ''
+                ]"
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -66,7 +70,7 @@
           <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
             <span class="text-xs text-gray-400">{{ job.publishDate }}</span>
             <button 
-              @click="$router.push({ path: `/info/job/${job.id}` })"
+              @click.stop="viewJobDetail(job)"
               class="text-sky-500 text-sm font-medium hover:text-sky-600"
             >
               查看详情 →
@@ -130,8 +134,11 @@
                 class="p-2"
               >
                 <svg 
-                  class="w-6 h-6 transition" 
-                  :class="favorites.fairs.includes(fair.id) ? 'text-red-500 fill-red-500' : 'text-gray-300'"
+                  class="w-6 h-6 transition-transform duration-150" 
+                  :class="[
+                    favorites.fairs.includes(fair.id) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300',
+                    animatingFairs.has(fair.id) ? 'scale-125' : ''
+                  ]"
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
@@ -160,7 +167,11 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 import { fetchFairs, fetchFavouriteFairIds, fetchFavouriteJobIds, fetchJobTags,fetchJobs } from "@/utils/mockData";
+import { subscribe, unsubscribe } from "@/services/subscription";
+
+const router = useRouter();
 
 const searchValue = ref("");
 const activeName = ref("job");
@@ -173,6 +184,9 @@ const favorites = ref({
   jobs: [],
   fairs: []
 });
+
+const animatingJobs = ref(new Set());
+const animatingFairs = ref(new Set());
 
 const jobs = await fetchJobs();
 const fairs = await fetchFairs();
@@ -187,6 +201,37 @@ const filteredJobs = computed(() => {
 
 favorites.value.jobs = await fetchFavouriteJobIds()
 favorites.value.fairs = await fetchFavouriteFairIds()
+
+function viewJobDetail(job) {
+  router.push({ path: `/info/job/${job.id}` });
+}
+
+function viewFairDetail(fair) {
+  router.push({ path: `/info/activity/${fair.id}` });
+}
+
+function toggleFavorite(type, id) {
+  const numId = Number(id);
+  const set = type === 'job' ? favorites.value.jobs : favorites.value.fairs;
+  const animSet = type === 'job' ? animatingJobs : animatingFairs;
+  const isFav = set.includes(numId);
+
+  // 触发动画
+  animSet.value.add(numId);
+  setTimeout(() => animSet.value.delete(numId), 180);
+
+  // 本地切换
+  if (isFav) {
+    const idx = set.indexOf(numId);
+    if (idx !== -1) set.splice(idx, 1);
+    // 后端取消订阅（占位）
+    unsubscribe({ type: type === 'job' ? 'job' : 'activity', id: numId }).catch(() => {});
+  } else {
+    set.push(numId);
+    // 后端订阅（占位）
+    subscribe({ type: type === 'job' ? 'job' : 'activity', id: numId }).catch(() => {});
+  }
+}
 </script>
 
 <style scoped>
