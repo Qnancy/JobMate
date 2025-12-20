@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -31,11 +30,9 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank(message = "User name cannot be blank")
-    @Column(name = "name", nullable = false, length = 31)
+    @Column(name = "name", unique = true, nullable = false, length = 31)
     private String name;
 
-    @NotBlank(message = "Password cannot be blank")
     @Column(name = "password", nullable = false)
     private String password;
 
