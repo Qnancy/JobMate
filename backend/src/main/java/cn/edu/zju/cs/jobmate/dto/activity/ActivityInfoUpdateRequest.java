@@ -17,11 +17,8 @@ import java.time.LocalDateTime;
 public class ActivityInfoUpdateRequest implements UpdateRequest<ActivityInfo> {
 
     private Integer companyId;
-
     private String title;
-
     private LocalDateTime time;
-
     private String link;
     private String location;
     private String extra;
