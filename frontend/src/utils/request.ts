@@ -20,9 +20,10 @@ export async function request<T = any>(url: string, options: RequestInit = {}): 
   const userJson = localStorage.getItem('jobmate_current_user');
   if (userJson) {
     try {
-      const user = JSON.parse(userJson);
       // 假设后端需要 Authorization 头，格式视后端要求而定
+      // const user = JSON.parse(userJson);
       // if (user.token) headers.set('Authorization', `Bearer ${user.token}`);
+      JSON.parse(userJson);
     } catch (e) { /* ignore */ }
   }
   
@@ -44,23 +45,23 @@ export async function request<T = any>(url: string, options: RequestInit = {}): 
   }
 
   try {
-    // 2. 发送请求
+    // 发送请求
     const response = await fetch(`${BASE_URL}${url}`, {
       ...options,
       headers,
     });
 
-    // 3. 处理 HTTP 错误状态
+    // 处理 HTTP 错误状态
     if (!response.ok) {
       const errorMsg = `请求失败: ${response.status} ${response.statusText}`;
       showToast({ type: 'fail', message: errorMsg });
       throw new Error(errorMsg);
     }
 
-    // 4. 解析响应
+    // 解析响应
     const resData: ApiResponse<T> = await response.json();
 
-    // 5. 处理业务错误码 (假设 code !== 0 为错误)
+    // 处理业务错误码 (假设 code !== 0 为错误)
     if (resData.code !== 0) {
       // 可以根据 code 做特殊处理，比如 401 token 过期跳转登录
       // showToast({ type: 'fail', message: resData.message || '业务处理失败' });
@@ -74,10 +75,44 @@ export async function request<T = any>(url: string, options: RequestInit = {}): 
   }
 }
 
-// 便捷方法
+// api规范化封装
+type QueryParams = Record<string, string | number | boolean | null | undefined>;
+
+function buildQuery(params?: QueryParams) {
+  if (!params) return "";
+
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === null || value === undefined) return;
+    search.append(key, String(value));
+  });
+
+  const q = search.toString();
+  return q ? `?${q}` : "";
+}
+
+const jsonHeaders = {
+  "Content-Type": "application/json",
+};
+
 export const api = {
-  get: <T>(url: string) => request<T>(url, { method: 'GET' }),
-  post: <T>(url: string, data: any) => request<T>(url, { method: 'POST', body: JSON.stringify(data) }),
-  put: <T>(url: string, data: any) => request<T>(url, { method: 'PUT', body: JSON.stringify(data) }),
-  del: <T>(url: string) => request<T>(url, { method: 'DELETE' }),
+  get: <T>(url: string, params?: QueryParams) =>
+    request<T>(url + buildQuery(params), { method: "GET" }),
+
+  post: <T>(url: string, data: any) =>
+    request<T>(url, {
+      method: "POST",
+      headers: jsonHeaders,
+      body: JSON.stringify(data),
+    }),
+
+  put: <T>(url: string, data: any) =>
+    request<T>(url, {
+      method: "PUT",
+      headers: jsonHeaders,
+      body: JSON.stringify(data),
+    }),
+
+  del: <T>(url: string) =>
+    request<T>(url, { method: "DELETE" }),
 };

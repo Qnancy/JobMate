@@ -24,8 +24,8 @@ export async function login(name: string, password: string) {
   }
 
   // 内置访客账号
-  if (name === 'guest' && password === 'guest') {
-    const guestUser: User = { id: -1, name: 'guest', role: 'guest', create_at: new Date().toISOString() }
+  if (name === 'user' && password === 'user') {
+    const guestUser: User = { id: -1, name: 'user', role: 'user', create_at: new Date().toISOString() }
     setCurrentUser(guestUser)
     return { code: 0, message: 'ok', data: guestUser }
   }
@@ -56,7 +56,6 @@ export async function login(name: string, password: string) {
 
 // // Currently Written by AI. Need Refactor when backend is ready.
 
-const USERS_KEY = 'jobmate_users'
 const CURRENT_KEY = 'jobmate_current_user'
 
 function setCurrentUser(user: User) {

@@ -29,7 +29,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:4523/m1/7365080-7096046-default',
+        target: 'url_of_your_backend_server', // 后端服务器地址
         changeOrigin: true,
       },
     },
