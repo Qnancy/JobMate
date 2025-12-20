@@ -121,13 +121,16 @@
           <div class="flex-1 overflow-y-auto">
             <van-cell-group>
               <van-swipe-cell v-for="job in jobList" :key="job.id">
-                <van-cell :title="job.position" :label="`ID: ${job.company_id} | ${job.city}`" :value="recruitTypeMap[job.recruit_type] || job.recruit_type" />
+                <van-cell :title="job.position" :label="`公司ID: ${job.company.id} | ${job.location || '暂无地点'}`" :value="recruitTypeMap[job.recruit_type] || job.recruit_type" />
                 <template #right>
                   <van-button square text="编辑" type="primary" class="h-full" @click="openJobEdit(job)" />
                   <van-button square text="删除" type="danger" class="h-full" @click="handleDeleteJob(job.id)" />
                 </template>
               </van-swipe-cell>
             </van-cell-group>
+            <div ref="jobSentinel" class="h-6"></div>
+            <div v-if="jobLoading" class="text-center text-gray-400 py-2">加载中...</div>
+            <div v-else-if="!jobHasMore && jobList.length" class="text-center text-gray-400 py-2">没有更多</div>
             <div v-if="jobList.length === 0" class="text-center text-gray-400 mt-10">暂无职位数据</div>
           </div>
         </div>
@@ -143,13 +146,16 @@
           <div class="flex-1 overflow-y-auto">
              <van-cell-group>
               <van-swipe-cell v-for="act in activityList" :key="act.id">
-                <van-cell :title="act.title" :label="act.date + ' | ' + act.location" :value="act.status" />
+                <van-cell :title="act.title" :label="`${act.time} | ${act.location || '暂无地点'}`" :value="act.status || ''" />
                 <template #right>
                   <van-button square text="编辑" type="primary" class="h-full" @click="openActivityEdit(act)" />
                   <van-button square text="删除" type="danger" class="h-full" @click="handleDeleteActivity(act.id)" />
                 </template>
               </van-swipe-cell>
             </van-cell-group>
+            <div ref="activitySentinel" class="h-6"></div>
+            <div v-if="activityLoading" class="text-center text-gray-400 py-2">加载中...</div>
+            <div v-else-if="!activityHasMore && activityList.length" class="text-center text-gray-400 py-2">没有更多</div>
             <div v-if="activityList.length === 0" class="text-center text-gray-400 mt-10">暂无宣讲会数据</div>
           </div>
         </div>
@@ -178,7 +184,6 @@
             />
           </van-popup>
 
-          <van-field v-model="jobForm.city" label="工作城市" placeholder="例如: 杭州市" />
           <van-field v-model="jobForm.location" label="工作地点" placeholder="请输入工作地点" />
           <van-field v-model="jobForm.link" label="投递链接" placeholder="请输入投递链接" />
           <van-field v-model="jobForm.extra" label="备注" placeholder="其他信息" />
@@ -188,9 +193,12 @@
       <!-- Activity Edit Dialog -->
       <van-dialog v-model:show="showActivityEdit" :title="editingActivity?.id ? '编辑宣讲会' : '发布宣讲会'" show-cancel-button @confirm="saveActivity">
         <van-form class="p-4">
+          <van-field v-model.number="activityForm.company_id" type="digit" label="公司ID" placeholder="请输入公司ID" />
           <van-field v-model="activityForm.title" label="标题" placeholder="请输入宣讲会标题" />
-          <van-field v-model="activityForm.date" label="时间" placeholder="例如: 2024-05-20 14:00" />
+          <van-field v-model="activityForm.time" label="时间" placeholder="例如: 2024-05-20 14:00" />
           <van-field v-model="activityForm.location" label="地点" placeholder="请输入地点" />
+          <van-field v-model="activityForm.link" label="链接" placeholder="请输入报名链接" />
+          <van-field v-model="activityForm.extra" label="备注" placeholder="其他信息" />
           <van-field v-model="activityForm.status" label="状态" placeholder="例如: 报名中" />
         </van-form>
       </van-dialog>
@@ -200,7 +208,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, watch } from "vue";
+import { ref, onMounted, onUnmounted, reactive, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { showToast, showSuccessToast, showConfirmDialog } from "vant";
 import * as auth from "@/services/auth";
@@ -223,15 +231,39 @@ const userList = ref<userService.User[]>([]);
 const jobList = ref<jobService.Job[]>([]);
 const activityList = ref<activityService.Activity[]>([]);
 
+// Infinite scroll state
+const jobPage = ref(1);
+const jobPageSize = ref(10);
+const jobLoading = ref(false);
+const jobHasMore = ref(true);
+
+const activityPage = ref(1);
+const activityPageSize = ref(10);
+const activityLoading = ref(false);
+const activityHasMore = ref(true);
+
+const jobSentinel = ref<HTMLElement | null>(null);
+const activitySentinel = ref<HTMLElement | null>(null);
+let jobObserver: IntersectionObserver | null = null;
+let activityObserver: IntersectionObserver | null = null;
+
 // Edit State
 const showJobEdit = ref(false);
 const editingJob = ref<jobService.Job | null>(null);
-const jobForm = reactive({
+type JobForm = {
+  company_id: number;
+  recruit_type: jobService.JobType;
+  position: string;
+  link: string;
+  location: string;
+  extra: string;
+};
+
+const jobForm = reactive<JobForm>({
   company_id: 0,
-  recruit_type: '',
+  recruit_type: 'INTERN',
   position: '',
   link: '',
-  city: '',
   location: '',
   extra: ''
 });
@@ -255,7 +287,26 @@ const onConfirmRecruitType = ({ selectedOptions }: any) => {
 
 const showActivityEdit = ref(false);
 const editingActivity = ref<activityService.Activity | null>(null);
-const activityForm = reactive({ title: '', date: '', location: '', status: '' });
+
+type ActivityForm = {
+  company_id: number;
+  title: string;
+  time: string;
+  link: string;
+  location: string;
+  extra: string;
+  status: string;
+};
+
+const activityForm = reactive<ActivityForm>({
+  company_id: 0,
+  title: '',
+  time: '',
+  link: '',
+  location: '',
+  extra: '',
+  status: '',
+});
 
 
 onMounted(() => {
@@ -271,12 +322,59 @@ onMounted(() => {
         return;
     }
     user.value = currentUser;
+
+  setupJobObserver();
+  setupActivityObserver();
 });
 
+function setupJobObserver() {
+  if (jobObserver) jobObserver.disconnect();
+  jobObserver = new IntersectionObserver((entries) => {
+    const entry = entries.find((e) => e.isIntersecting);
+    if (!entry) return;
+    fetchMoreJobs();
+  });
+  if (jobSentinel.value) jobObserver.observe(jobSentinel.value);
+}
+
+function setupActivityObserver() {
+  if (activityObserver) activityObserver.disconnect();
+  activityObserver = new IntersectionObserver((entries) => {
+    const entry = entries.find((e) => e.isIntersecting);
+    if (!entry) return;
+    fetchMoreActivities();
+  });
+  if (activitySentinel.value) activityObserver.observe(activitySentinel.value);
+}
+
 // Fetch Data when popups open
-watch(showUserMgr, (val) => { if(val) fetchUsers(); });
-watch(showJobMgr, (val) => { if(val) fetchJobs(); });
-watch(showActivityMgr, (val) => { if(val) fetchActivities(); });
+watch(showUserMgr, (val) => { if (val) fetchUsers(); });
+
+watch(showJobMgr, async (val) => {
+  if (val) {
+    jobPage.value = 1;
+    jobHasMore.value = true;
+    jobList.value = [];
+    await nextTick();
+    if (jobSentinel.value) jobObserver?.observe(jobSentinel.value);
+    fetchMoreJobs();
+  } else {
+    if (jobSentinel.value) jobObserver?.unobserve(jobSentinel.value);
+  }
+});
+
+watch(showActivityMgr, async (val) => {
+  if (val) {
+    activityPage.value = 1;
+    activityHasMore.value = true;
+    activityList.value = [];
+    await nextTick();
+    if (activitySentinel.value) activityObserver?.observe(activitySentinel.value);
+    fetchMoreActivities();
+  } else {
+    if (activitySentinel.value) activityObserver?.unobserve(activitySentinel.value);
+  }
+});
 
 async function fetchUsers() {
   try {
@@ -285,18 +383,50 @@ async function fetchUsers() {
   } catch(e) { console.error(e); }
 }
 
-async function fetchJobs() {
+async function fetchMoreJobs() {
+  if (jobLoading.value || !jobHasMore.value) return;
+
+  jobLoading.value = true;
   try {
-    const res = await jobService.getJobs();
-    if(res.code === 0) jobList.value = res.data || [];
+    const res = await jobService.getJob({
+      page: jobPage.value,
+      page_size: jobPageSize.value,
+    });
+
+    if (res.code === 0) {
+      const list = res.data || [];
+      jobList.value.push(...list);
+      if (list.length < jobPageSize.value) {
+        jobHasMore.value = false;
+      } else {
+        jobPage.value += 1;
+      }
+    }
   } catch(e) { console.error(e); }
+  jobLoading.value = false;
 }
 
-async function fetchActivities() {
+async function fetchMoreActivities() {
+  if (activityLoading.value || !activityHasMore.value) return;
+
+  activityLoading.value = true;
   try {
-    const res = await activityService.getActivities();
-    if(res.code === 0) activityList.value = res.data || [];
+    const res = await activityService.getActivities({
+      page: activityPage.value,
+      page_size: activityPageSize.value,
+    });
+
+    if (res.code === 0) {
+      const list = res.data || [];
+      activityList.value.push(...list);
+      if (list.length < activityPageSize.value) {
+        activityHasMore.value = false;
+      } else {
+        activityPage.value += 1;
+      }
+    }
   } catch(e) { console.error(e); }
+  activityLoading.value = false;
 }
 
 // Job Operations
@@ -304,21 +434,19 @@ function openJobEdit(job: jobService.Job | null) {
   editingJob.value = job;
   if (job) {
     Object.assign(jobForm, {
-      company_id: job.company_id,
+      company_id: job.company.id,
       recruit_type: job.recruit_type,
       position: job.position,
-      link: job.link,
-      city: job.city,
+      link: job.link || '',
       location: job.location || '',
       extra: job.extra || ''
     });
   } else {
     Object.assign(jobForm, {
-      company_id: undefined,
+      company_id: 0,
       recruit_type: 'INTERN',
       position: '',
       link: '',
-      city: '',
       location: '',
       extra: ''
     });
@@ -330,10 +458,13 @@ async function saveJob() {
   try {
     // Convert empty strings to null for optional fields if needed, or keep as is.
     // Based on curl example, location can be null.
-    const payload = {
-        ...jobForm,
-        location: jobForm.location || null,
-        extra: jobForm.extra || null
+    const payload: jobService.JobPayload = {
+      company_id: Number(jobForm.company_id) || 0,
+      recruit_type: jobForm.recruit_type,
+      position: jobForm.position,
+      link: jobForm.link || null,
+      location: jobForm.location || null,
+      extra: jobForm.extra || null,
     };
 
     if (editingJob.value) {
@@ -343,7 +474,10 @@ async function saveJob() {
       await jobService.createJob(payload);
       showSuccessToast('发布成功');
     }
-    fetchJobs();
+    jobPage.value = 1;
+    jobHasMore.value = true;
+    jobList.value = [];
+    await fetchMoreJobs();
   } catch (e) { showToast('操作失败'); }
 }
 
@@ -352,7 +486,10 @@ function handleDeleteJob(id: number) {
     .then(async () => {
       await jobService.deleteJob(id);
       showSuccessToast('删除成功');
-      fetchJobs();
+      jobPage.value = 1;
+      jobHasMore.value = true;
+      jobList.value = [];
+      await fetchMoreJobs();
     }).catch(() => {});
 }
 
@@ -360,23 +497,52 @@ function handleDeleteJob(id: number) {
 function openActivityEdit(act: activityService.Activity | null) {
   editingActivity.value = act;
   if (act) {
-    Object.assign(activityForm, act);
+    Object.assign(activityForm, {
+      company_id: act.company.id,
+      title: act.title,
+      time: act.time,
+      link: act.link || '',
+      location: act.location || '',
+      extra: act.extra || '',
+      status: act.status || '',
+    });
   } else {
-    Object.assign(activityForm, { title: '', date: '', location: '', status: '' });
+    Object.assign(activityForm, {
+      company_id: 0,
+      title: '',
+      time: '',
+      link: '',
+      location: '',
+      extra: '',
+      status: '',
+    });
   }
   showActivityEdit.value = true;
 }
 
 async function saveActivity() {
   try {
+    const payload: activityService.ActivityPayload = {
+      company_id: Number(activityForm.company_id) || 0,
+      title: activityForm.title,
+      time: activityForm.time,
+      link: activityForm.link || null,
+      location: activityForm.location || null,
+      extra: activityForm.extra || null,
+      status: activityForm.status || undefined,
+    };
+
     if (editingActivity.value) {
-      await activityService.updateActivity(editingActivity.value.id, activityForm);
+      await activityService.updateActivity(editingActivity.value.id, payload);
       showSuccessToast('更新成功');
     } else {
-      await activityService.createActivity(activityForm);
+      await activityService.createActivity(payload);
       showSuccessToast('发布成功');
     }
-    fetchActivities();
+    activityPage.value = 1;
+    activityHasMore.value = true;
+    activityList.value = [];
+    await fetchMoreActivities();
   } catch (e) { showToast('操作失败'); }
 }
 
@@ -385,7 +551,10 @@ function handleDeleteActivity(id: number) {
     .then(async () => {
       await activityService.deleteActivity(id);
       showSuccessToast('删除成功');
-      fetchActivities();
+      activityPage.value = 1;
+      activityHasMore.value = true;
+      activityList.value = [];
+      await fetchMoreActivities();
     }).catch(() => {});
 }
 
@@ -395,4 +564,9 @@ function onLogout() {
   showSuccessToast("已退出");
   router.push({ path: "/my/login" });
 }
+
+onUnmounted(() => {
+  jobObserver?.disconnect();
+  activityObserver?.disconnect();
+});
 </script>
