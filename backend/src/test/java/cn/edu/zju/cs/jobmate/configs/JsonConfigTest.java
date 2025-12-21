@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,10 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@Import(JsonConfig.class)
+@ContextConfiguration(classes = {
+    JsonConfig.class,
+    JacksonAutoConfiguration.class
+})
 class JsonConfigTest {
 
     @Autowired
@@ -35,7 +39,7 @@ class JsonConfigTest {
     }
 
     @Test
-    void testSnakeCaseAndDateTimeFormat() throws Exception {
+    void testJsonConfig() throws Exception {
         Demo demo = new Demo(
             123,
             "hello",
