@@ -63,7 +63,7 @@ public class LogInterceptor implements HandlerInterceptor {
         if (exception != null) {
             log.error("Request from {}: {} {} completed with exception after {} ms",
                 ip, method, uri, duration, exception);
-        } else if (slowApi.isEnabled() && duration > slowApi.getThresholdMs()) {
+        } else if (slowApi.getEnabled() && duration > slowApi.getThresholdMs()) {
             log.warn("Slow request from {}: {} {} completed in {} ms with status {}",
                 ip, method, uri, duration, status);
         } else {

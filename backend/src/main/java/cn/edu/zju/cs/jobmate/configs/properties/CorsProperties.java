@@ -7,33 +7,25 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 /**
  * CORS related properties.
  */
-@Component
+@Data
 @Validated
+@Component
 @ConfigurationProperties(prefix = "app.cors")
 public class CorsProperties {
 
+    /**
+     * Allowed origins for CORS.
+     */
     @NotNull
     private List<String> allowedOrigins;
 
+    /**
+     * Maximum age (in seconds) for CORS preflight requests(OPTIONS).
+     */
     private Long maxAge;
-
-    public List<String> getAllowedOrigins() {
-        return allowedOrigins;
-    }
-
-    public void setAllowedOrigins(List<String> allowedOrigins) {
-        this.allowedOrigins = allowedOrigins;
-    }
-
-    public Long getMaxAge() {
-        return maxAge;
-    }
-
-    public void setMaxAge(Long maxAge) {
-        this.maxAge = maxAge;
-    }
 }

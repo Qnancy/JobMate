@@ -16,7 +16,7 @@ class MonitorPropertiesTest {
     void testSlowApiConfigBinding() {
         MonitorProperties.SlowApi slowApi = monitorProperties.getSlowApi();
         assertNotNull(slowApi, "SlowApi config should not be null");
-        assertTrue(slowApi.isEnabled());
+        assertTrue(slowApi.getEnabled());
         assertEquals(1000L, slowApi.getThresholdMs());
     }
 
@@ -24,7 +24,7 @@ class MonitorPropertiesTest {
     void testRateLimiterConfigBinding() {
         MonitorProperties.RateLimiter rateLimiter = monitorProperties.getRateLimiter();
         assertNotNull(rateLimiter, "RateLimiter config should not be null");
-        assertFalse(rateLimiter.isEnabled());
+        assertFalse(rateLimiter.getEnabled());
         assertEquals(10, rateLimiter.getLimitIntervalS());
         assertEquals(50, rateLimiter.getMaxRequestsPerInterval());
     }

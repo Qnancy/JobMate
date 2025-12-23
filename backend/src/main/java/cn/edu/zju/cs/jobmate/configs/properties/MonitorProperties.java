@@ -5,12 +5,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 /**
  * Monitoring related properties.
  */
-@Component
+@Data
 @Validated
+@Component
 @ConfigurationProperties(prefix = "app.monitor")
 public class MonitorProperties {
 
@@ -20,86 +22,47 @@ public class MonitorProperties {
     @NotNull
     private RateLimiter rateLimiter;
 
-    public SlowApi getSlowApi() {
-        return slowApi;
-    }
-
-    public void setSlowApi(SlowApi slowApi) {
-        this.slowApi = slowApi;
-    }
-
-    public RateLimiter getRateLimiter() {
-        return rateLimiter;
-    }
-
-    public void setRateLimiter(RateLimiter rateLimiter) {
-        this.rateLimiter = rateLimiter;
-    }
-
     /**
      * Slow API monitoring properties.
      */
+    @Data
     public static class SlowApi {
 
+        /**
+         * Whether slow API monitoring is enabled.
+         */
         @NotNull
         private Boolean enabled;
 
+        /**
+         * Threshold in milliseconds to consider an API call as slow.
+         */
         @NotNull
         private Long thresholdMs;
-
-        public Boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(Boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public Long getThresholdMs() {
-            return thresholdMs;
-        }
-
-        public void setThresholdMs(Long thresholdMs) {
-            this.thresholdMs = thresholdMs;
-        }
     }
 
     /**
      * Rate limiter properties.
      */
+    @Data
     public static class RateLimiter {
 
+        /**
+         * Whether rate limiting is enabled.
+         */
         @NotNull
         private Boolean enabled;
 
+        /**
+         * Time interval in seconds for rate limiting.
+         */
         @NotNull
         private Integer limitIntervalS;
 
+        /**
+         * Maximum number of requests allowed per time interval.
+         */
         @NotNull
         private Integer maxRequestsPerInterval;
-
-        public Boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(Boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public Integer getLimitIntervalS() {
-            return limitIntervalS;
-        }
-
-        public void setLimitIntervalS(Integer limitIntervalS) {
-            this.limitIntervalS = limitIntervalS;
-        }
-
-        public Integer getMaxRequestsPerInterval() {
-            return maxRequestsPerInterval;
-        }
-
-        public void setMaxRequestsPerInterval(Integer maxRequestsPerInterval) {
-            this.maxRequestsPerInterval = maxRequestsPerInterval;
-        }
     }
 }

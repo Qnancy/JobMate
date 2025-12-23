@@ -43,7 +43,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     "/api/health"
                 );
         // Rate limiting interceptor
-        if (monitorProperties.getRateLimiter().isEnabled()) {
+        if (monitorProperties.getRateLimiter().getEnabled()) {
             registry.addInterceptor(Objects.requireNonNull(rateLimitInterceptor))
                     .addPathPatterns("/api/**");
         }
