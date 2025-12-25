@@ -78,6 +78,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.42</version>
         </dependency>
+		<!-- JWT -->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+		</dependency>
 
 		<!-- Testing Dependencies -->
 		<dependency>
