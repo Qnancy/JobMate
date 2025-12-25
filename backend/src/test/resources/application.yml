@@ -47,3 +47,5 @@ app:
     allowed-origins: 
       - "https://localhost:3000"
     max-age: 3600
+  admin:
+    secret: ADMIN
