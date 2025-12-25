@@ -58,3 +58,6 @@ app:
     max-age: 3600
   admin:
     secret: ADMIN@JobMate#2025
+  jwt:
+    secret: Th15!5@S3cr3tK3yF0rJ06M4t3@99l!(@t10n
+    expiration: 86400000

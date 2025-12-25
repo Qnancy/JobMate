@@ -49,3 +49,6 @@ app:
     max-age: 3600
   admin:
     secret: ADMIN
+  jwt:
+    secret: ThisIsATestSecretKeyForJobMateApplication
+    expiration: 86400000
