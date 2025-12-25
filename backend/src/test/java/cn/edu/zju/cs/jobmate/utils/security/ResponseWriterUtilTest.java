@@ -1,6 +1,7 @@
 package cn.edu.zju.cs.jobmate.utils.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,12 +26,12 @@ class ResponseWriterUtilTest {
             public void write(int b) throws IOException {
                 baos.write(b);
             }
-        
+
             @Override
             public boolean isReady() {
                 return true;
             }
-        
+
             @Override
             public void setWriteListener(WriteListener writeListener) {
                 // no-op for test
@@ -38,18 +39,20 @@ class ResponseWriterUtilTest {
         };
         when(response.getOutputStream()).thenReturn(servletOutputStream);
 
+        ObjectMapper mapper = new ObjectMapper();
+        ResponseWriterUtil util = new ResponseWriterUtil(mapper);
+
         // Act
-        ResponseWriterUtil.writeResponse(response, 401, "Unauthorized");
+        util.writeResponse(response, ErrorCode.INTERNAL_SERVER_ERROR);
 
         // Assert
-        verify(response).setStatus(401);
+        verify(response).setStatus(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus().value());
         verify(response).setContentType("application/json");
 
-        ObjectMapper mapper = new ObjectMapper();
         var map = mapper.readValue(baos.toByteArray(), Map.class);
 
-        assertEquals(401, map.get("code"));
-        assertEquals("Unauthorized", map.get("message"));
+        assertEquals(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus().value(), map.get("code"));
+        assertEquals(ErrorCode.INTERNAL_SERVER_ERROR.getMessage(), map.get("message"));
         assertNull(map.get("data"));
     }
 }

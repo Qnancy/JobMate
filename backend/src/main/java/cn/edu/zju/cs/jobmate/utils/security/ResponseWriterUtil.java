@@ -8,37 +8,33 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Response writer utility class for Spring Security.
- * 
- * @apiNote Only used in Spring Security.
  */
 @Slf4j
 public class ResponseWriterUtil {
 
-    /**
-     * Object mapper for JSON serialization.
-     * 
-     * @apiNote Thread-safe singleton.
-     */
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
+
+    public ResponseWriterUtil(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
 
     /**
-     * Write response with given status code and message.
+     * Write response with given {@link ErrorCode}.
      * 
-     * @param response HttpServletResponse
-     * @param code HTTP status code
-     * @param message Response message
+     * @param response the HttpServletResponse to write to
      */
-    public static void writeResponse(HttpServletResponse response, int code, String message) {
-        response.setStatus(code);
+    public void writeResponse(HttpServletResponse response, ErrorCode errorCode) {
+        response.setStatus(errorCode.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         Map<String, Object> body = new HashMap<>();
-        body.put("code", code);
-        body.put("message", message);
+        body.put("code", errorCode.getHttpStatus().value());
+        body.put("message", errorCode.getMessage());
         body.put("data", null);
         try {
             mapper.writeValue(response.getOutputStream(), body);
