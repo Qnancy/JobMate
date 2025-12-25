@@ -13,6 +13,8 @@ public enum ErrorCode {
 
     // System Errors.
     INTERNAL_SERVER_ERROR(1001, HttpStatus.INTERNAL_SERVER_ERROR, "服务器内部错误"),
+    TOKEN_SIGNING_ERROR   (1002, HttpStatus.INTERNAL_SERVER_ERROR, "令牌签名错误"),
+    TOKEN_PARSING_ERROR   (1003, HttpStatus.INTERNAL_SERVER_ERROR, "令牌解析错误"),
 
     // Argument Errors.
     INVALID_PARAMETER(2001, HttpStatus.BAD_REQUEST, "参数无效"),
@@ -23,6 +25,7 @@ public enum ErrorCode {
     UNAUTHORIZED(3001, HttpStatus.UNAUTHORIZED, "未授权访问"),
 
     // Permission Errors.
+    INVALID_ADMIN_SECRET(4001, HttpStatus.FORBIDDEN, "无效的管理员密钥"),
 
     // General Resource Errors.
     TOO_MANY_REQUESTS(5001, HttpStatus.TOO_MANY_REQUESTS, "请求过于频繁，请稍后再试"),
