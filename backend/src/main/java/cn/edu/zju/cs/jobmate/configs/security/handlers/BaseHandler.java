@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.utils.security;
+package cn.edu.zju.cs.jobmate.configs.security.handlers;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,14 +13,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Response writer utility class for Spring Security.
+ * Base security handler used in Spring Security.
  */
 @Slf4j
-public class ResponseWriterUtil {
+public abstract class BaseHandler {
 
     private final ObjectMapper mapper;
 
-    public ResponseWriterUtil(ObjectMapper mapper) {
+    public BaseHandler(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
