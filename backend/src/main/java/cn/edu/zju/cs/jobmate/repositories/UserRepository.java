@@ -7,27 +7,24 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Repository for User entity.
+ * DAO for {@link User}.
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     /**
-     * Find user by name.
+     * Find user by username.
      *
-     * @param name user name
+     * @param username user name
      * @return optional user
      */
-    Optional<User> findByName(String name);
+    Optional<User> findByUsername(String username);
 
     /**
-     * Check if user exists by name.
+     * Check if user exists by username.
      *
-     * @param name user name
+     * @param username user name
      * @return true if exists
      */
-    boolean existsByName(String name);
-
-    // Removed updateUserById - using standard JPA save() instead
+    boolean existsByUsername(String username);
 }
-

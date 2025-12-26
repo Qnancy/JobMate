@@ -1,23 +1,40 @@
 package cn.edu.zju.cs.jobmate.services;
 
-import cn.edu.zju.cs.jobmate.enums.UserRole;
+import cn.edu.zju.cs.jobmate.dto.user.*;
 import cn.edu.zju.cs.jobmate.models.User;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
- * Service interface for User entity.
+ * User service interface.
+ * 
+ * TODO: add authentication and authorization methods.
  */
 public interface UserService {
 
     /**
-     * Create a new user.
+     * Register a new user.
      *
-     * @param user user to create
-     * @return created user
+     * @param dto user register request
+     * @return registered user
+     * @throws BusinessException if user with the same username already exists
+     *  or admin secret is incorrect
      */
-    User create(User user);
+    User register(UserRegisterRequest dto);
+
+    /**
+     * Delete user by id.
+     *
+     * @param id user id
+     */
+    void delete(Integer id);
+
+    /**
+     * Update user.
+     *
+     * @param id user id
+     * @param dto user update request
+     * @return updated user
+     */
+    User update(Integer id, UserUpdateRequest dto);
 
     /**
      * Get user by id.
@@ -26,68 +43,4 @@ public interface UserService {
      * @return retrieved user
      */
     User getById(Integer id);
-
-    /**
-     * Get user by name.
-     *
-     * @param name user name
-     * @return optional user
-     */
-    Optional<User> getByName(String name);
-
-    /**
-     * Get all users.
-     *
-     * @return list of users
-     */
-    List<User> getAll();
-
-    /**
-     * Update user.
-     *
-     * @param user user to update
-     * @return updated user
-     */
-    User update(User user);
-
-    /**
-     * Update user by id with new values.
-     *
-     * @param id user id
-     * @param name new username
-     * @param role new user role
-     * @return updated user
-     */
-    User updateById(Integer id, String name, UserRole role);
-
-    /**
-     * Delete user by id.
-     *
-     * @param id user id
-     */
-    void deleteById(Integer id);
-
-    /**
-     * Delete user by id, throw exception if not found.
-     *
-     * @param id user id
-     * @throws BusinessException if user not found
-     */
-    void deleteUserById(Integer id);
-
-    /**
-     * Check if user exists by id.
-     *
-     * @param id user id
-     * @return true if exists
-     */
-    boolean existsById(Integer id);
-
-    /**
-     * Check if user exists by name.
-     *
-     * @param name user name
-     * @return true if exists
-     */
-    boolean existsByName(String name);
 }

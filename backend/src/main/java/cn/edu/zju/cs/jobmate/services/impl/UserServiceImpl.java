@@ -1,37 +1,75 @@
 package cn.edu.zju.cs.jobmate.services.impl;
 
+import cn.edu.zju.cs.jobmate.configs.properties.AdminProperties;
+import cn.edu.zju.cs.jobmate.dto.user.*;
+import cn.edu.zju.cs.jobmate.enums.UserRole;
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 
-import cn.edu.zju.cs.jobmate.enums.UserRole;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.repositories.UserRepository;
 import cn.edu.zju.cs.jobmate.services.UserService;
+
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
- * Service implementation for User entity.
+ * User service implementation.
  */
 @Service
-@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final AdminProperties adminProperties;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(
+        UserRepository userRepository,
+        AdminProperties adminProperties
+    ) {
         this.userRepository = userRepository;
+        this.adminProperties = adminProperties;
     }
 
     @Override
-    public User create(User user) {
-        if (userRepository.existsByName(user.getUsername())) {
-            throw new IllegalArgumentException("User with name " + user.getUsername() + " already exists");
+    @Transactional
+    public User register(UserRegisterRequest dto) {
+        // Validate admin secret for admin registration.
+        if (dto.getRole() == UserRole.ADMIN &&
+            dto.getAdminSecret() != adminProperties.getSecret()) {
+            throw new BusinessException(ErrorCode.INVALID_ADMIN_SECRET);
         }
-        return userRepository.save(user);
+        // Check for existing username.
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
+        }
+        return userRepository.save(dto.toModel());
+    }
+
+    @Override
+    @Transactional
+    public void delete(Integer id) {
+        if (id == null) {
+            throw new BusinessException(ErrorCode.MISSING_PARAMETER);
+        }
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public User update(Integer id, UserUpdateRequest dto) {
+        // Check if no updates needed.
+        if (!dto.isUpdatable()) {
+            throw new BusinessException(ErrorCode.NO_UPDATES);
+        }
+
+        // Fetch existing User.
+        User user = getById(id);
+
+        // Update and save.
+        dto.apply(user);
+        return userRepository.save(Objects.requireNonNull(user));
     }
 
     @Override
@@ -43,65 +81,4 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<User> getByName(String name) {
-        return userRepository.findByName(name);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public User update(User user) {
-        Integer id = user.getId();
-        if (id == null || !userRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        }
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User updateById(Integer id, String name, UserRole role) {
-        User user = getById(id);  // Reuse existing method, throws exception if not found
-        
-        // Update entity properties
-        user.setUsername(name);
-        user.setRole(role);
-        
-        // Use standard JPA save - no cache issues
-        return userRepository.save(user);
-    }
-
-    @Override
-    public void deleteById(Integer id) {
-        if (id != null) {
-            userRepository.deleteById(id);
-        }
-    }
-
-    @Override
-    public void deleteUserById(Integer id) {
-        if (id == null || !userRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        }
-        userRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsById(Integer id) {
-        return id != null && userRepository.existsById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsByName(String name) {
-        return userRepository.existsByName(name);
-    }
 }
-

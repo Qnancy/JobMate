@@ -30,8 +30,8 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", unique = true, nullable = false, length = 31)
-    private String name;
+    @Column(name = "username", unique = true, nullable = false, length = 31)
+    private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -46,8 +46,8 @@ public class User implements UserDetails {
     protected User() {
     }
 
-    public User(String name, String password, UserRole role) {
-        this.name = name;
+    public User(String username, String password, UserRole role) {
+        this.username = username;
         this.password = password;
         this.role = role;
     }
@@ -63,7 +63,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return name;
+        return username;
     }
 
     @Override
@@ -79,8 +79,8 @@ public class User implements UserDetails {
         return createdAt;
     }
 
-    public void setUsername(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setPassword(String password) {
@@ -145,7 +145,7 @@ public class User implements UserDetails {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", name=" + ToStringUtil.wrap(name) +
+                ", username=" + ToStringUtil.wrap(username) +
                 ", role=" + role +
                 ", createdAt=" + createdAt +
                 '}';
