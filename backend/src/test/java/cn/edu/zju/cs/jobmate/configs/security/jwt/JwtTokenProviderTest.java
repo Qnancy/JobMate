@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.utils.security;
+package cn.edu.zju.cs.jobmate.configs.security.jwt;
 
 import cn.edu.zju.cs.jobmate.configs.properties.JwtProperties;
 import cn.edu.zju.cs.jobmate.models.User;
