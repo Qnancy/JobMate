@@ -84,4 +84,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             responder.writeResponse(response, ErrorCode.AUTHENTICATION_FAILED);
         }
     }
+
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        // TODO: implement.
+        String path = request.getServletPath();
+        return path.startsWith("/api/public/") || path.startsWith("/api/auth/");
+    }
 }
