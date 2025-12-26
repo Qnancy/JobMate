@@ -6,9 +6,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
+import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,10 +17,12 @@ import jakarta.servlet.http.HttpServletResponse;
  * unauthorized access attempts in Spring Security filter chain.
  */
 @Component
-public class AuthEntryPoint extends BaseHandler implements AuthenticationEntryPoint {
+public class AuthEntryPoint implements AuthenticationEntryPoint {
 
-    public AuthEntryPoint(ObjectMapper objectMapper) {
-        super(objectMapper);
+    private final SecurityResponder responder;
+
+    public AuthEntryPoint(SecurityResponder responder) {
+        this.responder = responder;
     }
 
     @Override
@@ -30,6 +31,6 @@ public class AuthEntryPoint extends BaseHandler implements AuthenticationEntryPo
         HttpServletResponse response,
         AuthenticationException authException
     ) throws IOException, ServletException {
-        writeResponse(response, ErrorCode.AUTHENTICATION_FAILED);
+        responder.writeResponse(response, ErrorCode.AUTHENTICATION_FAILED);
     }
 }

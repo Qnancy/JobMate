@@ -6,9 +6,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
+import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,10 +17,12 @@ import jakarta.servlet.http.HttpServletResponse;
  * denied access attempts in Spring Security filter chain.
  */
 @Component
-public class AccessDenier extends BaseHandler implements AccessDeniedHandler {
+public class AccessDenier implements AccessDeniedHandler {
 
-    public AccessDenier(ObjectMapper objectMapper) {
-        super(objectMapper);
+    private final SecurityResponder responder;
+
+    public AccessDenier(SecurityResponder responder) {
+        this.responder = responder;
     }
 
     @Override
@@ -30,6 +31,6 @@ public class AccessDenier extends BaseHandler implements AccessDeniedHandler {
         HttpServletResponse response,
         AccessDeniedException accessDeniedException
     ) throws IOException, ServletException {
-        writeResponse(response, ErrorCode.FORBIDDEN_ACCESS);
+        responder.writeResponse(response, ErrorCode.FORBIDDEN_ACCESS);
     }
 }
