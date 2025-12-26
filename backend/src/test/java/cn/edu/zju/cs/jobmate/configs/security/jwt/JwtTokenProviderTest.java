@@ -26,7 +26,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void testGenerateAndParseToken() {
+    void testGenerateAndParseToken() throws Exception {
         User user = new User("testuser", "password", UserRole.USER);
         ReflectionTestUtils.setField(user, "id", 42);
 
@@ -39,7 +39,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void testValidateToken_expired() throws InterruptedException {
+    void testValidateToken_expired() throws Exception {
         properties.setExpiration(1L); // 1 ms.
         User user = new User("expireduser", "password", UserRole.USER);
         ReflectionTestUtils.setField(user, "id", 99);
@@ -50,7 +50,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void testValidateToken_invalidSignature() {
+    void testValidateToken_invalidSignature() throws Exception {
         User user = new User("user", "password", UserRole.USER);
         ReflectionTestUtils.setField(user, "id", 1);
 
