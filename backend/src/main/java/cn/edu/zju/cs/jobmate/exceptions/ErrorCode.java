@@ -22,10 +22,13 @@ public enum ErrorCode {
     NO_UPDATES       (2003, HttpStatus.BAD_REQUEST, "没有更新"),
 
     // Authentication Errors.
-    UNAUTHORIZED(3001, HttpStatus.UNAUTHORIZED, "未授权访问"),
+    UNAUTHENTICATED      (3001, HttpStatus.UNAUTHORIZED, "未认证访问"),
+    AUTHENTICATION_FAILED(3002, HttpStatus.UNAUTHORIZED, "认证失败"),
+    INVALID_TOKEN        (3003, HttpStatus.UNAUTHORIZED, "无效的令牌"),
 
     // Permission Errors.
     INVALID_ADMIN_SECRET(4001, HttpStatus.FORBIDDEN, "无效的管理员密钥"),
+    FORBIDDEN_ACCESS    (4002, HttpStatus.FORBIDDEN, "拒绝访问"),
 
     // General Resource Errors.
     TOO_MANY_REQUESTS(5001, HttpStatus.TOO_MANY_REQUESTS, "请求过于频繁，请稍后再试"),
