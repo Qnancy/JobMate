@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
@@ -47,14 +46,13 @@ public class QuerySpecBuilder {
      * @param fields the {@link Fields} to search the keyword in
      * @param filters the {@link Filter}s to apply
      * @return the JPA specification
-     * @throws BusinessException if field is not of type String
      */
     @SuppressWarnings("unchecked")
     public static <T> Specification<T> build(
         String keyword,
         Fields fields,
         Filter... filters
-    ) throws BusinessException {
+    ) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
