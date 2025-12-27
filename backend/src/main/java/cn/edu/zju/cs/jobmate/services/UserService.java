@@ -43,4 +43,12 @@ public interface UserService {
      * @return retrieved user
      */
     User getById(Integer id);
+
+    /**
+     * Get current logged-in user.
+     *
+     * @return current user
+     * @throws BusinessException if no user is logged in
+     */
+    User getCurrentUser();
 }

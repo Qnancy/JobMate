@@ -86,36 +86,16 @@ public class UserController {
     }
 
     /**
-     * Get user by ID
-     * TODO
-     * GET /api/users/{id}
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUser(
-            @PathVariable @NotNull @Positive Integer id) {
-
-        log.info("Retrieving user with ID: {}", id);
-
-        User user = userService.getById(id);
-        UserResponse response = UserResponse.from(user);
-        log.info("Successfully retrieved user: {}", user.getUsername());
-        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
-    }
-
-    /**
-     * Get current user
-     * TODO
-     * GET /api/users/me
+     * Get current User info.
+     * 
+     * @apiNote GET /api/users/me
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
-            @Valid @RequestBody UserMeRequest request) {
-
-        log.info("Retrieving current user with ID: {}", request.getId());
-
-        User user = userService.getById(request.getId());
+    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser() {
+        log.info("Retrieving current User");
+        User user = userService.getCurrentUser();
         UserResponse response = UserResponse.from(user);
-        log.info("Successfully retrieved current user: {}", user.getUsername());
-        return ResponseEntity.ok(ApiResponse.ok("查询成功", response));
+        log.info("Successfully retrieved current User(id={})", response.getId());
+        return ResponseEntity.ok(ApiResponse.ok("获取成功", response));
     }
 }

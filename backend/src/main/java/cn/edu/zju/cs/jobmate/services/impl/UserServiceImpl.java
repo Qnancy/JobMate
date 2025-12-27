@@ -9,6 +9,7 @@ import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.repositories.UserRepository;
 import cn.edu.zju.cs.jobmate.services.UserService;
+import cn.edu.zju.cs.jobmate.utils.security.AuthenticationLoader;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
@@ -79,5 +80,11 @@ public class UserServiceImpl implements UserService {
         }
         return userRepository.findById(id)
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        return AuthenticationLoader.getCurrentUser();
     }
 }
