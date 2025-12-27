@@ -34,6 +34,7 @@ public class JwtTokenProvider {
      * 
      * @param user the authenticated user
      * @return the generated JWT token
+     * @throws JOSEException if signing fails
      */
     public String generateToken(User user) throws JOSEException {
         Date now = new Date();
