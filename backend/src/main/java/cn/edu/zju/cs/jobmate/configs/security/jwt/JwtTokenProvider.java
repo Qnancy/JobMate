@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.nimbusds.jose.JOSEException;
@@ -18,7 +19,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
 import cn.edu.zju.cs.jobmate.configs.properties.JwtProperties;
-import cn.edu.zju.cs.jobmate.models.User;
 
 /**
  * JWT Token Provider.
@@ -32,22 +32,22 @@ public class JwtTokenProvider {
     /**
      * Generate JWT token for a given username.
      * 
-     * @param user the authenticated user
+     * @param userDetails the user details
      * @return the generated JWT token
      * @throws JOSEException if signing fails
      */
-    public String generateToken(User user) throws JOSEException {
+    public String generateToken(UserDetails userDetails) throws JOSEException {
         Date now = new Date();
         Date exp = new Date(now.getTime() + properties.getExpiration());
 
         // Prepare the JWT.
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-            .subject(user.getUsername())
+            .subject(userDetails.getUsername())
             .jwtID(UUID.randomUUID().toString())
             .issueTime(now)
             .expirationTime(exp)
-            .claim("uid", user.getId())
+            // TODO: .claim()
             .build();
 
         // Sign the JWT.
@@ -88,17 +88,5 @@ public class JwtTokenProvider {
     public String getUsernameFromToken(String token) throws ParseException {
         SignedJWT signedJWT = SignedJWT.parse(token);
         return signedJWT.getJWTClaimsSet().getSubject();
-    }
-
-    /**
-     * Extract user ID from JWT token.
-     * 
-     * @param token the JWT token
-     * @return the extracted user ID
-     * @throws ParseException if parsing fails
-     */
-    public Integer getUserIdFromToken(String token) throws ParseException {
-        SignedJWT signedJWT = SignedJWT.parse(token);
-        return signedJWT.getJWTClaimsSet().getIntegerClaim("uid");
     }
 }

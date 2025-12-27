@@ -35,7 +35,6 @@ class JwtTokenProviderTest {
 
         assertTrue(provider.validateToken(token));
         assertEquals("testuser", provider.getUsernameFromToken(token));
-        assertEquals(42, provider.getUserIdFromToken(token));
     }
 
     @Test
