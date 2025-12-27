@@ -42,7 +42,7 @@ public class UserController {
      * 
      * @apiNote POST /api/users/register
      */
-    @PostMapping("/register")
+    @PostMapping
     public ResponseEntity<ApiResponse<UserResponse>> register(
         @Valid @RequestBody UserRegisterRequest request
     ) {
