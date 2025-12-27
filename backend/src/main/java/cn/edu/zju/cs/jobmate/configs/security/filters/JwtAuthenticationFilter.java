@@ -6,6 +6,7 @@ import java.text.ParseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -14,8 +15,8 @@ import com.nimbusds.jose.JOSEException;
 import cn.edu.zju.cs.jobmate.configs.security.authentication.JwtAuthenticationToken;
 import cn.edu.zju.cs.jobmate.configs.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
-import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Set authentication in the security context.
             String username = provider.getUsernameFromToken(token);
-            User userDetails = (User) userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             JwtAuthenticationToken authentication = new JwtAuthenticationToken(
                 userDetails,
                 token,
