@@ -6,6 +6,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
 import jakarta.servlet.ServletException;
@@ -31,6 +32,6 @@ public class AuthEntryPoint implements AuthenticationEntryPoint {
         HttpServletResponse response,
         AuthenticationException authException
     ) throws IOException, ServletException {
-        responder.writeResponse(response, ErrorCode.AUTHENTICATION_FAILED);
+        responder.writeResponse(response, ApiResponse.error(ErrorCode.AUTHENTICATION_FAILED));
     }
 }

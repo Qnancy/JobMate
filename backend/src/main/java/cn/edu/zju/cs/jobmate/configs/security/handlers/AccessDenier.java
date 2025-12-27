@@ -6,6 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
+import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
 import jakarta.servlet.ServletException;
@@ -31,6 +32,6 @@ public class AccessDenier implements AccessDeniedHandler {
         HttpServletResponse response,
         AccessDeniedException accessDeniedException
     ) throws IOException, ServletException {
-        responder.writeResponse(response, ErrorCode.FORBIDDEN_ACCESS);
+        responder.writeResponse(response, ApiResponse.error(ErrorCode.FORBIDDEN_ACCESS));
     }
 }

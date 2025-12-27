@@ -14,6 +14,7 @@ import com.nimbusds.jose.JOSEException;
 
 import cn.edu.zju.cs.jobmate.configs.security.authentication.JwtAuthenticationToken;
 import cn.edu.zju.cs.jobmate.configs.security.jwt.JwtTokenProvider;
+import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
 
@@ -61,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Parse and validate the token.
             if (!provider.validateToken(token)) {
-                responder.writeResponse(response, ErrorCode.INVALID_TOKEN);
+                responder.writeResponse(response, ApiResponse.error(ErrorCode.INVALID_TOKEN));
                 return ;
             }
 
@@ -78,11 +79,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Continue the filter chain.
             filterChain.doFilter(request, response);
         } catch (ParseException | JOSEException e) {
-            log.error("JWT parsing error: {}", e.getMessage());
-            responder.writeResponse(response, ErrorCode.TOKEN_PARSING_ERROR);
+            log.info("JWT parsing error: {}", e.getMessage());
+            responder.writeResponse(response, ApiResponse.error(ErrorCode.INVALID_TOKEN));
         } catch (Exception e) {
             log.error("JWT authentication error: {}", e.getMessage());
-            responder.writeResponse(response, ErrorCode.AUTHENTICATION_FAILED);
+            responder.writeResponse(response, ApiResponse.error(ErrorCode.AUTHENTICATION_FAILED));
         }
     }
 
@@ -90,6 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         // TODO: implement.
         String path = request.getServletPath();
-        return path.startsWith("/api/public/") || path.startsWith("/api/auth/");
+        return path.equals("/api/auth/login")
+            || path.equals("/api/users/register");
     }
 }
