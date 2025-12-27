@@ -9,9 +9,11 @@ import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.repositories.UserRepository;
 import cn.edu.zju.cs.jobmate.services.UserService;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,18 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
  * User service implementation.
  */
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final AdminProperties adminProperties;
-
-    public UserServiceImpl(
-        UserRepository userRepository,
-        AdminProperties adminProperties
-    ) {
-        this.userRepository = userRepository;
-        this.adminProperties = adminProperties;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -44,7 +40,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
         }
-        return userRepository.save(dto.toModel());
+        // Encode password.
+        User user = dto.toModel();
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        return userRepository.save(user);
     }
 
     @Override
