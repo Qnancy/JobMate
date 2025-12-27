@@ -13,8 +13,8 @@ public enum ErrorCode {
 
     // System Errors.
     INTERNAL_SERVER_ERROR(1001, HttpStatus.INTERNAL_SERVER_ERROR, "服务器内部错误"),
-    TOKEN_SIGNING_ERROR   (1002, HttpStatus.INTERNAL_SERVER_ERROR, "令牌签名错误"),
-    TOKEN_PARSING_ERROR   (1003, HttpStatus.INTERNAL_SERVER_ERROR, "令牌解析错误"),
+    TOKEN_SIGNING_ERROR  (1002, HttpStatus.INTERNAL_SERVER_ERROR, "令牌签名错误"),
+    TOKEN_PARSING_ERROR  (1003, HttpStatus.INTERNAL_SERVER_ERROR, "令牌解析错误"),
 
     // Argument Errors.
     INVALID_PARAMETER(2001, HttpStatus.BAD_REQUEST, "参数无效"),
@@ -22,9 +22,10 @@ public enum ErrorCode {
     NO_UPDATES       (2003, HttpStatus.BAD_REQUEST, "没有更新"),
 
     // Authentication Errors.
-    UNAUTHENTICATED      (3001, HttpStatus.UNAUTHORIZED, "未认证访问"),
-    AUTHENTICATION_FAILED(3002, HttpStatus.UNAUTHORIZED, "认证失败"),
-    INVALID_TOKEN        (3003, HttpStatus.UNAUTHORIZED, "无效的令牌"),
+    UNAUTHENTICATED       (3001, HttpStatus.UNAUTHORIZED, "未认证访问"),
+    AUTHENTICATION_FAILED (3002, HttpStatus.UNAUTHORIZED, "认证失败"),
+    INVALID_TOKEN         (3003, HttpStatus.UNAUTHORIZED, "无效或过期的令牌"),
+    INVALID_AUTHENTICATION(3004, HttpStatus.UNAUTHORIZED, "用户名或密码错误"),
 
     // Permission Errors.
     INVALID_ADMIN_SECRET(4001, HttpStatus.FORBIDDEN, "无效的管理员密钥"),

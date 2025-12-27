@@ -2,9 +2,10 @@ package cn.edu.zju.cs.jobmate.configs;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,32 +14,38 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cn.edu.zju.cs.jobmate.configs.properties.CorsProperties;
-import cn.edu.zju.cs.jobmate.configs.security.*;
+import cn.edu.zju.cs.jobmate.configs.security.filters.*;
+import cn.edu.zju.cs.jobmate.configs.security.handlers.*;
+import cn.edu.zju.cs.jobmate.configs.security.jwt.JwtTokenProvider;
+import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Security configuration for JobMate.
- * 
- * TODO: add OAuth2 support.
  */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private CorsProperties cors;
+    private final CorsProperties cors;
+    private final AuthEntryPoint authEntryPoint;
+    private final AccessDenier accessDenier;
 
-    @Autowired
-    private AuthEntryPoint authEntryPoint;
-
-    @Autowired
-    private AccessDenier accessDenier;
-
+    private final ObjectMapper mapper;
+    private final SecurityResponder responder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsService userDetailsService;
+    
     /**
      * Password encoder to validate user passwords.
      * 
@@ -47,6 +54,18 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Authentication manager used in authentication processes.
+     * 
+     * @param config AuthenticationConfiguration instance
+     * @return AuthenticationManager instance
+     * @throws Exception if an error occurs during configuration
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     /**
@@ -83,20 +102,31 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/**").permitAll() // TODO: adjust.
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/users/register").permitAll()
                 .anyRequest().authenticated()
+            )
+            .addFilterAt(
+                new LoginAuthenticationFilter(
+                    authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)),
+                    responder,
+                    mapper,
+                    jwtTokenProvider
+                ),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterAfter(
+                new JwtAuthenticationFilter(
+                    responder,
+                    jwtTokenProvider,
+                    userDetailsService
+                ),
+                UsernamePasswordAuthenticationFilter.class
             )
             .exceptionHandling(e -> e
                 .authenticationEntryPoint(authEntryPoint)
                 .accessDeniedHandler(accessDenier)
             );
-        
-        // TODO: http.addFilterAfter();
         return http.build();
-    }
-
-    //@Bean
-    public UserDetailsService userDetailsService() {
-        return null; // TODO
     }
 }

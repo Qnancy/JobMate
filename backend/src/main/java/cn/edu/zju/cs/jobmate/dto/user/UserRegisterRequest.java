@@ -35,7 +35,7 @@ public class UserRegisterRequest implements CreateRequest<User> {
     public @NonNull User toModel() {
         return new User(
             username,
-            password,
+            null, // Encode.
             role
         );
     }
