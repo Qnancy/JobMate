@@ -17,18 +17,6 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     private String device;
 
     public JwtAuthenticationToken(
-        String cretentials,
-        HttpServletRequest request
-    ) {
-        super(null);
-        this.principal = null;
-        this.credentials = cretentials;
-        this.ip = request.getRemoteAddr();
-        this.device = request.getHeader(HttpHeaders.USER_AGENT);
-        setAuthenticated(false);
-    }
-
-    public JwtAuthenticationToken(
         UserDetails principal,
         String credentials,
         HttpServletRequest request

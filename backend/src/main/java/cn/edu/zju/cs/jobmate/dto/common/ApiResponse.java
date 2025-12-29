@@ -18,16 +18,8 @@ public class ApiResponse<T> {
     private String message;
     private T data;
 
-    public static <T> ApiResponse<T> ok() {
-        return new ApiResponse<>(200, "success", null);
-    }
-
     public static <T> ApiResponse<T> ok(String message) {
         return new ApiResponse<>(200, message, null);
-    }
-
-    public static <T> ApiResponse<T> ok(T data) {
-        return new ApiResponse<>(200, "success", data);
     }
 
     public static <T> ApiResponse<T> ok(String message, T data) {
@@ -36,10 +28,6 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> error(Integer code, String message) {
         return new ApiResponse<>(code, message, null);
-    }
-
-    public static <T> ApiResponse<T> error(Integer code, String message, T data) {
-        return new ApiResponse<>(code, message, data);
     }
 
     public static <T> ApiResponse<T> error(ErrorCode errorCode) {
