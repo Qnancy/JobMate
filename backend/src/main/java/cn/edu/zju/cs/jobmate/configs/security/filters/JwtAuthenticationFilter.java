@@ -6,44 +6,33 @@ import java.text.ParseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.nimbusds.jose.JOSEException;
 
 import cn.edu.zju.cs.jobmate.configs.security.authentication.JwtAuthenticationToken;
 import cn.edu.zju.cs.jobmate.configs.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
+import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * JWT authentication filter to process incoming requests and validate JWT tokens.
  */
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public final SecurityResponder responder;
     public final JwtTokenProvider provider;
     public final UserDetailsService userDetailsService;
-
-    public JwtAuthenticationFilter(
-        SecurityResponder responder,
-        JwtTokenProvider provider,
-        UserDetailsService userDetailsService
-    ) {
-        this.responder = responder;
-        this.provider = provider;
-        this.userDetailsService = userDetailsService;
-    }
 
     @Override
     protected void doFilterInternal(
@@ -62,23 +51,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Parse and validate the token.
             if (!provider.validateToken(token)) {
+                log.info("JWT invalid or expired");
                 responder.writeResponse(response, ApiResponse.error(ErrorCode.INVALID_TOKEN));
                 return ;
             }
 
             // Set authentication in the security context.
             String username = provider.getUsernameFromToken(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            User user = (User) userDetailsService.loadUserByUsername(username);
             JwtAuthenticationToken authentication = new JwtAuthenticationToken(
-                userDetails,
+                user,
                 token,
                 request
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("JWT authentication successful, loaded User(id={})", user.getId());
 
             // Continue the filter chain.
             filterChain.doFilter(request, response);
-        } catch (ParseException | JOSEException e) {
+        } catch (ParseException e) {
             log.info("JWT parsing error: {}", e.getMessage());
             responder.writeResponse(response, ApiResponse.error(ErrorCode.INVALID_TOKEN));
         } catch (Exception e) {

@@ -63,19 +63,21 @@ public class JwtTokenProvider {
      * 
      * @param token the JWT token
      * @return true if valid, false otherwise
-     * @throws ParseException if parsing fails
-     * @throws JOSEException if verification fails
      */
-    public boolean validateToken(String token) throws ParseException, JOSEException {
-        SignedJWT signedJWT = SignedJWT.parse(token);
-        JWSVerifier verifier = new MACVerifier(properties.getSecret().getBytes());
-        // Verify the signature.
-        if (!signedJWT.verify(verifier)) {
+    public boolean validateToken(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWSVerifier verifier = new MACVerifier(properties.getSecret().getBytes());
+            // Verify the signature.
+            if (!signedJWT.verify(verifier)) {
+                return false;
+            }
+            // Verify the expiration time.
+            Date exp = signedJWT.getJWTClaimsSet().getExpirationTime();
+            return exp != null && exp.after(new Date());
+        } catch (JOSEException | ParseException e) {
             return false;
         }
-        // Verify the expiration time.
-        Date exp = signedJWT.getJWTClaimsSet().getExpirationTime();
-        return exp != null && exp.after(new Date());
     }
 
     /**
