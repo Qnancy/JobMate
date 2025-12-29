@@ -24,7 +24,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private MonitorProperties monitorProperties;
 
     @Autowired
-    private LogInterceptor logInterceptor;
+    private AuditInterceptor auditInterceptor;
 
     @Autowired
     private RateLimitInterceptor rateLimitInterceptor;
@@ -35,9 +35,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
         // Logging interceptor
-        registry.addInterceptor(Objects.requireNonNull(logInterceptor))
+        registry.addInterceptor(Objects.requireNonNull(auditInterceptor))
                 .addPathPatterns("/api/**")
-                .excludePathPatterns(
+                .excludePathPatterns( // TODO: update
                     "/api/login",
                     "/api/register",
                     "/api/health"

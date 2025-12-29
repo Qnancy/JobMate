@@ -15,16 +15,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Interceptor to log requests.
+ * Interceptor to trace and audit requests.
+ * 
+ * @apiNote This interceptor cooperates with AuditFilter.
  */
 @Slf4j
 @Component
-public class LogInterceptor implements HandlerInterceptor {
+public class AuditInterceptor implements HandlerInterceptor {
 
     private MonitorProperties.SlowApi slowApi; // Slow API monitoring properties.
     private static final String timeAttribute = "REQUEST_START_TIME";
 
-    public LogInterceptor(MonitorProperties monitorProperties) {
+    public AuditInterceptor(MonitorProperties monitorProperties) {
         this.slowApi = monitorProperties.getSlowApi();
     }
 
