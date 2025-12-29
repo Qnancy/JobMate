@@ -37,7 +37,7 @@ public class SecurityResponder {
         try {
             mapper.writeValue(response.getOutputStream(), apiResponse);
         } catch (IOException e) {
-            log.error("Failed to write response: {}", e.getMessage(), e);
+            log.error("Failed to write response: {}", e.getMessage());
         }
     }
 }
