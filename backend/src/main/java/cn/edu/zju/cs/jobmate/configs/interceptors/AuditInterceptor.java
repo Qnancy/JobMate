@@ -1,10 +1,9 @@
 package cn.edu.zju.cs.jobmate.configs.interceptors;
 
 import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
+import cn.edu.zju.cs.jobmate.configs.security.filters.AuditFilter;
+import cn.edu.zju.cs.jobmate.utils.httpservlet.RequestUtil;
 
-import java.util.UUID;
-
-import org.slf4j.MDC;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -12,23 +11,20 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Interceptor to trace and audit requests.
  * 
- * @apiNote This interceptor cooperates with AuditFilter.
+ * @apiNote This interceptor cooperates with {@link AuditFilter}.
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AuditInterceptor implements HandlerInterceptor {
 
-    private MonitorProperties.SlowApi slowApi; // Slow API monitoring properties.
-    private static final String timeAttribute = "REQUEST_START_TIME";
-
-    public AuditInterceptor(MonitorProperties monitorProperties) {
-        this.slowApi = monitorProperties.getSlowApi();
-    }
+    private final MonitorProperties.SlowApi slowApi;
 
     @Override
     public boolean preHandle(
@@ -36,14 +32,8 @@ public class AuditInterceptor implements HandlerInterceptor {
         @NonNull HttpServletResponse response,
         @NonNull Object handler
     ) throws Exception {
-        long startTime = System.currentTimeMillis();
-        request.setAttribute(timeAttribute, startTime);
-        String uri = request.getRequestURI();
-        String method = request.getMethod();
-        String ip = request.getRemoteAddr();
-        String traceId = UUID.randomUUID().toString();
-        MDC.put("traceId", traceId); // Add trace id to MDC for logging.
-        log.info("Receiving request from {}: {} {}", ip, method, uri);
+        log.info("Proceeding request in Security Chain in {} ms",
+            RequestUtil.checkTimer(request));
         return true;
     }
 
@@ -54,24 +44,16 @@ public class AuditInterceptor implements HandlerInterceptor {
         @NonNull Object handler,
         @Nullable Exception exception
     ) throws Exception {
-        long startTime = (Long) request.getAttribute(timeAttribute);
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        String uri = request.getRequestURI();
-        String method = request.getMethod();
-        int status = response.getStatus();
-        String ip = request.getRemoteAddr();
-        // TODO: get user auth info from SecurityContext
+        long time = RequestUtil.checkTimer(request);
         if (exception != null) {
-            log.error("Request from {}: {} {} completed with exception after {} ms",
-                ip, method, uri, duration, exception);
-        } else if (slowApi.getEnabled() && duration > slowApi.getThresholdMs()) {
-            log.warn("Slow request from {}: {} {} completed in {} ms with status {}",
-                ip, method, uri, duration, status);
+            log.error("Request {} completed with exception in {} ms",
+                RequestUtil.info(request), time, exception);
+        } else if (slowApi.getEnabled() && time > slowApi.getThresholdMs()) {
+            log.warn("Slow request {} completed in {} ms with status {}",
+                RequestUtil.info(request), time, response.getStatus());
         } else {
-            log.info("Request from {}: {} {} completed in {} ms with status {}",
-                ip, method, uri, duration, status);
+            log.info("Request {} completed in {} ms with status {}",
+                RequestUtil.info(request), time, response.getStatus());
         }
-        MDC.remove("traceId"); // Clean up MDC.
     }
 }

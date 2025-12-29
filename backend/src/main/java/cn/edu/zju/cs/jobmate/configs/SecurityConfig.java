@@ -118,6 +118,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/users/register").permitAll()
                 .anyRequest().authenticated()
             )
+            .addFilterBefore(
+                new AuditFilter(),
+                UsernamePasswordAuthenticationFilter.class
+            )
             .addFilterAt(
                 new LoginAuthenticationFilter(
                     authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)),
@@ -128,11 +132,7 @@ public class SecurityConfig {
                 UsernamePasswordAuthenticationFilter.class
             )
             .addFilterAfter(
-                new JwtAuthenticationFilter(
-                    responder,
-                    jwtTokenProvider,
-                    userDetailsService
-                ),
+                new JwtAuthenticationFilter(responder, jwtTokenProvider, userDetailsService),
                 UsernamePasswordAuthenticationFilter.class
             )
             .exceptionHandling(e -> e
