@@ -1,3 +1,6 @@
+# JobMate Application Configuration.
+
+# Spring Boot Application Settings.
 spring:
   application:
     name: JobMate
@@ -40,9 +43,11 @@ spring:
           max-wait: 2000ms
       timeout: 2000ms
 
+# Server Configuration.
 server:
   port: 8080
 
+# Application Specific Settings.
 app:
   monitor:
     slow-api:
@@ -61,3 +66,14 @@ app:
   jwt:
     secret: Th15!5@S3cr3tK3yF0rJ06M4t3@99l!(@t10n
     expiration: 86400000
+
+# Management and Monitoring Configuration.
+management:
+  endpoints:
+    web:
+      base-path: /monitor
+      exposure:
+        include: health,metrics
+  endpoint:
+    health:
+      show-details: always

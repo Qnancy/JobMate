@@ -102,6 +102,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/monitor/**").permitAll() // TODO: secure this endpoint
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/users/register").permitAll()
                 .anyRequest().authenticated()
