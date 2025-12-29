@@ -49,7 +49,7 @@ public class UserController {
         log.info("Registering User with {}", request);
         User user = userService.register(request);
         UserResponse response = UserResponse.from(user);
-        log.info("Successfully registered user(id={})", response.getId());
+        log.info("Successfully registered User(id={})", response.getId());
         return ResponseEntity.ok(ApiResponse.ok("注册成功", response));
     }
 
