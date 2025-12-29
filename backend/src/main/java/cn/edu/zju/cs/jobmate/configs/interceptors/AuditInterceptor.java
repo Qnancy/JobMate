@@ -11,7 +11,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -21,10 +20,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class AuditInterceptor implements HandlerInterceptor {
 
     private final MonitorProperties.SlowApi slowApi;
+
+    public AuditInterceptor(MonitorProperties monitorProperties) {
+        this.slowApi = monitorProperties.getSlowApi();
+    }
 
     @Override
     public boolean preHandle(
