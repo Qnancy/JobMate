@@ -55,7 +55,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     ) throws AuthenticationException {
         try {
             LoginRequest loginRequest = mapper.readValue(request.getInputStream(), LoginRequest.class);
-            log.debug("Attempting authentication: {}", loginRequest);
+            log.info("Attempting authentication: {}", loginRequest);
             UsernamePasswordAuthenticationToken authRequest =
                 new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
@@ -85,6 +85,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
                 .tokenType("Bearer")
                 .build();
             responder.writeResponse(response, ApiResponse.ok("登录成功", body));
+            log.info("User '{}' logined successfully", userDetails.getUsername());
         } catch (JOSEException e) {
             log.error("Failed to generate JWT token: {}", e.getMessage());
             responder.writeResponse(response, ApiResponse.error(ErrorCode.TOKEN_SIGNING_ERROR));

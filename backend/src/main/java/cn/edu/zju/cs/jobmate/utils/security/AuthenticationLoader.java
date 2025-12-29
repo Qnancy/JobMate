@@ -31,7 +31,7 @@ public class AuthenticationLoader {
                 if (!auth.isAuthenticated()) {
                     throw new BusinessException(ErrorCode.UNAUTHENTICATED);
                 }
-                yield (User) jwtAuth.getPrincipal();
+                yield jwtAuth.getPrincipal();
             }
             default -> {
                 if (!auth.isAuthenticated() || auth.getPrincipal() == null) {

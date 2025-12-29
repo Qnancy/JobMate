@@ -2,8 +2,8 @@ package cn.edu.zju.cs.jobmate.configs.security.authentication;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 
+import cn.edu.zju.cs.jobmate.models.User;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -11,13 +11,13 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
-    private final UserDetails principal;
-    private String credentials;
+    private final User principal; // The authenticated user.
+    private String credentials; // The JWT token.
     private String ip;
     private String device;
 
     public JwtAuthenticationToken(
-        UserDetails principal,
+        User principal,
         String credentials,
         HttpServletRequest request
     ) {
@@ -30,7 +30,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     @Override
-    public UserDetails getPrincipal() {
+    public User getPrincipal() {
         return principal;
     }
 
