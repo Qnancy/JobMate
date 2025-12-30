@@ -91,4 +91,17 @@ public class JwtTokenProvider {
         SignedJWT signedJWT = SignedJWT.parse(token);
         return signedJWT.getJWTClaimsSet().getSubject();
     }
+
+    /**
+     * Get remaining time to expiry in millisecond from JWT token.
+     * 
+     * @param token the JWT token
+     * @return the remaining time to expiry in milliseconds
+     * @throws ParseException if parsing fails
+     */
+    public long getRemainTimeFromToken(String token) throws ParseException {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        Date exp = signedJWT.getJWTClaimsSet().getExpirationTime();
+        return exp.getTime() - System.currentTimeMillis();
+    }
 }

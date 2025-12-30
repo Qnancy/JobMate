@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cn.edu.zju.cs.jobmate.configs.properties.CorsProperties;
 import cn.edu.zju.cs.jobmate.configs.security.filters.*;
 import cn.edu.zju.cs.jobmate.configs.security.handlers.*;
+import cn.edu.zju.cs.jobmate.security.jwt.JwtBlacklistManager;
 import cn.edu.zju.cs.jobmate.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.utils.httpservlet.ResponseUtil;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class SecurityConfig {
     private final ResponseUtil responder;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
+    private final JwtBlacklistManager jwtBlacklistManager;
     
     /**
      * Password encoder to validate user passwords.
@@ -132,7 +134,12 @@ public class SecurityConfig {
                 UsernamePasswordAuthenticationFilter.class
             )
             .addFilterAfter(
-                new JwtAuthenticationFilter(responder, jwtTokenProvider, userDetailsService),
+                new JwtAuthenticationFilter(
+                    responder,
+                    jwtTokenProvider,
+                    userDetailsService,
+                    jwtBlacklistManager
+                ),
                 UsernamePasswordAuthenticationFilter.class
             )
             .exceptionHandling(e -> e

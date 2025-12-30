@@ -13,6 +13,7 @@ import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.security.authentication.JwtAuthenticationToken;
+import cn.edu.zju.cs.jobmate.security.jwt.JwtBlacklistManager;
 import cn.edu.zju.cs.jobmate.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.utils.httpservlet.ResponseUtil;
 import jakarta.servlet.FilterChain;
@@ -29,9 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    public final ResponseUtil responder;
-    public final JwtTokenProvider provider;
-    public final UserDetailsService userDetailsService;
+    private final ResponseUtil responder;
+    private final JwtTokenProvider provider;
+    private final UserDetailsService userDetailsService;
+    private final JwtBlacklistManager blacklistManager;
 
     @Override
     protected void doFilterInternal(
@@ -47,6 +49,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return ;
             }
             String token = authHeader.substring(7);
+
+            // Check if the token is blacklisted.
+            if (blacklistManager.isBlacklisted(token)) {
+                log.info("JWT is blacklisted");
+                responder.writeResponse(response, ApiResponse.error(ErrorCode.INVALID_TOKEN));
+                return ;
+            }
 
             // Parse and validate the token.
             if (!provider.validateToken(token)) {
@@ -65,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Continue the filter chain.
             filterChain.doFilter(request, response);
         } catch (ParseException e) {
-            log.info("JWT parsing error: {}", e.getMessage());
+            log.info("JWT parsing failed: {}", e.getMessage());
             responder.writeResponse(response, ApiResponse.error(ErrorCode.INVALID_TOKEN));
         } catch (Exception e) {
             log.error("JWT authentication error: {}", e.getMessage());
@@ -75,9 +84,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        // TODO: implement.
         String path = request.getServletPath();
         return path.equals("/api/auth/login")
-            || path.equals("/api/users/register");
+            || path.equals("/api/users/register")
+            || path.startsWith("/monitor");
     }
 }

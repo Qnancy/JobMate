@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,15 +51,20 @@ public class AuthenticationTest {
         embeddedRedis.stop();
     }
 
+    @AfterEach
+    void clean() {
+        userRepository.deleteAll();
+    }
+
     @Test
-    void testNoAuthentication_AccessRejected() throws Exception {
+    void testAccessWithNoAuthentication_Rejected() throws Exception {
         mockMvc.perform(get("/api/test"))
             .andExpect(status().isUnauthorized());
     }
 
     @Test
     @SuppressWarnings("null")
-    void testRegisterAndLogin_AccessSuccessful() throws Exception {
+    void testLoginAndAccessAndLogout_Successful() throws Exception {
         // Register.
         UserRegisterRequest registerRequest = UserRegisterRequest.builder()
             .username("testuser")
@@ -104,22 +110,46 @@ public class AuthenticationTest {
             .andExpect(jsonPath("$.message").value("获取成功"))
             .andExpect(jsonPath("$.data.username").value("testuser"));
 
-        // Clean.
-        userRepository.deleteAll();
-    }
+        // Logout.
+        mockMvc.perform(post("/api/auth/logout")
+            .header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("登出成功"));
 
-    @Test
-    void testInvalidToken() throws Exception {
+        // Access protected endpoint after logout.
         mockMvc.perform(get("/api/test")
-            .header("Authorization", "Bearer invalidtoken"))
+            .header("Authorization", "Bearer " + token))
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.code").value(401))
             .andExpect(jsonPath("$.message").value("无效或过期的令牌"));
     }
 
     @Test
+    void testAccessWithInvalidToken_Rejected() throws Exception {
+        // Invalid token.
+        mockMvc.perform(get("/api/test")
+            .header("Authorization", "Bearer invalidtoken"))
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.code").value(401))
+            .andExpect(jsonPath("$.message").value("无效或过期的令牌"));
+
+        mockMvc.perform(get("/api/test")
+            .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiZXhwIjoxNzY3MTgwNTUzLCJpYXQiOjE3NjcwOTQxNTMsImp0aSI6ImJkNmM2NDRlLWEwZWQtNDJhZi1iMmE2LWQ3NTMwY2JmOTg1ZSJ9.N-O2phE0LmUei2cq3wDa6y0SfdPEe7WeChXUClJy67U"))
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.code").value(401))
+            .andExpect(jsonPath("$.message").value("无效或过期的令牌"));
+
+        mockMvc.perform(get("/api/test")
+            .header("Authorization", "bear er "))
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.code").value(401))
+            .andExpect(jsonPath("$.message").value("认证失败"));
+    }
+
+    @Test
     @SuppressWarnings("null")
-    void testUsernameNotFound() throws Exception {
+    void testLogin_UsernameNotFound() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
             .username("nonexistentuser")
             .password("SomePassword123")
@@ -134,7 +164,7 @@ public class AuthenticationTest {
 
     @Test
     @SuppressWarnings("null")
-    void testIncorrectPassword() throws Exception {
+    void testLogin_IncorrectPassword() throws Exception {
         // Register.
         UserRegisterRequest registerRequest = UserRegisterRequest.builder()
             .username("testuser")
@@ -160,8 +190,5 @@ public class AuthenticationTest {
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.code").value(401))
             .andExpect(jsonPath("$.message").value("用户名或密码错误"));
-
-        // Clean.
-        userRepository.deleteAll();
     }
 }
