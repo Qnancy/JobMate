@@ -13,11 +13,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Custom authentication entry point to handle
  * unauthorized access attempts in Spring Security filter chain.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthEntryPoint implements AuthenticationEntryPoint {
@@ -30,6 +32,7 @@ public class AuthEntryPoint implements AuthenticationEntryPoint {
         HttpServletResponse response,
         AuthenticationException authException
     ) throws IOException, ServletException {
+        log.info("Unauthorized access attempt: {}", authException.getMessage());
         responder.writeResponse(response, ApiResponse.error(ErrorCode.AUTHENTICATION_FAILED));
     }
 }

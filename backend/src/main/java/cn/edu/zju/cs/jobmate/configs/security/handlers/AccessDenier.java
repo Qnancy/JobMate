@@ -13,11 +13,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Custom access denied handler for handling
  * denied access attempts in Spring Security filter chain.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AccessDenier implements AccessDeniedHandler {
@@ -30,6 +32,7 @@ public class AccessDenier implements AccessDeniedHandler {
         HttpServletResponse response,
         AccessDeniedException accessDeniedException
     ) throws IOException, ServletException {
+        log.info("Access denied: {}", accessDeniedException.getMessage());
         responder.writeResponse(response, ApiResponse.error(ErrorCode.FORBIDDEN_ACCESS));
     }
 }
