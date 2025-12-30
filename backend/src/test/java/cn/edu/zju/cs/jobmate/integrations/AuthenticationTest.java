@@ -3,6 +3,8 @@ package cn.edu.zju.cs.jobmate.integrations;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,6 +21,7 @@ import cn.edu.zju.cs.jobmate.dto.authentication.LoginRequest;
 import cn.edu.zju.cs.jobmate.dto.user.UserRegisterRequest;
 import cn.edu.zju.cs.jobmate.enums.UserRole;
 import cn.edu.zju.cs.jobmate.repositories.UserRepository;
+import cn.edu.zju.cs.jobmate.testing.EmbeddedRedis;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -33,6 +36,19 @@ public class AuthenticationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    // Embedded Redis for testing token storage.
+    private static final EmbeddedRedis embeddedRedis = new EmbeddedRedis();
+
+    @BeforeAll
+    static void setup() throws Exception {
+        embeddedRedis.start();
+    }
+
+    @AfterAll
+    static void teardown() {
+        embeddedRedis.stop();
+    }
 
     @Test
     void testNoAuthentication_AccessRejected() throws Exception {

@@ -1,33 +1,36 @@
 package cn.edu.zju.cs.jobmate.testing;
 
-import java.io.IOException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.TestConfiguration;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import redis.embedded.RedisServer;
 
 /**
  * Embedded Redis for testing purposes.
+ * 
+ * @apiNote Manually manage the lifecycle of the embedded Redis server
+ *         ({@link #start()} and {@link #stop()})
+ *         in your test setup(using {@link BeforeAll}) and teardown(using {@link AfterAll})
+ *         so that it does not interfere with other tests.
  */
-@TestConfiguration
 public class EmbeddedRedis {
 
-    @Value("${spring.data.redis.port}")
-    private int port;
+    private static final int port = 6378;
 
     private RedisServer server;
 
-    @PostConstruct
-    public void startRedis() throws IOException {
+    /**
+     * Start the embedded Redis server.
+     */
+    public void start() {
         server = new RedisServer(port);
         server.start();
     }
 
-    @PreDestroy
-    public void stopRedis() {
+    /**
+     * Stop the embedded Redis server.
+     */
+    public void stop() {
         if (server != null) {
             server.stop();
         }

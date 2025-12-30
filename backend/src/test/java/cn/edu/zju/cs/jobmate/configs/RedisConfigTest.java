@@ -2,10 +2,11 @@ package cn.edu.zju.cs.jobmate.configs;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -19,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Import(value = EmbeddedRedis.class)
 class RedisConfigTest {
 
     @Data
@@ -29,6 +29,19 @@ class RedisConfigTest {
     static class Demo {
         private String name;
         private int age;
+    }
+
+    // Embedded Redis server for testing.
+    private static final EmbeddedRedis embeddedRedis = new EmbeddedRedis();
+
+    @BeforeAll
+    static void setup() {
+        embeddedRedis.start();
+    }
+
+    @AfterAll
+    static void teardown() {
+        embeddedRedis.stop();
     }
 
     @Autowired
