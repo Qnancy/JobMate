@@ -1,8 +1,7 @@
-package cn.edu.zju.cs.jobmate.configs.security.jwt;
+package cn.edu.zju.cs.jobmate.security.jwt;
 
 import cn.edu.zju.cs.jobmate.configs.properties.JwtProperties;
 import cn.edu.zju.cs.jobmate.models.User;
-import cn.edu.zju.cs.jobmate.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.enums.UserRole;
 
 import org.junit.jupiter.api.BeforeEach;
