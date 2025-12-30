@@ -14,8 +14,7 @@ import cn.edu.zju.cs.jobmate.configs.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.models.User;
-import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
-
+import cn.edu.zju.cs.jobmate.utils.httpservlet.ResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    public final SecurityResponder responder;
+    public final ResponseUtil responder;
     public final JwtTokenProvider provider;
     public final UserDetailsService userDetailsService;
 

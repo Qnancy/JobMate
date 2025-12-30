@@ -27,7 +27,7 @@ import cn.edu.zju.cs.jobmate.configs.properties.CorsProperties;
 import cn.edu.zju.cs.jobmate.configs.security.filters.*;
 import cn.edu.zju.cs.jobmate.configs.security.handlers.*;
 import cn.edu.zju.cs.jobmate.configs.security.jwt.JwtTokenProvider;
-import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
+import cn.edu.zju.cs.jobmate.utils.httpservlet.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -44,7 +44,7 @@ public class SecurityConfig {
     private final AccessDenier accessDenier;
 
     private final ObjectMapper mapper;
-    private final SecurityResponder responder;
+    private final ResponseUtil responder;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
     

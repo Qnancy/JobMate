@@ -18,7 +18,7 @@ import cn.edu.zju.cs.jobmate.dto.authentication.LoginRequest;
 import cn.edu.zju.cs.jobmate.dto.authentication.LoginResponse;
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
-import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
+import cn.edu.zju.cs.jobmate.utils.httpservlet.ResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,13 +31,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final SecurityResponder responder;
+    private final ResponseUtil responder;
     private final ObjectMapper mapper;
     private final JwtTokenProvider tokenProvider;
 
     public LoginAuthenticationFilter(
         AuthenticationManager authenticationManager,
-        SecurityResponder responder,
+        ResponseUtil responder,
         ObjectMapper mapper,
         JwtTokenProvider tokenProvider
     ) {
@@ -54,7 +54,10 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         HttpServletResponse response
     ) throws AuthenticationException {
         try {
-            LoginRequest loginRequest = mapper.readValue(request.getInputStream(), LoginRequest.class);
+            LoginRequest loginRequest = mapper.readValue(
+                request.getInputStream(),
+                LoginRequest.class
+            );
             log.info("Attempting authentication: {}", loginRequest);
             UsernamePasswordAuthenticationToken authRequest =
                 new UsernamePasswordAuthenticationToken(

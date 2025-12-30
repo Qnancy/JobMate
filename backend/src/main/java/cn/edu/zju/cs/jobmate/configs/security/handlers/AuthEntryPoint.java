@@ -8,23 +8,21 @@ import org.springframework.stereotype.Component;
 
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
-import cn.edu.zju.cs.jobmate.utils.security.SecurityResponder;
+import cn.edu.zju.cs.jobmate.utils.httpservlet.ResponseUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Custom authentication entry point to handle
  * unauthorized access attempts in Spring Security filter chain.
  */
 @Component
+@RequiredArgsConstructor
 public class AuthEntryPoint implements AuthenticationEntryPoint {
 
-    private final SecurityResponder responder;
-
-    public AuthEntryPoint(SecurityResponder responder) {
-        this.responder = responder;
-    }
+    private final ResponseUtil responder;
 
     @Override
     public void commence (

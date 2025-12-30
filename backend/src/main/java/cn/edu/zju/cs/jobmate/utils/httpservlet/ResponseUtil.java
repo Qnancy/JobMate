@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.utils.security;
+package cn.edu.zju.cs.jobmate.utils.httpservlet;
 
 import java.io.IOException;
 
@@ -9,20 +9,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Security responder used in Spring Security.
+ * {@link HttpServletResponse} related utilities.
  */
 @Slf4j
 @Component
-public class SecurityResponder {
+@RequiredArgsConstructor
+public class ResponseUtil {
 
     private final ObjectMapper mapper;
-
-    public SecurityResponder(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
 
     /**
      * Write {@link ApiResponse} to HttpServletResponse.
