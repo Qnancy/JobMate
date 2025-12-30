@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.slf4j.MDC;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
@@ -23,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
  * @apiNote This filter cooperates with {@link AuditInterceptor}.
  */
 @Slf4j
-@Component
 public class AuditFilter extends OncePerRequestFilter {
 
     @Override
