@@ -13,11 +13,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 
-import cn.edu.zju.cs.jobmate.configs.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.dto.authentication.LoginRequest;
 import cn.edu.zju.cs.jobmate.dto.authentication.LoginResponse;
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
+import cn.edu.zju.cs.jobmate.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.utils.httpservlet.ResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

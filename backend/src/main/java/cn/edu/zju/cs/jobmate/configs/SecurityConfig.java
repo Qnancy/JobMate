@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cn.edu.zju.cs.jobmate.configs.properties.CorsProperties;
 import cn.edu.zju.cs.jobmate.configs.security.filters.*;
 import cn.edu.zju.cs.jobmate.configs.security.handlers.*;
-import cn.edu.zju.cs.jobmate.configs.security.jwt.JwtTokenProvider;
+import cn.edu.zju.cs.jobmate.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.utils.httpservlet.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 

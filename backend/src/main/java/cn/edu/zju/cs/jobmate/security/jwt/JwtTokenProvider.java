@@ -1,4 +1,4 @@
-package cn.edu.zju.cs.jobmate.configs.security.jwt;
+package cn.edu.zju.cs.jobmate.security.jwt;
 
 import java.text.ParseException;
 import java.util.Date;

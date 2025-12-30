@@ -1,18 +1,20 @@
-package cn.edu.zju.cs.jobmate.utils.security;
+package cn.edu.zju.cs.jobmate.security.authentication;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import cn.edu.zju.cs.jobmate.configs.security.authentication.JwtAuthenticationToken;
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.models.User;
 
 /**
- * Authentication utility for retrieving the current authenticated user.
+ * Authentication loader for retrieving the current authenticated user.
  */
-public class AuthenticationLoader {
+public final class AuthenticationLoader {
+
+    private AuthenticationLoader() {
+    }
 
     /**
      * Get the currently authenticated user from the security context.

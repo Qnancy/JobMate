@@ -8,8 +8,8 @@ import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.repositories.UserRepository;
+import cn.edu.zju.cs.jobmate.security.authentication.AuthenticationLoader;
 import cn.edu.zju.cs.jobmate.services.UserService;
-import cn.edu.zju.cs.jobmate.utils.security.AuthenticationLoader;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
