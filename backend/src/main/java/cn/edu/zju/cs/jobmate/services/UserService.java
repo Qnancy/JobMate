@@ -5,8 +5,6 @@ import cn.edu.zju.cs.jobmate.models.User;
 
 /**
  * User service interface.
- * 
- * TODO: add authentication and authorization methods.
  */
 public interface UserService {
 
