@@ -48,7 +48,7 @@ public interface UserService {
      * Get current logged-in user.
      *
      * @return current user
-     * @throws BusinessException if no user is logged in
+     * @throws BusinessException if no user is logged in or not found
      */
     User getCurrentUser();
 }

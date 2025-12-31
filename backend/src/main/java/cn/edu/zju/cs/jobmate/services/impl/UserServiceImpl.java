@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     public User register(UserRegisterRequest dto) {
         // Validate admin secret for admin registration.
         if (dto.getRole() == UserRole.ADMIN &&
-            dto.getAdminSecret() != adminProperties.getSecret()) {
+            !dto.getAdminSecret().equals(adminProperties.getSecret())) {
             throw new BusinessException(ErrorCode.INVALID_ADMIN_SECRET);
         }
         // Check for existing username.
@@ -85,6 +85,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public User getCurrentUser() {
-        return AuthenticationLoader.getCurrentUser();
+        return userRepository.findByUsername(AuthenticationLoader.getCurrentUsername())
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +16,10 @@ import cn.edu.zju.cs.jobmate.dto.authentication.LoginRequest;
 import cn.edu.zju.cs.jobmate.dto.authentication.LoginResponse;
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
+import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.security.jwt.JwtTokenProvider;
 import cn.edu.zju.cs.jobmate.utils.httpservlet.ResponseUtil;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -78,17 +79,17 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         Authentication authResult
     ) throws IOException, ServletException {
         // Get user details.
-        UserDetails userDetails = (UserDetails) authResult.getPrincipal();
+        User user = (User) authResult.getPrincipal();
 
         // Generate JWT token.
         try {
-            String token = tokenProvider.generateToken(userDetails);
+            String token = tokenProvider.generateToken(user);
             LoginResponse body = LoginResponse.builder()
                 .token(token)
                 .tokenType("Bearer")
                 .build();
             responder.writeResponse(response, ApiResponse.ok("登录成功", body));
-            log.info("User '{}' logined successfully", userDetails.getUsername());
+            log.info("User(username='{}') logined successfully", user.getUsername());
         } catch (JOSEException e) {
             log.error("Failed to generate JWT token: {}", e.getMessage());
             responder.writeResponse(response, ApiResponse.error(ErrorCode.TOKEN_SIGNING_ERROR));

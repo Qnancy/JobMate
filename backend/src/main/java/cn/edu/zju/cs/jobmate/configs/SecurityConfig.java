@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,6 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cn.edu.zju.cs.jobmate.configs.properties.CorsProperties;
+import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
 import cn.edu.zju.cs.jobmate.configs.security.filters.*;
 import cn.edu.zju.cs.jobmate.configs.security.handlers.*;
 import cn.edu.zju.cs.jobmate.security.jwt.JwtBlacklistManager;
@@ -47,8 +47,8 @@ public class SecurityConfig {
     private final ObjectMapper mapper;
     private final ResponseUtil responder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserDetailsService userDetailsService;
     private final JwtBlacklistManager jwtBlacklistManager;
+    private final MonitorProperties monitorProperties;
     
     /**
      * Password encoder to validate user passwords.
@@ -121,7 +121,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .addFilterBefore(
-                new AuditFilter(),
+                new AuditFilter(monitorProperties),
                 UsernamePasswordAuthenticationFilter.class
             )
             .addFilterAt(
@@ -137,7 +137,6 @@ public class SecurityConfig {
                 new JwtAuthenticationFilter(
                     responder,
                     jwtTokenProvider,
-                    userDetailsService,
                     jwtBlacklistManager
                 ),
                 UsernamePasswordAuthenticationFilter.class

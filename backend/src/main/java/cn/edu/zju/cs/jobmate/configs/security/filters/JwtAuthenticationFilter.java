@@ -2,16 +2,16 @@ package cn.edu.zju.cs.jobmate.configs.security.filters;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
-import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.security.authentication.JwtAuthenticationToken;
 import cn.edu.zju.cs.jobmate.security.jwt.JwtBlacklistManager;
 import cn.edu.zju.cs.jobmate.security.jwt.JwtTokenProvider;
@@ -32,7 +32,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final ResponseUtil responder;
     private final JwtTokenProvider provider;
-    private final UserDetailsService userDetailsService;
     private final JwtBlacklistManager blacklistManager;
 
     @Override
@@ -66,10 +65,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Set authentication in the security context.
             String username = provider.getUsernameFromToken(token);
-            User user = (User) userDetailsService.loadUserByUsername(username);
-            JwtAuthenticationToken authentication = new JwtAuthenticationToken(user, token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("JWT authentication successful, loaded User(id={})", user.getId());
+            List<GrantedAuthority> authorities = provider.getAuthoritiesFromToken(token);
+            JwtAuthenticationToken auth = new JwtAuthenticationToken(username, token, authorities);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            log.info("JWT authentication successful, loaded User(username='{}')", username);
+            log.debug("Granted Authorities: {}", authorities);
 
             // Continue the filter chain.
             filterChain.doFilter(request, response);

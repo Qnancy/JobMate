@@ -1,29 +1,31 @@
 package cn.edu.zju.cs.jobmate.security.authentication;
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
+import java.util.Collection;
 
-import cn.edu.zju.cs.jobmate.models.User;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * JWT authentication token.
  */
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
-    private final User principal; // The authenticated user.
+    private final String principal; // The authenticated user' username.
     private String credentials; // The JWT token.
 
     public JwtAuthenticationToken(
-        User principal,
-        String credentials
+        String principal,
+        String credentials,
+        Collection<? extends GrantedAuthority> authorities
     ) {
-        super(principal.getAuthorities());
+        super(authorities);
         this.principal = principal;
         this.credentials = credentials;
         setAuthenticated(true);
     }
 
     @Override
-    public User getPrincipal() {
+    public String getPrincipal() {
         return principal;
     }
 

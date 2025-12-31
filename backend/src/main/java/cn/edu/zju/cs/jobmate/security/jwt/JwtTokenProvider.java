@@ -2,10 +2,13 @@ package cn.edu.zju.cs.jobmate.security.jwt;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.nimbusds.jose.JOSEException;
@@ -19,6 +22,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
 import cn.edu.zju.cs.jobmate.configs.properties.JwtProperties;
+import cn.edu.zju.cs.jobmate.models.User;
 
 /**
  * JWT Token Provider.
@@ -32,22 +36,27 @@ public class JwtTokenProvider {
     /**
      * Generate JWT token for a given username.
      * 
-     * @param userDetails the user details
+     * @param user the {@link User} entity
      * @return the generated JWT token
      * @throws JOSEException if signing fails
      */
-    public String generateToken(UserDetails userDetails) throws JOSEException {
+    public String generateToken(User user) throws JOSEException {
         Date now = new Date();
         Date exp = new Date(now.getTime() + properties.getExpiration());
 
         // Prepare the JWT.
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-            .subject(userDetails.getUsername())
             .jwtID(UUID.randomUUID().toString())
+            .subject(user.getUsername())
             .issueTime(now)
+            .issuer("JobMate")
             .expirationTime(exp)
-            // TODO: .claim()
+            // TODO: add fake id.
+            .claim("roles", user.getAuthorities()
+                .stream()
+                .map(auth -> auth.getAuthority())
+                .toList())
             .build();
 
         // Sign the JWT.
@@ -81,7 +90,7 @@ public class JwtTokenProvider {
     }
 
     /**
-     * Extract username from JWT token.
+     * Get username from JWT token.
      * 
      * @param token the JWT token
      * @return the extracted username
@@ -103,5 +112,20 @@ public class JwtTokenProvider {
         SignedJWT signedJWT = SignedJWT.parse(token);
         Date exp = signedJWT.getJWTClaimsSet().getExpirationTime();
         return exp.getTime() - System.currentTimeMillis();
+    }
+
+    /**
+     * Get authorities from JWT token.
+     * 
+     * @param token the JWT token
+     * @return the list of granted authorities
+     * @throws ParseException if parsing fails
+     */
+    public List<GrantedAuthority> getAuthoritiesFromToken(String token) throws ParseException {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        List<String> roles = signedJWT.getJWTClaimsSet().getStringListClaim("roles");
+        return roles.stream()
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
     }
 }
