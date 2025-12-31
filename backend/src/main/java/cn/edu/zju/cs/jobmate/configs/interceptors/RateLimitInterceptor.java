@@ -37,10 +37,9 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         @NonNull HttpServletResponse response,
         @NonNull Object handler
     ) throws Exception {
-        // TODO: get user from security context
+        // Rate limiting strategy: count requests from the same IP in a time window.
         String ip = request.getRemoteAddr();
-        String uri = request.getRequestURI();
-        String key = PREFIX + ip + ":" + uri;
+        String key = PREFIX + ip;
         Long cnt = redis.opsForValue().increment(key); // TODO: wrap redis operation.
         // Set expiration for the key on first increment
         if (cnt != null && cnt == 1) {
