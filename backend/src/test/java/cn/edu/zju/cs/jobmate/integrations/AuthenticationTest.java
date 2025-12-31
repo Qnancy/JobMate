@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cn.edu.zju.cs.jobmate.configs.properties.AdminProperties;
 import cn.edu.zju.cs.jobmate.dto.authentication.LoginRequest;
 import cn.edu.zju.cs.jobmate.dto.user.UserRegisterRequest;
 import cn.edu.zju.cs.jobmate.enums.UserRole;
@@ -37,6 +38,9 @@ public class AuthenticationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AdminProperties adminProperties;
 
     // Embedded Redis for testing token storage.
     private static final EmbeddedRedis embeddedRedis = new EmbeddedRedis();
@@ -190,5 +194,104 @@ public class AuthenticationTest {
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.code").value(401))
             .andExpect(jsonPath("$.message").value("用户名或密码错误"));
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    void testAdminAccessAdminEndpoint_Success() throws Exception {
+        // Register.
+        UserRegisterRequest registerRequest = UserRegisterRequest.builder()
+            .username("adminuser")
+            .password("AdminPassword123")
+            .role(UserRole.ADMIN)
+            .adminSecret(adminProperties.getSecret())
+            .build();
+        
+        mockMvc.perform(post("/api/users/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(registerRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("注册成功"))
+            .andExpect(jsonPath("$.data").isNotEmpty());
+        
+        // Login.
+        LoginRequest loginRequest = LoginRequest.builder()
+            .username("adminuser")
+            .password("AdminPassword123")
+            .build();
+        MvcResult result = mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(loginRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("登录成功"))
+            .andExpect(jsonPath("$.data.token").isNotEmpty())
+            .andExpect(jsonPath("$.data.token_type").value("Bearer"))
+            .andReturn();
+        JsonNode root = mapper.readTree(result.getResponse().getContentAsString());
+        String token = root.path("data").path("token").asText();
+    
+        // Access admin protected endpoint.
+        mockMvc.perform(get("/api/test/admin")
+            .header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(content().string("admin ok"));
+        
+        // Logout.
+        mockMvc.perform(post("/api/auth/logout")
+            .header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("登出成功"));
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    void testNonAdminAccessAdminEndpoint_Forbidden() throws Exception {
+        // Register.
+        UserRegisterRequest registerRequest = UserRegisterRequest.builder()
+            .username("testuser")
+            .password("TestPassword123")
+            .role(UserRole.USER)
+            .build();
+        mockMvc.perform(post("/api/users/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(registerRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("注册成功"))
+            .andExpect(jsonPath("$.data").isNotEmpty());
+
+        // Login.
+        LoginRequest loginRequest = LoginRequest.builder()
+            .username("testuser")
+            .password("TestPassword123")
+            .build();
+        MvcResult result = mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(loginRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("登录成功"))
+            .andExpect(jsonPath("$.data.token").isNotEmpty())
+            .andExpect(jsonPath("$.data.token_type").value("Bearer"))
+            .andReturn();
+        JsonNode root = mapper.readTree(result.getResponse().getContentAsString());
+        String token = root.path("data").path("token").asText();
+
+        // Access admin protected endpoint.
+        mockMvc.perform(get("/api/test/admin")
+            .header("Authorization", "Bearer " + token))
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.code").value(403))
+            .andExpect(jsonPath("$.message").value("拒绝访问"));
+
+        // Logout.
+        mockMvc.perform(post("/api/auth/logout")
+            .header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("登出成功"));
     }
 }

@@ -6,9 +6,12 @@ import cn.edu.zju.cs.jobmate.enums.UserRole;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
 
 class JwtTokenProviderTest {
 
@@ -35,6 +38,11 @@ class JwtTokenProviderTest {
 
         assertTrue(provider.validateToken(token));
         assertEquals("testuser", provider.getUsernameFromToken(token));
+        assertNotNull(provider.getRemainTimeFromToken(token));
+        assertEquals(
+            List.of(new SimpleGrantedAuthority("ROLE_USER")),
+            provider.getAuthoritiesFromToken(token)
+        );
     }
 
     @Test
