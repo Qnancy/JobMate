@@ -1,6 +1,5 @@
 package cn.edu.zju.cs.jobmate.configs.interceptors;
 
-import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
 import cn.edu.zju.cs.jobmate.configs.security.filters.AuditFilter;
 import cn.edu.zju.cs.jobmate.utils.httpservlet.RequestUtil;
 
@@ -22,12 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class AuditInterceptor implements HandlerInterceptor {
 
-    private final MonitorProperties.SlowApi slowApi;
-
-    public AuditInterceptor(MonitorProperties monitorProperties) {
-        this.slowApi = monitorProperties.getSlowApi();
-    }
-
     @Override
     public boolean preHandle(
         @NonNull HttpServletRequest request,
@@ -46,16 +39,7 @@ public class AuditInterceptor implements HandlerInterceptor {
         @NonNull Object handler,
         @Nullable Exception exception
     ) throws Exception {
-        long time = RequestUtil.checkTimer(request);
-        if (exception != null) {
-            log.error("Request {} completed with exception in {} ms",
-                RequestUtil.info(request), time, exception);
-        } else if (slowApi.getEnabled() && time > slowApi.getThresholdMs()) {
-            log.warn("Slow request {} completed in {} ms with status {}",
-                RequestUtil.info(request), time, response.getStatus());
-        } else {
-            log.info("Request {} completed in {} ms with status {}",
-                RequestUtil.info(request), time, response.getStatus());
-        }
+        log.debug("Completed general request processing in {} ms",
+            RequestUtil.checkTimer(request));
     }
 }
