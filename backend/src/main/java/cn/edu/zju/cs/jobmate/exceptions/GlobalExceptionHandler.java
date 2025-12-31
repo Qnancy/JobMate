@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,6 +33,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity
             .status(Objects.requireNonNull(code.getHttpStatus()))
             .body(ApiResponse.error(code));
+    }
+
+    /**
+     * Handle access denied exceptions.
+     * 
+     * @param ex the access denied exception
+     * @return a standardized error response with 403 status
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
+        log.info("Access denied");
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ApiResponse.error(ErrorCode.FORBIDDEN_ACCESS));
     }
 
     /**
