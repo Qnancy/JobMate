@@ -34,15 +34,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
-        // Logging interceptor
+        // Auditing interceptor.
         registry.addInterceptor(Objects.requireNonNull(auditInterceptor))
-                .addPathPatterns("/api/**")
-                .excludePathPatterns( // TODO: update
-                    "/api/login",
-                    "/api/register",
-                    "/api/health"
-                );
-        // Rate limiting interceptor
+                .addPathPatterns("/api/**");
+        // Rate limiting interceptor.
         if (monitorProperties.getRateLimiter().getEnabled()) {
             registry.addInterceptor(Objects.requireNonNull(rateLimitInterceptor))
                     .addPathPatterns("/api/**");
