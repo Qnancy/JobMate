@@ -8,10 +8,13 @@ import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 
 /**
  * Global exception handler for the application.
@@ -36,7 +39,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle access denied exceptions.
+     * Handle {@link AccessDeniedException}.
      * 
      * @param ex the access denied exception
      * @return a standardized error response with 403 status
@@ -50,28 +53,28 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle Spring @Valid validation failures.
+     * Handle {@link Valid} validation failures.
      * 
-     * @param ex the method argument not valid exception
+     * @param ex the Spring {@link MethodArgumentNotValidException}
      * @return a standardized error response with 400 status
-     * TODO: fix
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
+        log.warn("Invalid method argument: {}", ex.getMessage());
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(ApiResponse.error(ErrorCode.INVALID_PARAMETER));
     }
 
     /**
-     * Handle Jakarta @Validated constraint violations.
+     * Handle Spring {@link Validated} constraint violations.
      * 
-     * @param ex the constraint violation exception
+     * @param ex the {@link ConstraintViolationException}
      * @return a standardized error response with 400 status
-     * TODO: fix
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleConstraintViolationException(ConstraintViolationException ex) {
+        log.warn("Constraint violation: {}", ex.getMessage());
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(ApiResponse.error(ErrorCode.INVALID_PARAMETER));

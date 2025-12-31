@@ -17,7 +17,7 @@ public enum ErrorCode {
     TOKEN_PARSING_ERROR  (1003, HttpStatus.INTERNAL_SERVER_ERROR, "令牌解析错误"),
 
     // Argument Errors.
-    INVALID_PARAMETER(2001, HttpStatus.BAD_REQUEST, "参数无效"),
+    INVALID_PARAMETER(2001, HttpStatus.BAD_REQUEST, "非法或无效的参数"),
     MISSING_PARAMETER(2002, HttpStatus.BAD_REQUEST, "缺少参数"),
     NO_UPDATES       (2003, HttpStatus.BAD_REQUEST, "没有更新"),
 
