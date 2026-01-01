@@ -11,6 +11,7 @@ import cn.edu.zju.cs.jobmate.repositories.UserRepository;
 import cn.edu.zju.cs.jobmate.security.authentication.AuthenticationLoader;
 import cn.edu.zju.cs.jobmate.services.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * User service implementation.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {

@@ -10,7 +10,7 @@ import cn.edu.zju.cs.jobmate.repositories.JobInfoRepository;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
 import cn.edu.zju.cs.jobmate.services.JobInfoService;
 import cn.edu.zju.cs.jobmate.utils.query.QuerySpecBuilder;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -27,18 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class JobInfoServiceImpl implements JobInfoService {
 
     private final JobInfoRepository jobInfoRepository;
     private final CompanyService companyService;
-
-    public JobInfoServiceImpl(
-        JobInfoRepository jobInfoRepository,
-        CompanyService companyService
-    ) {
-        this.jobInfoRepository = jobInfoRepository;
-        this.companyService = companyService;
-    }
 
     @Override
     @Transactional

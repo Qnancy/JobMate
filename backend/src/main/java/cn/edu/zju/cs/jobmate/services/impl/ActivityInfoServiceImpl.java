@@ -10,7 +10,7 @@ import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
 import cn.edu.zju.cs.jobmate.services.ActivityInfoService;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
 import cn.edu.zju.cs.jobmate.utils.query.QuerySpecBuilder;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
@@ -27,18 +27,11 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     private final ActivityInfoRepository activityInfoRepository;
     private final CompanyService companyService;
-
-    public ActivityInfoServiceImpl(
-        ActivityInfoRepository activityInfoRepository,
-        CompanyService companyService
-    ) {
-        this.activityInfoRepository = activityInfoRepository;
-        this.companyService = companyService;
-    }
 
     @Override
     @Transactional

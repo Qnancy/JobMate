@@ -11,6 +11,7 @@ import cn.edu.zju.cs.jobmate.repositories.JobSubscriptionRepository;
 import cn.edu.zju.cs.jobmate.services.JobInfoService;
 import cn.edu.zju.cs.jobmate.services.JobSubscriptionService;
 import cn.edu.zju.cs.jobmate.services.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
@@ -22,21 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class JobSubscriptionServiceImpl implements JobSubscriptionService {
 
     private final JobSubscriptionRepository jobSubscriptionRepository;
     private final JobInfoService jobInfoService;
     private final UserService userService;
-
-    public JobSubscriptionServiceImpl(
-        JobSubscriptionRepository jobSubscriptionRepository,
-        JobInfoService jobInfoService,
-        UserService userService
-    ) {
-        this.jobSubscriptionRepository = jobSubscriptionRepository;
-        this.jobInfoService = jobInfoService;
-        this.userService = userService;
-    }
 
     @Override
     @Transactional

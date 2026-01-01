@@ -11,6 +11,8 @@ import cn.edu.zju.cs.jobmate.repositories.ActivitySubscriptionRepository;
 import cn.edu.zju.cs.jobmate.services.ActivityInfoService;
 import cn.edu.zju.cs.jobmate.services.ActivitySubscriptionService;
 import cn.edu.zju.cs.jobmate.services.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -19,22 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * ActivitySubscription service implementation.
  */
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ActivitySubscriptionServiceImpl implements ActivitySubscriptionService {
 
     private final ActivitySubscriptionRepository activitySubscriptionRepository;
     private final ActivityInfoService activityInfoService;
     private final UserService userService;
-
-    public ActivitySubscriptionServiceImpl(
-        ActivitySubscriptionRepository activitySubscriptionRepository,
-        ActivityInfoService activityInfoService,
-        UserService userService
-    ) {
-        this.activitySubscriptionRepository = activitySubscriptionRepository;
-        this.activityInfoService = activityInfoService;
-        this.userService = userService;
-    }
 
     @Override
     @Transactional

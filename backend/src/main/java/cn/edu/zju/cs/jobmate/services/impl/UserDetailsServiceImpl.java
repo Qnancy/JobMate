@@ -8,20 +8,20 @@ import org.springframework.stereotype.Service;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * {@link UserDetailsService} implementation.
  * 
  * @apiNote Used for Spring Security authentication.
  */
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    public UserDetailsServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     /**
      * Loads a user by username.

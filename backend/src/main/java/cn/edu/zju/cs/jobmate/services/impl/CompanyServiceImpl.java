@@ -8,6 +8,7 @@ import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.CompanyRepository;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
 import cn.edu.zju.cs.jobmate.utils.query.QuerySpecBuilder;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
@@ -24,13 +25,10 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
-
-    public CompanyServiceImpl(CompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
-    }
 
     @Override
     @Transactional
