@@ -24,8 +24,7 @@ class JwtTokenProviderTest {
         properties.setSecret("Th15!5@S3cr3tK3yF0rJ06M4t3@99l!(@t10n123456");
         properties.setExpiration(3600_000L); // 1 hour.
 
-        provider = new JwtTokenProvider();
-        ReflectionTestUtils.setField(provider, "properties", properties);
+        provider = new JwtTokenProvider(properties);
     }
 
     @Test

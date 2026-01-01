@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -23,15 +22,16 @@ import com.nimbusds.jwt.SignedJWT;
 
 import cn.edu.zju.cs.jobmate.configs.properties.JwtProperties;
 import cn.edu.zju.cs.jobmate.models.User;
+import lombok.RequiredArgsConstructor;
 
 /**
  * JWT Token Provider.
  */
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Autowired
-    private JwtProperties properties;
+    private final JwtProperties properties;
 
     /**
      * Generate JWT token for a given username.

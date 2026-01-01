@@ -12,12 +12,12 @@ public interface UpdateRequest<T> {
      * 
      * @return false if no updates are needed, true otherwise.
      */
-    public boolean isUpdatable();
+    boolean isUpdatable();
 
     /**
      * Apply the updates from this request to the given entity.
      * 
      * @param entity the entity to be updated
      */
-    public void apply(T entity);
+    void apply(T entity);
 }

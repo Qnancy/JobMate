@@ -12,5 +12,5 @@ public interface CreateRequest<T> {
      * 
      * @return the entity created from this request DTO
      */
-    public T toModel();
+    T toModel();
 }

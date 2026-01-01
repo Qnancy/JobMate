@@ -27,12 +27,8 @@ public class UserUpdateRequest implements UpdateRequest<User> {
 
     @Override
     public void apply(User user) {
-        if (username != null) {
-            user.setUsername(username);
-        }
-        if (password != null) {
-            user.setPassword(password);
-        }
+        if (username != null) { user.setUsername(username); }
+        if (password != null) { user.setPassword(password); }
     }
 
     @Override
