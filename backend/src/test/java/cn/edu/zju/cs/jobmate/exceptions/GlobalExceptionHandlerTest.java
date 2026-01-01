@@ -28,10 +28,24 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testHandleBusinessException() throws Exception {
-        mockMvc.perform(get("/business-ex"))
+        mockMvc.perform(get("/api/test/business-ex"))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.code").value(ErrorCode.UNKNOWN_ERROR.getHttpStatus().value()))
             .andExpect(jsonPath("$.message").value(ErrorCode.UNKNOWN_ERROR.getMessage()))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testHandleAccessDeniedException() throws Exception {
+        // See in {@link AuthenticationTest#testNonAdminAccessAdminEndpoint_Forbidden()}.
+    }
+
+    @Test
+    void testHandleNoHandlerFoundException() throws Exception {
+        mockMvc.perform(get("/api/non-existent-endpoint"))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.code").value(ErrorCode.RESOURCE_NOT_FOUND.getHttpStatus().value()))
+            .andExpect(jsonPath("$.message").value(ErrorCode.RESOURCE_NOT_FOUND.getMessage()))
             .andExpect(jsonPath("$.data").isEmpty());
     }
 
@@ -57,7 +71,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testHandleUncaughtException() throws Exception {
-        mockMvc.perform(get("/uncaught-ex"))
+        mockMvc.perform(get("/api/test/uncaught-ex"))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.code").value(500))
             .andExpect(jsonPath("$.message").value("服务器内部错误，请联系管理员"))

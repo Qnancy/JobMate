@@ -21,34 +21,34 @@ import jakarta.validation.constraints.Positive;
 @RestController
 public class DummyController {
 
-    @GetMapping("/business-ex")
-    public void throwBusinessException() {
-        throw new BusinessException(ErrorCode.UNKNOWN_ERROR);
-    }
-
-    @GetMapping("/uncaught-ex")
-    public void throwUncaughtException() {
-        throw new RuntimeException("System failure");
-    }
-
     @GetMapping("/api/test")
     public String test() {
         return "ok";
     }
 
+    @GetMapping("/api/test/business-ex")
+    public void testBusinessExceptionHandler() {
+        throw new BusinessException(ErrorCode.UNKNOWN_ERROR);
+    }
+
+    @GetMapping("/api/test/uncaught-ex")
+    public void testUncaughtExceptionHandler() {
+        throw new RuntimeException("System failure");
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/api/test/admin")
-    public String testAdmin() {
+    public String testAdminEndpoint() {
         return "admin ok";
     }
 
     @PostMapping("/api/test/valid")
-    public String testValid(@Valid @RequestBody ValidTestRequest req) {
+    public String testValidExceptionHandler(@Valid @RequestBody ValidTestRequest req) {
         return "ok";
     }
 
     @GetMapping("/api/test/constraint/{id}")
-    public String testConstraint(@PathVariable @Positive Integer id) {
+    public String testConstraintExceptionHandler(@PathVariable @Positive Integer id) {
         return "ok";
     }
 

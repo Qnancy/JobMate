@@ -42,6 +42,11 @@ spring:
           min-idle: 0
           max-wait: 2000ms
       timeout: 2000ms
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
 
 # Server Configuration.
 server:

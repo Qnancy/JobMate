@@ -33,6 +33,7 @@ public enum ErrorCode {
 
     // General Resource Errors.
     TOO_MANY_REQUESTS(5001, HttpStatus.TOO_MANY_REQUESTS, "请求过于频繁，请稍后再试"),
+    RESOURCE_NOT_FOUND(5002, HttpStatus.NOT_FOUND, "资源未找到"),
 
     // Business Resource Errors.
     ACTIVITY_INFO_ALREADY_EXISTS        (4001, HttpStatus.CONFLICT, "活动信息已存在"),

@@ -42,6 +42,7 @@
     </root>
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" level="ERROR"/>
+    <logger name="org.springframework.web.servlet.PageNotFound" level="ERROR"/>
     <logger name="org.hibernate.SQL" level="WARN"/>
     <logger name="cn.edu.zju.cs.jobmate" level="DEBUG"/>
 
