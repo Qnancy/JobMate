@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
-import cn.edu.zju.cs.jobmate.security.authentication.AuthenticationLoader;
 import cn.edu.zju.cs.jobmate.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +28,7 @@ public class AuthenticationController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
     ) {
         authenticationService.logout(authorization);
-        log.info("User(username={}) logged out successfully",
-            AuthenticationLoader.getCurrentUsername());
+        log.info("Current User logged out successfully");
         return ResponseEntity.ok(ApiResponse.ok("登出成功"));
     }
 }
