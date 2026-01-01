@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
 import cn.edu.zju.cs.jobmate.testing.DummyController;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = DummyController.class)
@@ -32,6 +32,26 @@ class GlobalExceptionHandlerTest {
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.code").value(ErrorCode.UNKNOWN_ERROR.getHttpStatus().value()))
             .andExpect(jsonPath("$.message").value(ErrorCode.UNKNOWN_ERROR.getMessage()))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testHandleMethodArgumentNotValidException() throws Exception {
+        mockMvc.perform(post("/api/test/valid")
+            .contentType("application/json")
+            .content("{}")) // Missing required fields.
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_PARAMETER.getHttpStatus().value()))
+            .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_PARAMETER.getMessage()))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testHandleConstraintViolationException() throws Exception {
+        mockMvc.perform(get("/api/test/constraint/-1")) // Invalid parameter.
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_PARAMETER.getHttpStatus().value()))
+            .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_PARAMETER.getMessage()))
             .andExpect(jsonPath("$.data").isEmpty());
     }
 
