@@ -3,7 +3,10 @@ package cn.edu.zju.cs.jobmate.utils.log;
 /**
  * Utility used in {@link #toString()} for friendly logging.
  */
-public class ToStringUtil {
+public final class ToStringUtil {
+
+    private ToStringUtil() {
+    }
 
     /**
      * Wrap the string with single quotes.

@@ -11,7 +11,10 @@ import jakarta.persistence.criteria.Predicate;
 /**
  * JPA {@link Specification} builder used in keyword and filter query.
  */
-public class QuerySpecBuilder {
+public final class QuerySpecBuilder {
+
+    private QuerySpecBuilder() {
+    }
 
     /**
      * Fields to search the keyword in.
