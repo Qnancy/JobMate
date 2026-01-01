@@ -49,23 +49,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void delete(Integer id) {
-        if (id == null) {
-            throw new BusinessException(ErrorCode.MISSING_PARAMETER);
-        }
-        userRepository.deleteById(id);
+    public void delete() {
+        String username = AuthenticationLoader.getCurrentUsername();
+        userRepository.deleteByUsername(username);
     }
 
     @Override
     @Transactional
-    public User update(Integer id, UserUpdateRequest dto) {
+    public User update(UserUpdateRequest dto) {
         // Check if no updates needed.
         if (!dto.isUpdatable()) {
             throw new BusinessException(ErrorCode.NO_UPDATES);
         }
 
-        // Fetch existing User.
-        User user = getById(id);
+        // Fetch current User.
+        User user = getCurrentUser();
 
         // Update and save.
         dto.apply(user);

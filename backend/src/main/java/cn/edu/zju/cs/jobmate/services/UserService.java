@@ -19,20 +19,17 @@ public interface UserService {
     User register(UserRegisterRequest dto);
 
     /**
-     * Delete user by id.
-     *
-     * @param id user id
+     * Delete current user.
      */
-    void delete(Integer id);
+    void delete();
 
     /**
-     * Update user.
+     * Update current user.
      *
-     * @param id user id
      * @param dto user update request
      * @return updated user
      */
-    User update(Integer id, UserUpdateRequest dto);
+    User update(UserUpdateRequest dto);
 
     /**
      * Get user by id.

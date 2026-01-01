@@ -2,7 +2,7 @@ package cn.edu.zju.cs.jobmate.dto.user;
 
 import cn.edu.zju.cs.jobmate.dto.common.UpdateRequest;
 import cn.edu.zju.cs.jobmate.models.User;
-
+import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 import jakarta.validation.constraints.Size;
 
 import lombok.Builder;
@@ -33,5 +33,11 @@ public class UserUpdateRequest implements UpdateRequest<User> {
         if (password != null) {
             user.setPassword(password);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "UserUpdateRequest{" +
+                "username=" + ToStringUtil.wrap(username) + '}';
     }
 }

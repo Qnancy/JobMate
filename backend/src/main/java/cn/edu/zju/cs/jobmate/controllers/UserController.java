@@ -6,16 +6,13 @@ import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.services.UserService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,14 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     /**
      * Register a new User.
@@ -54,34 +48,30 @@ public class UserController {
     }
 
     /**
-     * Delete User.
+     * Delete current User.
      * 
-     * @apiNote DELETE /api/users/{id}
+     * @apiNote DELETE /api/users/me
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(
-        @PathVariable @NotNull @Positive Integer id
-    ) {
-        log.info("Deleting User(id={})", id);
-        userService.delete(id);
-        log.info("Successfully deleted User(id={})", id);
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> delete() {
+        userService.delete();
+        log.info("Successfully deleted current User");
         return ResponseEntity.ok(ApiResponse.ok("删除成功"));
     }
 
     /**
-     * Update User.
+     * Update current User.
      * 
-     * @apiNote PUT /api/users/{id}
+     * @apiNote PUT /api/users/me
      */
-    @PutMapping("/{id}")
+    @PutMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> update(
-        @PathVariable @NotNull @Positive Integer id,
         @Valid @RequestBody UserUpdateRequest request
     ) {
-        log.info("Updating User(id={})", id);
-        User user = userService.update(id, request);
+        log.info("Updating current User with {})", request);
+        User user = userService.update(request);
         UserResponse response = UserResponse.from(user);
-        log.info("Successfully updated User(id={})", id);
+        log.info("Successfully updated current User");
         return ResponseEntity.ok(ApiResponse.ok("更新成功", response));
     }
 
@@ -92,10 +82,9 @@ public class UserController {
      */
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser() {
-        log.info("Retrieving current User");
         User user = userService.getCurrentUser();
         UserResponse response = UserResponse.from(user);
-        log.info("Successfully retrieved current User(id={})", response.getId());
+        log.info("Successfully retrieved current User");
         return ResponseEntity.ok(ApiResponse.ok("获取成功", response));
     }
 }

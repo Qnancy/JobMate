@@ -13,6 +13,13 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     /**
+     * Delete user by username.
+     * 
+     * @param username user name
+     */
+    void deleteByUsername(String username);
+
+    /**
      * Find user by username.
      *
      * @param username user name
