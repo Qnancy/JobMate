@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * DAO for {@link JobSubscription}.
  */
 @Repository
-public interface JobSubscriptionRepository extends JpaRepository<JobSubscription, Integer> {
+public interface JobSubscriptionRepository extends JpaRepository<JobSubscription, Long> {
 
     /**
      * Find job subscriptions by user ID with pagination.
@@ -20,5 +20,5 @@ public interface JobSubscriptionRepository extends JpaRepository<JobSubscription
      * @param pageable pagination information
      * @return a page of job subscriptions
      */
-    Page<JobSubscription> findByUserId(Integer userId, Pageable pageable);
+    Page<JobSubscription> findByUserId(Long userId, Pageable pageable);
 }

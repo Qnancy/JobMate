@@ -37,7 +37,7 @@ class JobInfoControllerTest extends ControllerTestStartUp {
     @SuppressWarnings("null")
     void testCreateJobInfo() throws Exception {
         JobInfoCreateRequest request = JobInfoCreateRequest.builder()
-            .companyId(1)
+            .companyId(1L)
             .recruitType(RecruitType.CAMPUS)
             .position("Java Developer")
             .link("https://job.example.com")
@@ -66,7 +66,7 @@ class JobInfoControllerTest extends ControllerTestStartUp {
 
     @Test
     void testDeleteJobInfo() throws Exception {
-        doNothing().when(jobInfoService).delete(1);
+        doNothing().when(jobInfoService).delete(1L);
 
         mockMvc.perform(delete("/api/jobs/1"))
             .andExpect(status().isOk())
@@ -93,7 +93,7 @@ class JobInfoControllerTest extends ControllerTestStartUp {
         );
         jobInfo.setCompany(company);
 
-        when(jobInfoService.update(eq(1), any(JobInfoUpdateRequest.class))).thenReturn(jobInfo);
+        when(jobInfoService.update(eq(1L), any(JobInfoUpdateRequest.class))).thenReturn(jobInfo);
 
         mockMvc.perform(put("/api/jobs/1")
             .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +118,7 @@ class JobInfoControllerTest extends ControllerTestStartUp {
         );
         jobInfo.setCompany(company);
 
-        when(jobInfoService.getById(1)).thenReturn(jobInfo);
+        when(jobInfoService.getById(1L)).thenReturn(jobInfo);
 
         mockMvc.perform(get("/api/jobs/1"))
             .andExpect(status().isOk())

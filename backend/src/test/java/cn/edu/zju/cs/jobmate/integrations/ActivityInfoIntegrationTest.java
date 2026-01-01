@@ -121,7 +121,7 @@ public class ActivityInfoIntegrationTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateActivityInfo_CompanyNotFound() throws Exception {
         ActivityInfoCreateRequest request = ActivityInfoCreateRequest.builder()
-            .companyId(9999)
+            .companyId(9999L)
             .title("Test Activity")
             .time(LocalDateTime.now())
             .link(null)
@@ -199,7 +199,7 @@ public class ActivityInfoIntegrationTest {
         ActivityInfo activityInfo = activityInfoRepository.findAll().get(0);
 
         ActivityInfoUpdateRequest request = ActivityInfoUpdateRequest.builder()
-            .companyId(9999)
+            .companyId(9999L)
             .title("Updated Activity")
             .location("Shanghai")
             .build();

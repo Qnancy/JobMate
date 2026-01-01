@@ -37,7 +37,7 @@ class ActivityInfoControllerTest extends ControllerTestStartUp {
     @SuppressWarnings("null")
     void testCreateActivityInfo() throws Exception {
         ActivityInfoCreateRequest request = ActivityInfoCreateRequest.builder()
-            .companyId(1)
+            .companyId(1L)
             .title("Test Activity")
             .time(LocalDateTime.now())
             .link("https://activity.example.com")
@@ -65,7 +65,7 @@ class ActivityInfoControllerTest extends ControllerTestStartUp {
 
     @Test
     void testDeleteActivityInfo() throws Exception {
-        doNothing().when(activityInfoService).delete(1);
+        doNothing().when(activityInfoService).delete(1L);
 
         mockMvc.perform(delete("/api/activities/1"))
             .andExpect(status().isOk())
@@ -90,7 +90,7 @@ class ActivityInfoControllerTest extends ControllerTestStartUp {
             "Updated Extra"
         );
 
-        when(activityInfoService.update(eq(1), any(ActivityInfoUpdateRequest.class)))
+        when(activityInfoService.update(eq(1L), any(ActivityInfoUpdateRequest.class)))
             .thenReturn(activityInfo);
 
         mockMvc.perform(put("/api/activities/1")
@@ -113,7 +113,7 @@ class ActivityInfoControllerTest extends ControllerTestStartUp {
             "Extra Info"
         );
 
-        when(activityInfoService.getById(1)).thenReturn(activityInfo);
+        when(activityInfoService.getById(1L)).thenReturn(activityInfo);
 
         mockMvc.perform(get("/api/activities/1"))
             .andExpect(status().isOk())

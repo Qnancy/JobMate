@@ -1,14 +1,12 @@
 package cn.edu.zju.cs.jobmate.models;
 
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
+import cn.edu.zju.cs.jobmate.models.bases.BaseEntity;
 import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
@@ -16,11 +14,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "companies")
-public class Company {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Company extends BaseEntity {
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -35,10 +29,6 @@ public class Company {
     public Company(String name, CompanyType type) {
         this.name = name;
         this.type = type;
-    }
-
-    public Integer getId() {
-        return id;
     }
 
     public String getName() {
@@ -60,7 +50,7 @@ public class Company {
     @Override
     public String toString() {
         return "Company{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", name=" + ToStringUtil.wrap(name) +
                 ", type=" + type +
                 '}';

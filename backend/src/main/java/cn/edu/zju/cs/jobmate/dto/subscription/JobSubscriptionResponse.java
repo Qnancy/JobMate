@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class JobSubscriptionResponse {
 
-    private Integer id;
+    private Long id;
     private JobInfoResponse jobInfo;
     private LocalDateTime subscribedAt;
 

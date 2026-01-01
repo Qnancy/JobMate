@@ -18,7 +18,7 @@ import lombok.Data;
 public class JobInfoCreateRequest implements CreateRequest<JobInfo> {
 
     @NotNull(message = "Company id cannot be null")
-    private Integer companyId;
+    private Long companyId;
 
     @NotNull(message = "Recruitment type cannot be null")
     private RecruitType recruitType;

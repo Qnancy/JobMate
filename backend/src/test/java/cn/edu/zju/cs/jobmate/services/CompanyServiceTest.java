@@ -70,9 +70,9 @@ class CompanyServiceTest {
 
     @Test
     void testDeleteCompany_Success() {
-        doNothing().when(companyRepo).deleteById(1);
-        companyService.delete(1);
-        verify(companyRepo).deleteById(1);
+        doNothing().when(companyRepo).deleteById(1L);
+        companyService.delete(1L);
+        verify(companyRepo).deleteById(1L);
     }
 
     @Test
@@ -90,11 +90,11 @@ class CompanyServiceTest {
             .name("New")
             .type(CompanyType.PRIVATE)
             .build();
-        when(companyRepo.findById(1)).thenReturn(Optional.of(company));
+        when(companyRepo.findById(1L)).thenReturn(Optional.of(company));
         when(companyRepo.save(any(Company.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Company updated = companyService.update(1, dto);
+        Company updated = companyService.update(1L, dto);
         assertEquals("New", updated.getName());
         assertEquals(CompanyType.PRIVATE, updated.getType());
     }
@@ -103,19 +103,19 @@ class CompanyServiceTest {
     void testUpdateCompany_NoUpdates() {
         Company company = new Company("Old", CompanyType.STATE);
         CompanyUpdateRequest dto = CompanyUpdateRequest.builder().build();
-        when(companyRepo.findById(1)).thenReturn(Optional.of(company));
+        when(companyRepo.findById(1L)).thenReturn(Optional.of(company));
 
         BusinessException ex = assertThrows(BusinessException.class,
-            () -> companyService.update(1, dto));
+            () -> companyService.update(1L, dto));
         assertEquals(ErrorCode.NO_UPDATES, ex.getErrorCode());
     }
 
     @Test
     void testGetById_Success() {
         Company company = new Company("Test", CompanyType.STATE);
-        when(companyRepo.findById(1)).thenReturn(Optional.of(company));
+        when(companyRepo.findById(1L)).thenReturn(Optional.of(company));
 
-        Company result = companyService.getById(1);
+        Company result = companyService.getById(1L);
         assertEquals("Test", result.getName());
     }
 
@@ -128,10 +128,10 @@ class CompanyServiceTest {
 
     @Test
     void testGetById_NotFound() {
-        when(companyRepo.findById(1)).thenReturn(Optional.empty());
+        when(companyRepo.findById(1L)).thenReturn(Optional.empty());
 
         BusinessException ex = assertThrows(BusinessException.class,
-            () -> companyService.getById(1));
+            () -> companyService.getById(1L));
         assertEquals(ErrorCode.COMPANY_NOT_FOUND, ex.getErrorCode());
     }
 

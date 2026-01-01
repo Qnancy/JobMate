@@ -24,7 +24,7 @@ public interface CompanyService {
      *
      * @param id company id
      */
-    void delete(Integer id);
+    void delete(Long id);
 
     /**
      * Update company.
@@ -34,7 +34,7 @@ public interface CompanyService {
      * @return updated company
      * @throws BusinessException if no update is made or company not found
      */
-    Company update(Integer id, CompanyUpdateRequest dto);
+    Company update(Long id, CompanyUpdateRequest dto);
 
     /**
      * Get company by id.
@@ -43,7 +43,7 @@ public interface CompanyService {
      * @return retrieved company
      * @throws BusinessException if company not found
      */
-    Company getById(Integer id);
+    Company getById(Long id);
 
     /**
      * Get all companies with pagination.

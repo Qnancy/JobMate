@@ -47,7 +47,7 @@ public class ActivitySubscriptionServiceImpl implements ActivitySubscriptionServ
 
     @Override
     @Transactional
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
@@ -56,7 +56,7 @@ public class ActivitySubscriptionServiceImpl implements ActivitySubscriptionServ
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ActivitySubscription> getAllByUser(Integer uid, PageRequest dto) {
+    public Page<ActivitySubscription> getAllByUser(Long uid, PageRequest dto) {
         // TODO: Validate User existence.
         return activitySubscriptionRepository.findByUserId(uid, dto.toPageable());
     }

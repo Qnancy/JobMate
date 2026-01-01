@@ -4,9 +4,6 @@ import cn.edu.zju.cs.jobmate.models.Company;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -15,11 +12,7 @@ import jakarta.persistence.MappedSuperclass;
  * Info class is the base class for JobInfo and ActivityInfo entity.
  */
 @MappedSuperclass
-public abstract class Info {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public abstract class Info extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id", nullable = false)
@@ -35,10 +28,6 @@ public abstract class Info {
     private String extra;
 
     protected Info() {
-    }
-
-    public Integer getId() {
-        return id;
     }
 
     public Company getCompany() {

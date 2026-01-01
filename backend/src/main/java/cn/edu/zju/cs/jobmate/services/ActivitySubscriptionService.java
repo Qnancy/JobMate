@@ -24,7 +24,7 @@ public interface ActivitySubscriptionService {
      *
      * @param id activity subscription id
      */
-    void deleteById(Integer id);
+    void deleteById(Long id);
 
     /**
      * Get all activity subscriptions by user with pagination.
@@ -33,5 +33,5 @@ public interface ActivitySubscriptionService {
      * @param dto page request DTO
      * @return page of activity subscriptions
      */
-    Page<ActivitySubscription> getAllByUser(Integer uid, PageRequest dto);
+    Page<ActivitySubscription> getAllByUser(Long uid, PageRequest dto);
 }

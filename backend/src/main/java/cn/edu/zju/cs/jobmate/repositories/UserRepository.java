@@ -10,7 +10,7 @@ import java.util.Optional;
  * DAO for {@link User}.
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
      * Delete user by username.

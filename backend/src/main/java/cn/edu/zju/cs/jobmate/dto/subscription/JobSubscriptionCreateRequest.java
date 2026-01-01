@@ -16,10 +16,10 @@ import lombok.Data;
 public class JobSubscriptionCreateRequest implements CreateRequest<JobSubscription> {
 
     @NotNull(message = "User id cannot be null")
-    private Integer userId;
+    private Long userId;
 
     @NotNull(message = "Job information id cannot be null")
-    private Integer jobInfoId;
+    private Long jobInfoId;
 
     @Override
     public JobSubscription toModel() {

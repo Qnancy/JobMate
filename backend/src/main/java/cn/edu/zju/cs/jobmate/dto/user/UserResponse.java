@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class UserResponse {
     
-    private Integer id;
+    private Long id;
     private String username;
     private UserRole role;
     private LocalDateTime createdAt;

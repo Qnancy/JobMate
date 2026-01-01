@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ActivitySubscriptionResponse {
 
-    private Integer id;
+    private Long id;
     private ActivityInfoResponse activityInfo;
     private LocalDateTime subscribedAt;
 

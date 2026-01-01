@@ -44,8 +44,8 @@ class JobSubscriptionServiceTest {
     @Test
     @SuppressWarnings("null")
     void testCreateJobSubscription_Success() {
-        int userId = 1;
-        int jobInfoId = 2;
+        long userId = 1;
+        long jobInfoId = 2;
         User user = new User("testuser", "pwd", null);
         JobInfo jobInfo = new JobInfo(
             null,
@@ -82,8 +82,8 @@ class JobSubscriptionServiceTest {
 
     @Test
     void testCreateJobSubscription_UserNotFound() {
-        int userId = 1;
-        int jobInfoId = 2;
+        long userId = 1;
+        long jobInfoId = 2;
         JobSubscriptionCreateRequest dto = JobSubscriptionCreateRequest.builder()
             .userId(userId)
             .jobInfoId(jobInfoId)
@@ -99,8 +99,8 @@ class JobSubscriptionServiceTest {
 
     @Test
     void testCreateJobSubscription_JobInfoNotFound() {
-        int userId = 1;
-        int jobInfoId = 2;
+        long userId = 1;
+        long jobInfoId = 2;
         JobSubscriptionCreateRequest dto = JobSubscriptionCreateRequest.builder()
             .userId(userId)
             .jobInfoId(jobInfoId)
@@ -118,9 +118,9 @@ class JobSubscriptionServiceTest {
 
     @Test
     void testDeleteById_Success() {
-        doNothing().when(jobSubscriptionRepository).deleteById(1);
-        jobSubscriptionService.deleteById(1);
-        verify(jobSubscriptionRepository).deleteById(1);
+        doNothing().when(jobSubscriptionRepository).deleteById(1L);
+        jobSubscriptionService.deleteById(1L);
+        verify(jobSubscriptionRepository).deleteById(1L);
     }
 
     @Test
@@ -133,7 +133,7 @@ class JobSubscriptionServiceTest {
     @Test
     @SuppressWarnings("null")
     void testGetAllByUser_Success() {
-        int userId = 1;
+        long userId = 1;
         PageRequest pageRequest = PageRequest.builder()
             .page(1)
             .pageSize(2)

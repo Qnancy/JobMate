@@ -57,7 +57,7 @@ class CompanyControllerTest extends ControllerTestStartUp {
 
     @Test
     void testDeleteCompany() throws Exception {
-        doNothing().when(companyService).delete(1);
+        doNothing().when(companyService).delete(1L);
 
         mockMvc.perform(delete("/api/companies/1"))
             .andExpect(status().isOk())
@@ -75,7 +75,7 @@ class CompanyControllerTest extends ControllerTestStartUp {
             .build();
 
         Company company = new Company("UpdatedCompany", CompanyType.PRIVATE);
-        when(companyService.update(eq(1), any(CompanyUpdateRequest.class)))
+        when(companyService.update(eq(1L), any(CompanyUpdateRequest.class)))
             .thenReturn(company);
 
         mockMvc.perform(put("/api/companies/1")
@@ -91,7 +91,7 @@ class CompanyControllerTest extends ControllerTestStartUp {
     @Test
     void testGetCompany() throws Exception {
         Company company = new Company("TestCompany", CompanyType.STATE);
-        when(companyService.getById(1)).thenReturn(company);
+        when(companyService.getById(1L)).thenReturn(company);
 
         mockMvc.perform(get("/api/companies/1"))
             .andExpect(status().isOk())

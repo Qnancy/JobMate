@@ -26,7 +26,7 @@ public interface JobInfoService {
      *
      * @param id job info id
      */
-    void delete(Integer id);
+    void delete(Long id);
 
     /**
      * Update job info.
@@ -36,7 +36,7 @@ public interface JobInfoService {
      * @return updated job info
      * @throws BusinessException if no updates made, or job info or company not found
      */
-    JobInfo update(Integer id, JobInfoUpdateRequest dto);
+    JobInfo update(Long id, JobInfoUpdateRequest dto);
 
     /**
      * Get job info by id.
@@ -45,7 +45,7 @@ public interface JobInfoService {
      * @return retrieved job info
      * @throws BusinessException if job info not found
      */
-    JobInfo getById(Integer id);
+    JobInfo getById(Long id);
 
     /**
      * Get job infos with pagination.

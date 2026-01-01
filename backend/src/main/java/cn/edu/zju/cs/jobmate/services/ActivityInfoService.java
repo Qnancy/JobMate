@@ -24,7 +24,7 @@ public interface ActivityInfoService {
      *
      * @param id activity info id
      */
-    void delete(Integer id);
+    void delete(Long id);
 
     /**
      * Update activity info.
@@ -34,7 +34,7 @@ public interface ActivityInfoService {
      * @return updated activity info
      * @throws BusinessException if no updates made, or activity info or company not found
      */
-    ActivityInfo update(Integer id, ActivityInfoUpdateRequest dto);
+    ActivityInfo update(Long id, ActivityInfoUpdateRequest dto);
 
     /**
      * Get activity info by id.
@@ -43,7 +43,7 @@ public interface ActivityInfoService {
      * @return retrieved activity info
      * @throws BusinessException if activity info not found
      */
-    ActivityInfo getById(Integer id);
+    ActivityInfo getById(Long id);
 
     /**
      * Get activity infos with pagination.

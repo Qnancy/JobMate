@@ -14,10 +14,10 @@ import lombok.Data;
 public class ActivitySubscriptionCreateRequest implements CreateRequest<ActivitySubscription> {
 
     @NotNull(message = "User id cannot be null")
-    private Integer userId;
+    private Long userId;
 
     @NotNull(message = "Activity information id cannot be null")
-    private Integer activityInfoId;
+    private Long activityInfoId;
 
     @Override
     public ActivitySubscription toModel() {

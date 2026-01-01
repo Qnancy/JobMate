@@ -15,7 +15,7 @@ import lombok.Data;
 @Builder
 public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
 
-    private Integer companyId;
+    private Long companyId;
     private RecruitType recruitType;
 
     @Size(max = 128, message = "Position length cannot exceed 128")

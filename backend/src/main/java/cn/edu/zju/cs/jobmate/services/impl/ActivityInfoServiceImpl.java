@@ -46,7 +46,7 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional
-    public void delete(Integer id) {
+    public void delete(Long id) {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
@@ -55,7 +55,7 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional
-    public ActivityInfo update(Integer id, ActivityInfoUpdateRequest dto) {
+    public ActivityInfo update(Long id, ActivityInfoUpdateRequest dto) {
         // Check if no updates needed.
         if (!dto.isUpdatable()) {
             throw new BusinessException(ErrorCode.NO_UPDATES);
@@ -77,7 +77,7 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public ActivityInfo getById(Integer id) {
+    public ActivityInfo getById(Long id) {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }

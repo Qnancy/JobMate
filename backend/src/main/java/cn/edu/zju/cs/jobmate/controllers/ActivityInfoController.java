@@ -56,7 +56,7 @@ public class ActivityInfoController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(
-        @PathVariable @NotNull @Positive Integer id
+        @PathVariable @NotNull @Positive Long id
     ) {
         log.info("Deleting ActivityInfo(id={})", id);
         activityInfoService.delete(id);
@@ -72,7 +72,7 @@ public class ActivityInfoController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ActivityInfoResponse>> update(
-        @PathVariable @NotNull @Positive Integer id,
+        @PathVariable @NotNull @Positive Long id,
         @Valid @RequestBody ActivityInfoUpdateRequest request
     ) {
         log.info("Updating ActivityInfo(id={}) with {}", id, request);
@@ -89,7 +89,7 @@ public class ActivityInfoController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ActivityInfoResponse>> get(
-        @PathVariable @NotNull @Positive Integer id
+        @PathVariable @NotNull @Positive Long id
     ) {
         log.info("Retrieving ActivityInfo(id={})", id);
         ActivityInfo activityInfo = activityInfoService.getById(id);

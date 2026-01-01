@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class ActivityInfoCreateRequest implements CreateRequest<ActivityInfo> {
 
     @NotNull(message = "Company id cannot be null")
-    private Integer companyId;
+    private Long companyId;
 
     @NotBlank(message = "Title cannot be empty")
     private String title;

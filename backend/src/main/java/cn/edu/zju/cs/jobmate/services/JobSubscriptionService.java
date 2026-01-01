@@ -24,7 +24,7 @@ public interface JobSubscriptionService {
      *
      * @param id job subscription id
      */
-    void deleteById(Integer id);
+    void deleteById(Long id);
 
     /**
      * Get all job subscriptions by user with pagination.
@@ -33,5 +33,5 @@ public interface JobSubscriptionService {
      * @param dto page request DTO
      * @return page of job subscriptions
      */
-    Page<JobSubscription> getAllByUser(Integer uid, PageRequest dto);
+    Page<JobSubscription> getAllByUser(Long uid, PageRequest dto);
 }

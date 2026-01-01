@@ -43,7 +43,7 @@ class JobInfoServiceTest {
     @Test
     @SuppressWarnings("null")
     void testCreateJobInfo_Success() {
-        int companyId = 1;
+        long companyId = 1;
         Company company = new Company("Test Company", CompanyType.STATE);
 
         RecruitType type = RecruitType.CAMPUS;
@@ -78,7 +78,7 @@ class JobInfoServiceTest {
 
     @Test
     void testCreateJobInfo_CompanyNotFound() {
-        int companyId = 2;
+        long companyId = 2;
         JobInfoCreateRequest dto = JobInfoCreateRequest.builder()
             .companyId(companyId)
             .position("Java")
@@ -94,9 +94,9 @@ class JobInfoServiceTest {
 
     @Test
     void testDeleteJobInfo_Success() {
-        doNothing().when(jobInfoRepository).deleteById(1);
-        jobInfoService.delete(1);
-        verify(jobInfoRepository).deleteById(1);
+        doNothing().when(jobInfoRepository).deleteById(1L);
+        jobInfoService.delete(1L);
+        verify(jobInfoRepository).deleteById(1L);
     }
 
     @Test
@@ -109,8 +109,8 @@ class JobInfoServiceTest {
     @Test
     @SuppressWarnings("null")
     void testUpdateJobInfo_Success() {
-        int jobId = 1;
-        int companyId = 2;
+        long jobId = 1;
+        long companyId = 2;
         Company company = new Company("New Company", CompanyType.PRIVATE);
         JobInfo jobInfo = new JobInfo(
             RecruitType.CAMPUS,
@@ -138,7 +138,7 @@ class JobInfoServiceTest {
 
     @Test
     void testUpdateJobInfo_NoUpdates() {
-        int jobId = 1;
+        long jobId = 1;
         JobInfo jobInfo = new JobInfo(
             RecruitType.CAMPUS,
             "Old position",
@@ -157,8 +157,8 @@ class JobInfoServiceTest {
 
     @Test
     void testUpdateJobInfo_CompanyNotFound() {
-        int jobId = 1;
-        int companyId = 2;
+        long jobId = 1;
+        long companyId = 2;
         JobInfo jobInfo = new JobInfo(
             RecruitType.CAMPUS,
             "Old position",
@@ -181,7 +181,7 @@ class JobInfoServiceTest {
 
     @Test
     void testGetById_Success() {
-        int jobId = 1;
+        long jobId = 1;
         JobInfo jobInfo = new JobInfo(
             RecruitType.CAMPUS,
             "Position",
@@ -204,7 +204,7 @@ class JobInfoServiceTest {
 
     @Test
     void testGetById_NotFound() {
-        int jobId = 1;
+        long jobId = 1;
         when(jobInfoRepository.findById(jobId)).thenReturn(Optional.empty());
 
         BusinessException ex = assertThrows(BusinessException.class,

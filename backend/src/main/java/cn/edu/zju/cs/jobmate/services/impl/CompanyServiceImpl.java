@@ -41,7 +41,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional
-    public void delete(Integer id) {
+    public void delete(Long id) {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
@@ -50,7 +50,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional
-    public Company update(Integer id, CompanyUpdateRequest dto) {
+    public Company update(Long id, CompanyUpdateRequest dto) {
         // Check if no update needed.
         if (!dto.isUpdatable()) {
             throw new BusinessException(ErrorCode.NO_UPDATES);
@@ -68,7 +68,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public Company getById(Integer id) {
+    public Company getById(Long id) {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }

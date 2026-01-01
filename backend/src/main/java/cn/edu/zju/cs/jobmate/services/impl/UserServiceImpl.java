@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User getById(Integer id) {
+    public User getById(Long id) {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }

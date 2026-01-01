@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * DAO for {@link ActivitySubscription}.
  */
 @Repository
-public interface ActivitySubscriptionRepository extends JpaRepository<ActivitySubscription, Integer> {
+public interface ActivitySubscriptionRepository extends JpaRepository<ActivitySubscription, Long> {
 
     /**
      * Find activity subscriptions by user ID with pagination.
@@ -20,5 +20,5 @@ public interface ActivitySubscriptionRepository extends JpaRepository<ActivitySu
      * @param pageable pagination information
      * @return a page of activity subscriptions
      */
-    Page<ActivitySubscription> findByUserId(Integer userId, Pageable pageable);
+    Page<ActivitySubscription> findByUserId(Long userId, Pageable pageable);
 }

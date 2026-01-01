@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * DAO for {@link JobInfo}.
  */
 @Repository
-public interface JobInfoRepository extends JpaRepository<JobInfo, Integer>, JpaSpecificationExecutor<JobInfo> {
+public interface JobInfoRepository extends JpaRepository<JobInfo, Long>, JpaSpecificationExecutor<JobInfo> {
 }

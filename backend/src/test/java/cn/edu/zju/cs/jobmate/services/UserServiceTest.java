@@ -156,9 +156,9 @@ class UserServiceTest {
     @Test
     void testGetById_Success() {
         User user = new User("user1", "pwd", UserRole.USER);
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        User result = userService.getById(1);
+        User result = userService.getById(1L);
         assertEquals("user1", result.getUsername());
     }
 
@@ -171,10 +171,10 @@ class UserServiceTest {
 
     @Test
     void testGetById_NotFound() {
-        when(userRepository.findById(1)).thenReturn(Optional.empty());
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         BusinessException ex = assertThrows(BusinessException.class,
-            () -> userService.getById(1));
+            () -> userService.getById(1L));
         assertEquals(ErrorCode.USER_NOT_FOUND, ex.getErrorCode());
     }
 

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ActivityInfoResponse {
 
-    private Integer id;
+    private Long id;
     private CompanyResponse company;
     private String title;
     private LocalDateTime time;

@@ -43,7 +43,7 @@ public class ActicityInfoServiceTest {
     @Test
     @SuppressWarnings("null")
     public void testCreateActivityInfo_Success() {
-        int companyId = 1;
+        long companyId = 1;
         Company company = new Company("Test Company", CompanyType.STATE);
 
         String title = "Test Title";
@@ -80,7 +80,7 @@ public class ActicityInfoServiceTest {
 
     @Test
     void testCreateActivityInfo_CompanyNotFound() {
-        int companyId = 2;
+        long companyId = 2;
         ActivityInfoCreateRequest dto = ActivityInfoCreateRequest.builder()
                 .companyId(companyId)
                 .title("Title")
@@ -97,9 +97,9 @@ public class ActicityInfoServiceTest {
 
     @Test
     void testDeleteActivityInfo_Success() {
-        doNothing().when(activityInfoRepository).deleteById(1);
-        activityInfoService.delete(1);
-        verify(activityInfoRepository).deleteById(1);
+        doNothing().when(activityInfoRepository).deleteById(1L);
+        activityInfoService.delete(1L);
+        verify(activityInfoRepository).deleteById(1L);
     }
 
     @Test
@@ -112,8 +112,8 @@ public class ActicityInfoServiceTest {
     @Test
     @SuppressWarnings("null")
     void testUpdateActivityInfo_Success() {
-        int activityId = 1;
-        int companyId = 1;
+        long activityId = 1;
+        long companyId = 1;
         Company company = new Company("New Company", CompanyType.PRIVATE);
         ActivityInfo activityInfo = new ActivityInfo(
             "Old Title",
@@ -141,7 +141,7 @@ public class ActicityInfoServiceTest {
 
     @Test
     void testUpdateActivityInfo_NoUpdates() {
-        int activityId = 1;
+        long activityId = 1;
         ActivityInfo activityInfo = new ActivityInfo(
             "Title",
             LocalDateTime.now(),
@@ -161,8 +161,8 @@ public class ActicityInfoServiceTest {
 
     @Test
     void testUpdateActivityInfo_CompanyNotFound() {
-        int activityId = 1;
-        int companyId = 2;
+        long activityId = 1;
+        long companyId = 2;
         ActivityInfo activityInfo = new ActivityInfo(
             "Title",
             LocalDateTime.now(),
@@ -186,7 +186,7 @@ public class ActicityInfoServiceTest {
 
     @Test
     void testGetById_Success() {
-        int activityId = 1;
+        long activityId = 1;
         ActivityInfo activityInfo = new ActivityInfo(
             "Title",
             LocalDateTime.now(),
@@ -209,7 +209,7 @@ public class ActicityInfoServiceTest {
 
     @Test
     void testGetById_NotFound() {
-        int activityId = 1;
+        long activityId = 1;
         when(activityInfoRepository.findById(activityId)).thenReturn(Optional.empty());
 
         BusinessException ex = assertThrows(BusinessException.class,

@@ -12,7 +12,7 @@ import lombok.Data;
 @Builder
 public class CompanyResponse {
     
-    private Integer id;
+    private Long id;
     private String name;
     private CompanyType type;
 

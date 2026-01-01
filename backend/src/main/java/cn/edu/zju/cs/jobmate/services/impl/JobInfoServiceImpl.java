@@ -46,7 +46,7 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional
-    public void delete(Integer id) {
+    public void delete(Long id) {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
@@ -55,7 +55,7 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional
-    public JobInfo update(Integer id, JobInfoUpdateRequest dto) {
+    public JobInfo update(Long id, JobInfoUpdateRequest dto) {
         // Check if no updates needed.
         if (!dto.isUpdatable()) {
             throw new BusinessException(ErrorCode.NO_UPDATES);
@@ -77,7 +77,7 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public JobInfo getById(Integer id) {
+    public JobInfo getById(Long id) {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }

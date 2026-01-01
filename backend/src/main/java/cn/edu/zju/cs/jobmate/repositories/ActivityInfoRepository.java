@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * DAO for {@link ActivityInfo}.
  */
 @Repository
-public interface ActivityInfoRepository extends JpaRepository<ActivityInfo, Integer>, JpaSpecificationExecutor<ActivityInfo> {
+public interface ActivityInfoRepository extends JpaRepository<ActivityInfo, Long>, JpaSpecificationExecutor<ActivityInfo> {
 }

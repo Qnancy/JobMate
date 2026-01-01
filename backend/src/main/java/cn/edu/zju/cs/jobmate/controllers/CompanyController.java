@@ -63,7 +63,7 @@ public class CompanyController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(
-        @PathVariable @NotNull @Positive Integer id
+        @PathVariable @NotNull @Positive Long id
     ) {
         log.info("Deleting Company(id={})", id);
         companyService.delete(id);
@@ -79,7 +79,7 @@ public class CompanyController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CompanyResponse>> update(
-        @PathVariable @NotNull @Positive Integer id,
+        @PathVariable @NotNull @Positive Long id,
         @Valid @RequestBody CompanyUpdateRequest request
     ) {
         log.info("Updating Company(id={}) with {}", id, request);
@@ -96,7 +96,7 @@ public class CompanyController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CompanyResponse>> get(
-        @PathVariable @NotNull @Positive Integer id
+        @PathVariable @NotNull @Positive Long id
     ) {
         log.info("Retrieving Company(id={})", id);
         Company company = companyService.getById(id);

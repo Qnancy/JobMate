@@ -30,7 +30,7 @@ class JwtTokenProviderTest {
     @Test
     void testGenerateAndParseToken() throws Exception {
         User user = new User("testuser", "password", UserRole.USER);
-        ReflectionTestUtils.setField(user, "id", 42);
+        ReflectionTestUtils.setField(user, "id", 42L);
 
         String token = provider.generateToken(user);
         assertNotNull(token);
@@ -48,7 +48,7 @@ class JwtTokenProviderTest {
     void testValidateToken_expired() throws Exception {
         properties.setExpiration(1L); // 1 ms.
         User user = new User("expireduser", "password", UserRole.USER);
-        ReflectionTestUtils.setField(user, "id", 99);
+        ReflectionTestUtils.setField(user, "id", 99L);
 
         String token = provider.generateToken(user);
         Thread.sleep(5); // Wait for token to expire.
@@ -58,7 +58,7 @@ class JwtTokenProviderTest {
     @Test
     void testValidateToken_invalidSignature() throws Exception {
         User user = new User("user", "password", UserRole.USER);
-        ReflectionTestUtils.setField(user, "id", 1);
+        ReflectionTestUtils.setField(user, "id", 1L);
 
         String token = provider.generateToken(user);
 

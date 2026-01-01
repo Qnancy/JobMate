@@ -13,7 +13,7 @@ import lombok.Data;
 @Builder
 public class JobInfoResponse {
 
-    private Integer id;
+    private Long id;
     private CompanyResponse company;
     private RecruitType recruitType;
     private String position;

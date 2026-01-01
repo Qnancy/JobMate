@@ -54,7 +54,7 @@ public class JobInfoController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(
-        @PathVariable @NotNull @Positive Integer id
+        @PathVariable @NotNull @Positive Long id
     ) {
         log.info("Deleting JobInfo(id={})", id);
         jobInfoService.delete(id);
@@ -70,7 +70,7 @@ public class JobInfoController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<JobInfoResponse>> update(
-        @PathVariable @NotNull @Positive Integer id,
+        @PathVariable @NotNull @Positive Long id,
         @Valid @RequestBody JobInfoUpdateRequest request
     ) {
         log.info("Updating JobInfo(id={}) with {}", id, request);
@@ -87,7 +87,7 @@ public class JobInfoController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<JobInfoResponse>> get(
-        @PathVariable @NotNull @Positive Integer id
+        @PathVariable @NotNull @Positive Long id
     ) {
         log.info("Retrieving JobInfo(id={})", id);
         JobInfo jobInfo = jobInfoService.getById(id);

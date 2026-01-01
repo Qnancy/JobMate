@@ -37,7 +37,7 @@ public interface UserService {
      * @param id user id
      * @return retrieved user
      */
-    User getById(Integer id);
+    User getById(Long id);
 
     /**
      * Get current logged-in user.

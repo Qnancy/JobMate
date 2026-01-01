@@ -123,7 +123,7 @@ public class JobInfoIntegrationTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateJobInfo_CompanyNotFound() throws Exception {
         JobInfoCreateRequest request = JobInfoCreateRequest.builder()
-            .companyId(9999)
+            .companyId(9999L)
             .recruitType(RecruitType.CAMPUS)
             .position("Test Position")
             .link(null)
@@ -218,7 +218,7 @@ public class JobInfoIntegrationTest {
         JobInfo jobInfo = jobInfoRepository.findAll().get(0);
 
         JobInfoUpdateRequest request = JobInfoUpdateRequest.builder()
-            .companyId(9999)
+            .companyId(9999L)
             .recruitType(null)
             .position("Updated Position")
             .link("https://updated-link.com")

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ActivityInfoUpdateRequest implements UpdateRequest<ActivityInfo> {
 
-    private Integer companyId;
+    private Long companyId;
     private String title;
     private LocalDateTime time;
     private String link;

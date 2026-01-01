@@ -47,7 +47,7 @@ public class JobSubscriptionServiceImpl implements JobSubscriptionService {
 
     @Override
     @Transactional
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         if (id == null) {
             throw new BusinessException(ErrorCode.MISSING_PARAMETER);
         }
@@ -56,7 +56,7 @@ public class JobSubscriptionServiceImpl implements JobSubscriptionService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<JobSubscription> getAllByUser(Integer uid, PageRequest dto) {
+    public Page<JobSubscription> getAllByUser(Long uid, PageRequest dto) {
         // TODO: Validate User existence.
         return jobSubscriptionRepository.findByUserId(uid, dto.toPageable());
     }

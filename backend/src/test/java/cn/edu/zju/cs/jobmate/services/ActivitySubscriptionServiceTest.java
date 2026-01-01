@@ -45,8 +45,8 @@ class ActivitySubscriptionServiceTest {
     @Test
     @SuppressWarnings("null")
     void testCreateActivitySubscription_Success() {
-        int userId = 1;
-        int activityInfoId = 2;
+        long userId = 1;
+        long activityInfoId = 2;
         User user = new User("testuser", "pwd", null);
         ActivityInfo activityInfo = new ActivityInfo(
             "Test Activity",
@@ -83,8 +83,8 @@ class ActivitySubscriptionServiceTest {
 
     @Test
     void testCreateActivitySubscription_UserNotFound() {
-        int userId = 1;
-        int activityInfoId = 2;
+        long userId = 1;
+        long activityInfoId = 2;
         ActivitySubscriptionCreateRequest dto = ActivitySubscriptionCreateRequest.builder()
             .userId(userId)
             .activityInfoId(activityInfoId)
@@ -100,8 +100,8 @@ class ActivitySubscriptionServiceTest {
 
     @Test
     void testCreateActivitySubscription_ActivityInfoNotFound() {
-        int userId = 1;
-        int activityInfoId = 2;
+        long userId = 1;
+        long activityInfoId = 2;
         ActivitySubscriptionCreateRequest dto = ActivitySubscriptionCreateRequest.builder()
             .userId(userId)
             .activityInfoId(activityInfoId)
@@ -119,9 +119,9 @@ class ActivitySubscriptionServiceTest {
 
     @Test
     void testDeleteById_Success() {
-        doNothing().when(activitySubscriptionRepository).deleteById(1);
-        activitySubscriptionService.deleteById(1);
-        verify(activitySubscriptionRepository).deleteById(1);
+        doNothing().when(activitySubscriptionRepository).deleteById(1L);
+        activitySubscriptionService.deleteById(1L);
+        verify(activitySubscriptionRepository).deleteById(1L);
     }
 
     @Test
@@ -134,7 +134,7 @@ class ActivitySubscriptionServiceTest {
     @Test
     @SuppressWarnings("null")
     void testGetAllByUser_Success() {
-        int userId = 1;
+        long userId = 1;
         PageRequest pageRequest = PageRequest.builder()
             .page(1)
             .pageSize(2)
