@@ -8,11 +8,12 @@ import cn.edu.zju.cs.jobmate.services.JobInfoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,16 +21,13 @@ import org.springframework.web.bind.annotation.*;
  * JobInfo REST Controller.
  */
 @Slf4j
-@RestController
-@RequestMapping("/api/jobs")
 @Validated
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/jobs")
 public class JobInfoController {
 
     private final JobInfoService jobInfoService;
-
-    public JobInfoController(JobInfoService jobInfoService) {
-        this.jobInfoService = jobInfoService;
-    }
 
     /**
      * Create a new JobInfo.
@@ -37,6 +35,7 @@ public class JobInfoController {
      * @apiNote POST /api/jobs
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<JobInfoResponse>> create(
         @Valid @RequestBody JobInfoCreateRequest request
     ) {
@@ -53,6 +52,7 @@ public class JobInfoController {
      * @apiNote DELETE /api/jobs/{id}
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(
         @PathVariable @NotNull @Positive Integer id
     ) {
@@ -68,6 +68,7 @@ public class JobInfoController {
      * @apiNote PUT /api/jobs/{id}
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<JobInfoResponse>> update(
         @PathVariable @NotNull @Positive Integer id,
         @Valid @RequestBody JobInfoUpdateRequest request

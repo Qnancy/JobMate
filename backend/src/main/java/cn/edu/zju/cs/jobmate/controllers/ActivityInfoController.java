@@ -10,11 +10,12 @@ import cn.edu.zju.cs.jobmate.services.ActivityInfoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,16 +23,13 @@ import org.springframework.web.bind.annotation.*;
  * ActivityInfo REST Controller.
  */
 @Slf4j
-@RestController
-@RequestMapping("/api/activities")
 @Validated
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/activities")
 public class ActivityInfoController {
 
     private final ActivityInfoService activityInfoService;
-
-    public ActivityInfoController(ActivityInfoService activityInfoService) {
-        this.activityInfoService = activityInfoService;
-    }
 
     /**
      * Creates a new ActivityInfo.
@@ -39,6 +37,7 @@ public class ActivityInfoController {
      * @apiNote POST /api/activities
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ActivityInfoResponse>> create(
         @Valid @RequestBody ActivityInfoCreateRequest request
     ) {
@@ -55,6 +54,7 @@ public class ActivityInfoController {
      * @apiNote DELETE /api/activities/{id}
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(
         @PathVariable @NotNull @Positive Integer id
     ) {
@@ -70,6 +70,7 @@ public class ActivityInfoController {
      * @apiNote PUT /api/activities/{id}
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ActivityInfoResponse>> update(
         @PathVariable @NotNull @Positive Integer id,
         @Valid @RequestBody ActivityInfoUpdateRequest request

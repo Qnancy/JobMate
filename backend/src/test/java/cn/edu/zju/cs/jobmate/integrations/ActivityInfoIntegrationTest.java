@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -89,6 +90,7 @@ public class ActivityInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateActivityInfo_Success() throws Exception {
         ActivityInfoCreateRequest request = ActivityInfoCreateRequest.builder()
             .companyId(company1.getId())
@@ -116,6 +118,7 @@ public class ActivityInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateActivityInfo_CompanyNotFound() throws Exception {
         ActivityInfoCreateRequest request = ActivityInfoCreateRequest.builder()
             .companyId(9999)
@@ -136,6 +139,7 @@ public class ActivityInfoIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testDeleteActivityInfo() throws Exception {
         ActivityInfo activityInfo = activityInfoRepository.findAll().get(0);
 
@@ -148,6 +152,7 @@ public class ActivityInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateActivityInfo_Success() throws Exception {
         ActivityInfo activityInfo = activityInfoRepository.findAll().get(0);
 
@@ -169,6 +174,7 @@ public class ActivityInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateActivityInfo_NoUpdate() throws Exception {
         ActivityInfo activityInfo = activityInfoRepository.findAll().get(0);
 
@@ -188,6 +194,7 @@ public class ActivityInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateActivityInfo_CompanyNotFound() throws Exception {
         ActivityInfo activityInfo = activityInfoRepository.findAll().get(0);
 
@@ -208,6 +215,7 @@ public class ActivityInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateActivityInfo_ActivityNotFound() throws Exception {
         ActivityInfoUpdateRequest request = ActivityInfoUpdateRequest.builder()
             .title("Updated Activity")

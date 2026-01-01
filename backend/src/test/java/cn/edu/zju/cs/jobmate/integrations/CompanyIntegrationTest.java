@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -48,6 +49,7 @@ class CompanyIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateCompany_Success() throws Exception {
         CompanyCreateRequest request = CompanyCreateRequest.builder()
             .name("Company3")
@@ -66,6 +68,7 @@ class CompanyIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateCompany_AlreadyExist() throws Exception {
         CompanyCreateRequest request = CompanyCreateRequest.builder()
             .name("Company1")
@@ -82,6 +85,7 @@ class CompanyIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testDeleteCompany() throws Exception {
         Company company = companyRepository.save(
             new Company("Company3", CompanyType.PRIVATE));
@@ -95,6 +99,7 @@ class CompanyIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateCompany_Success() throws Exception {
         Company company = companyRepository.save(
             new Company("OldCompany", CompanyType.PRIVATE));
@@ -116,6 +121,7 @@ class CompanyIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateCompany_NoUpdate() throws Exception {
         Company company = companyRepository.save(
             new Company("SomeCompany", CompanyType.PRIVATE));
@@ -136,6 +142,7 @@ class CompanyIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateCompany_NotFound() throws Exception {
         CompanyUpdateRequest request = CompanyUpdateRequest.builder()
             .name("NewName")

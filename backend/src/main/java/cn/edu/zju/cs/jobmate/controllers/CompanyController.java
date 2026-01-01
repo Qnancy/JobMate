@@ -10,11 +10,12 @@ import cn.edu.zju.cs.jobmate.services.CompanyService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,16 +30,13 @@ import org.springframework.web.bind.annotation.RestController;
  * Company REST Controller.
  */
 @Slf4j
-@RestController
-@RequestMapping("/api/companies")
 @Validated
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/companies")
 public class CompanyController {
 
     private final CompanyService companyService;
-
-    public CompanyController(CompanyService companyService) {
-        this.companyService = companyService;
-    }
 
     /**
      * Create a new Company.
@@ -46,6 +44,7 @@ public class CompanyController {
      * @apiNote POST /api/companies
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CompanyResponse>> create(
         @Valid @RequestBody CompanyCreateRequest request
     ) {
@@ -62,6 +61,7 @@ public class CompanyController {
      * @apiNote DELETE /api/companies/{id}
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(
         @PathVariable @NotNull @Positive Integer id
     ) {
@@ -77,6 +77,7 @@ public class CompanyController {
      * @apiNote PUT /api/companies/{id}
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CompanyResponse>> update(
         @PathVariable @NotNull @Positive Integer id,
         @Valid @RequestBody CompanyUpdateRequest request

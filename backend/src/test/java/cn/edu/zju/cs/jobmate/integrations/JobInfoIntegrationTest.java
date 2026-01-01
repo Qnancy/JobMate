@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -91,6 +92,7 @@ public class JobInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateJobInfo_Success() throws Exception {
         JobInfoCreateRequest request = JobInfoCreateRequest.builder()
             .companyId(company1.getId())
@@ -118,6 +120,7 @@ public class JobInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateJobInfo_CompanyNotFound() throws Exception {
         JobInfoCreateRequest request = JobInfoCreateRequest.builder()
             .companyId(9999)
@@ -138,6 +141,7 @@ public class JobInfoIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testDeleteJobInfo() throws Exception {
         JobInfo jobInfo = jobInfoRepository.findAll().get(0);
 
@@ -150,6 +154,7 @@ public class JobInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateJobInfo_Success() throws Exception {
         Company company = companyRepository.save(new Company(
             "Company 3",
@@ -185,6 +190,7 @@ public class JobInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateJobInfo_NoUpdate() throws Exception {
         JobInfo jobInfo = jobInfoRepository.findAll().get(0);
 
@@ -207,6 +213,7 @@ public class JobInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateJobInfo_CompanyNotFound() throws Exception {
         JobInfo jobInfo = jobInfoRepository.findAll().get(0);
 
@@ -230,6 +237,7 @@ public class JobInfoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testUpdateJobInfo_JobInfoNotFound() throws Exception {
         JobInfoUpdateRequest request = JobInfoUpdateRequest.builder()
             .position("Updated Position")
