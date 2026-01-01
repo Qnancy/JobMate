@@ -15,6 +15,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(1001, HttpStatus.INTERNAL_SERVER_ERROR, "服务器内部错误"),
     TOKEN_SIGNING_ERROR  (1002, HttpStatus.INTERNAL_SERVER_ERROR, "令牌签名错误"),
     TOKEN_PARSING_ERROR  (1003, HttpStatus.INTERNAL_SERVER_ERROR, "令牌解析错误"),
+    CLOCK_MOVE_BACKWARD(1004, HttpStatus.INTERNAL_SERVER_ERROR, "系统时钟回拨"),
 
     // Argument Errors.
     INVALID_PARAMETER(2001, HttpStatus.BAD_REQUEST, "非法或无效的参数"),
