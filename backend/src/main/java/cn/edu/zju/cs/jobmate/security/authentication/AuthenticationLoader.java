@@ -1,5 +1,6 @@
 package cn.edu.zju.cs.jobmate.security.authentication;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -26,6 +27,7 @@ public final class AuthenticationLoader {
         }
         return switch (auth) {
             case JwtAuthenticationToken jwtAuth -> jwtAuth.getPrincipal();
+            case UsernamePasswordAuthenticationToken upAuth -> upAuth.getName();
             default -> {
                 log.error("Unsupported authentication type: {}",
                     auth.getClass().getName());
