@@ -53,6 +53,12 @@ public class GlobalExceptionHandler {
             .body(ApiResponse.error(ErrorCode.FORBIDDEN_ACCESS));
     }
 
+    /**
+     * Handle {@link NoHandlerFoundException}.
+     * 
+     * @param ex the no handler found exception
+     * @return a standardized error response with 404 status
+     */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
         log.warn("No handler for {} {}", ex.getHttpMethod(), ex.getRequestURL());
