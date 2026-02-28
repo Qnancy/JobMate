@@ -86,20 +86,31 @@
       </div>
     </main>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import {
-  fetchFairDetail,
-  fetchFavouriteFairIds,
-  addFavouriteFairId,
-  removeFavouriteFairId
-} from '@/utils/mockData';
+import { showToast } from 'vant';
+import { getActivityById } from '@/services/activity';
+import { subscribe, unsubscribe } from '@/services/subscription';
+import { isSuccessResponse } from '@/utils/request';
 
 const route = useRoute();
+const FAVORITE_KEY = 'jobmate_favorite_fairs';
 
-const selectedFair = ref({
-  id: null,
+type FairDetailView = {
+  id: number;
+  title: string;
+  status: string;
+  date: string;
+  location: string;
+  description: string;
+  notice: string;
+  companies: number;
+  companyList: string[];
+};
+
+const selectedFair = ref<FairDetailView>({
+  id: 0,
   title: '',
   status: '',
   date: '',
@@ -110,31 +121,81 @@ const selectedFair = ref({
   companyList: []
 });
 
-const favorites = ref({ fairs: [] });
+const favorites = ref<{ fairs: number[] }>({ fairs: [] });
 const isLoading = ref(true);
+
+function readFavoriteIds() {
+  try {
+    const raw = localStorage.getItem(FAVORITE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.map((item) => Number(item)).filter((item) => !Number.isNaN(item)) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeFavoriteIds(ids: number[]) {
+  localStorage.setItem(FAVORITE_KEY, JSON.stringify(ids));
+}
+
+function getActivityStatus(time?: string | null) {
+  if (!time) return '状态未知';
+  const date = new Date(time.replace(' ', 'T'));
+  if (Number.isNaN(date.getTime())) return '状态未知';
+  return date.getTime() > Date.now() ? '即将开始' : '已结束';
+}
 
 async function load() {
   isLoading.value = true;
   const id = Number(route.params.id);
-  const fair = await fetchFairDetail(id);
-  if (fair) selectedFair.value = fair;
-  const favIds = await fetchFavouriteFairIds();
-  favorites.value.fairs = favIds || [];
+  if (!id) {
+    isLoading.value = false;
+    return;
+  }
+
+  try {
+    const res = await getActivityById(id);
+    if (!isSuccessResponse(res) || !res.data) {
+      showToast(res.message || '获取活动详情失败');
+      isLoading.value = false;
+      return;
+    }
+
+    const item = res.data;
+    selectedFair.value = {
+      id: item.id,
+      title: item.title,
+      status: getActivityStatus(item.time),
+      date: item.time || '时间待定',
+      location: item.location || '地点待定',
+      description: item.extra || '暂无活动简介',
+      notice: item.link ? `报名链接：${item.link}` : '暂无报名链接',
+      companies: item.company?.name ? 1 : 0,
+      companyList: item.company?.name ? [item.company.name] : [],
+    };
+  } catch {
+    showToast('获取活动详情失败');
+  }
+
+  favorites.value.fairs = readFavoriteIds();
   isLoading.value = false;
 }
 
-function toggleFavorite(type, id) {
+function toggleFavorite(type: 'fair', id: number) {
+  if (!id) return;
   if (type !== 'fair') return;
   const numId = Number(id);
+  const ids = readFavoriteIds();
   if (favorites.value.fairs.includes(numId)) {
-    removeFavouriteFairId(numId).then(() => {
-      const idx = favorites.value.fairs.indexOf(numId);
-      if (idx !== -1) favorites.value.fairs.splice(idx, 1);
-    });
+    const next = ids.filter((item) => item !== numId);
+    writeFavoriteIds(next);
+    favorites.value.fairs = next;
+    unsubscribe({ type: 'activity', id: numId }).catch(() => {});
   } else {
-    addFavouriteFairId(numId).then(() => {
-      if (!favorites.value.fairs.includes(numId)) favorites.value.fairs.push(numId);
-    });
+    if (!ids.includes(numId)) ids.push(numId);
+    writeFavoriteIds(ids);
+    favorites.value.fairs = ids;
+    subscribe({ type: 'activity', id: numId }).catch(() => {});
   }
 }
 

@@ -54,6 +54,11 @@
           还没有账号？去注册
         </router-link>
       </div>
+      <div class="register-link">
+        <router-link to="/my/login-admin" class="register-btn">
+          管理员登录入口
+        </router-link>
+      </div>
     </div>
 
     <!-- 分隔线和其他登录方式 - 优化间距和样式 -->
@@ -73,13 +78,13 @@ import { ref, onMounted, watchEffect } from "vue";
 import { useRouter, onBeforeRouteLeave } from "vue-router";
 import { showToast } from "vant";
 import * as auth from "@/services/auth";
+import { isSuccessResponse } from "@/utils/request";
 import { Divider as AnDivider } from "ant-design-vue";
 import ZjuLoginButton from "@/components/zju-login-button.vue";
 
 const router = useRouter();
 
 const STORAGE_KEY = "jobmate_login_form";
-const CURRENT_KEY = "jobmate_current_user";
 const form = ref({ username: "", password: "" });
 const showPassword = ref(false);
 
@@ -127,16 +132,15 @@ onBeforeRouteLeave(() => {
 
 async function onSubmit() {
   if (!form.value.username) return showToast("请输入用户名");
-  if (!form.value.password || form.value.password.length < 3)
-    return showToast("请输入至少 3 位密码");
+  if (!form.value.password || form.value.password.length < 6)
+    return showToast("请输入至少 6 位密码");
 
   const res = await auth.login(form.value.username.trim(), form.value.password);
-  if (res.code !== 0) return showToast(res.message || "登录失败");
+  if (!isSuccessResponse(res)) return showToast(res.message || "登录失败");
 
   localStorage.removeItem(STORAGE_KEY);
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(res.data));
   showToast("登录成功");
-  const target = res?.data?.role === 'admin' ? '/admin' : '/my';
+  const target = res?.data?.role === 'ADMIN' ? '/admin' : '/my';
   router.push({ path: target });
 }
 </script>

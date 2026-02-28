@@ -18,7 +18,18 @@ export interface CompanyPayload {
 export interface CompanySearchParams {
   page: number;
   page_size: number;
+    keyword?: string;
+    type?: CompanyType;
   [key: string]: string | number | boolean | null | undefined;
+}
+
+export interface PageData<T> {
+    content: T[];
+    total: number;
+    count: number;
+    page: number;
+    page_size: number;
+    total_pages: number;
 }
 
 export async function createCompany(data: CompanyPayload) {
@@ -38,5 +49,9 @@ export async function getCompanyById(id: number) {
 }
 
 export function getCompany(params: CompanySearchParams) {
-  return api.get<Company[]>("/companies", params);
+    return api.get<PageData<Company>>("/companies", params);
+}
+
+export function searchCompany(params: CompanySearchParams) {
+    return api.get<PageData<Company>>("/companies/search", params);
 }

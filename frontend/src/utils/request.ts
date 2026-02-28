@@ -2,11 +2,21 @@ import { showToast } from 'vant';
 
 // 基础路径，配合 vite.config.ts 中的 proxy
 const BASE_URL = '/api';
+export const TOKEN_KEY = 'jobmate_token';
 
-interface ApiResponse<T = any> {
+export interface ApiResponse<T = any> {
   code: number;
   message: string;
   data: T;
+}
+
+export function isSuccessCode(code: number) {
+  return code === 0 || code === 200;
+}
+
+export function isSuccessResponse<T = any>(res: ApiResponse<T>) {
+  if (isSuccessCode(res.code)) return true;
+  return res.data !== undefined && res.data !== null;
 }
 
 /**
@@ -17,14 +27,9 @@ interface ApiResponse<T = any> {
 export async function request<T = any>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
   // 1. 自动携带 Token
   const headers = new Headers(options.headers);
-  const userJson = localStorage.getItem('jobmate_current_user');
-  if (userJson) {
-    try {
-      // 假设后端需要 Authorization 头，格式视后端要求而定
-      // const user = JSON.parse(userJson);
-      // if (user.token) headers.set('Authorization', `Bearer ${user.token}`);
-      JSON.parse(userJson);
-    } catch (e) { /* ignore */ }
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
   }
   
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
@@ -61,8 +66,8 @@ export async function request<T = any>(url: string, options: RequestInit = {}): 
     // 解析响应
     const resData: ApiResponse<T> = await response.json();
 
-    // 处理业务错误码 (假设 code !== 0 为错误)
-    if (resData.code !== 0) {
+    // 处理业务错误码
+    if (!isSuccessCode(resData.code)) {
       // 可以根据 code 做特殊处理，比如 401 token 过期跳转登录
       // showToast({ type: 'fail', message: resData.message || '业务处理失败' });
     }

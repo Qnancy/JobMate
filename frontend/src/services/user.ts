@@ -2,23 +2,27 @@ import { api } from "@/utils/request";
 
 export interface User {
   id: number;
-  name: string;
-  role: string;
-  // add other fields as needed
+  username: string;
+  role: 'ADMIN' | 'USER';
+  created_at?: string;
 }
 
 export async function getUsers() {
-  return api.get<User[]>('/users');
+  const res = await api.get<User>('/users/me');
+  return {
+    ...res,
+    data: res.data ? [res.data] : [],
+  };
 }
 
-export async function getUser(id: number) {
-  return api.get<User>(`/users/${id}`);
+export async function getCurrentUser() {
+  return api.get<User>('/users/me');
 }
 
-export async function updateUser(id: number, data: Partial<User>) {
-  return api.put<User>(`/users/${id}`, data);
+export async function updateCurrentUser(data: { username: string | null; password: string | null }) {
+  return api.put<User>(`/users/me`, data);
 }
 
-export async function deleteUser(id: number) {
-  return api.del(`/users/${id}`);
+export async function deleteCurrentUser() {
+  return api.del(`/users/me`);
 }

@@ -93,9 +93,30 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/my/login-admin': RouteRecordInfo<
+      '/my/login-admin',
+      '/my/login-admin',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/my/register': RouteRecordInfo<
       '/my/register',
       '/my/register',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/my/register-admin': RouteRecordInfo<
+      '/my/register-admin',
+      '/my/register-admin',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/my/settings': RouteRecordInfo<
+      '/my/settings',
+      '/my/settings',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -180,9 +201,27 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/my/login-admin.vue': {
+      routes:
+        | '/my/login-admin'
+      views:
+        | never
+    }
     'src/pages/my/register.vue': {
       routes:
         | '/my/register'
+      views:
+        | never
+    }
+    'src/pages/my/register-admin.vue': {
+      routes:
+        | '/my/register-admin'
+      views:
+        | never
+    }
+    'src/pages/my/settings.vue': {
+      routes:
+        | '/my/settings'
       views:
         | never
     }

@@ -6,7 +6,7 @@ export interface Job {
   company: Company; // 企业信息
   recruit_type: JobType; // 招聘类型
   position: string; // 岗位名称
-  link: string; // 投递链接
+  link: string | null; // 投递链接
   location?: string | null; // 工作地点
   extra?: string | null;
 }
@@ -26,7 +26,18 @@ export interface JobPayload {
 export interface JobSearchParams {
     page: number;
     page_size: number;
+    keyword?: string;
+    recruit_type?: JobType;
     [key: string]: string | number | boolean | null | undefined;
+}
+
+export interface PageData<T> {
+  content: T[];
+  total: number;
+  count: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
 }
 
 export async function createJob(data: JobPayload) {
@@ -46,5 +57,9 @@ export async function getJobById(id: number) {
 }
 
 export function getJob(params: JobSearchParams) {
-  return api.get<Job[]>("/jobs", params);
+  return api.get<PageData<Job>>("/jobs", params);
+}
+
+export function searchJob(params: JobSearchParams) {
+  return api.get<PageData<Job>>("/jobs/search", params);
 }

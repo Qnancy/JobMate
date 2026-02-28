@@ -12,6 +12,61 @@
   --glass-border: rgba(255, 255, 255, 0.35);
   --glass-highlight: rgba(255, 255, 255, 0.9);
   --glass-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+  --app-bg: #ffffff;
+  --app-text: #0f172a;
+  --tabbar-bg: rgba(255, 255, 255, 0.55);
+  --tabbar-border: rgba(255, 255, 255, 0.4);
+  --tabbar-shadow: 0 15px 45px rgba(15, 23, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --tabbar-active-bg: rgba(255, 255, 255, 0.9);
+  --tabbar-active-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+  --tabbar-text: #0f172a;
+  --home-bg: linear-gradient(to bottom, #f0f9ff, #ffffff);
+  --home-surface: #ffffff;
+  --home-title: #1e40af;
+  --home-subtitle: #0284c7;
+  --home-input-bg: #ffffff;
+  --home-input-border: #bae6fd;
+  --home-input-focus: #38bdf8;
+  --home-input-text: #374151;
+  --home-search-btn-bg: #d1d5db;
+  --home-search-btn-text: #374151;
+  --home-search-btn-hover-bg: #0284c7;
+  --home-search-btn-hover-text: #ffffff;
+  --home-feature-bg: linear-gradient(to right, #e0f2fe, #dbeafe);
+  --home-feature-text: #0f172a;
+  --home-stat-border: #e0f2fe;
+  --home-stat-number: #1d4ed8;
+  --home-stat-label: #6b7280;
+}
+
+:root[data-theme="dark"] {
+  color: #e5e7eb;
+  background-color: #0f172a;
+  --app-bg: #0f172a;
+  --app-text: #e5e7eb;
+  --tabbar-bg: rgba(15, 23, 42, 0.72);
+  --tabbar-border: rgba(148, 163, 184, 0.25);
+  --tabbar-shadow: 0 15px 45px rgba(2, 6, 23, 0.55), inset 0 1px 0 rgba(148, 163, 184, 0.12);
+  --tabbar-active-bg: rgba(30, 41, 59, 0.9);
+  --tabbar-active-shadow: 0 8px 20px rgba(2, 6, 23, 0.55);
+  --tabbar-text: #e5e7eb;
+  --home-bg: linear-gradient(to bottom, #0f172a, #111827);
+  --home-surface: #1f2937;
+  --home-title: #e2e8f0;
+  --home-subtitle: #94a3b8;
+  --home-input-bg: #1e293b;
+  --home-input-border: #334155;
+  --home-input-focus: #60a5fa;
+  --home-input-text: #e2e8f0;
+  --home-search-btn-bg: #334155;
+  --home-search-btn-text: #e2e8f0;
+  --home-search-btn-hover-bg: #1d4ed8;
+  --home-search-btn-hover-text: #ffffff;
+  --home-feature-bg: linear-gradient(to right, #1e293b, #334155);
+  --home-feature-text: #e2e8f0;
+  --home-stat-border: #334155;
+  --home-stat-number: #60a5fa;
+  --home-stat-label: #94a3b8;
 }
 
 *,
@@ -24,8 +79,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--app-bg);
+  color: var(--app-text);
 }
 
 #app {

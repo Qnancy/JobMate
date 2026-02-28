@@ -13,7 +13,7 @@
           fit="cover"
           :src="defaultAvatar"
         />
-        <div class="mt-3 text-[18px] font-bold tracking-[0.3px]">{{ user.name }}</div>
+        <div class="mt-3 text-[18px] font-bold tracking-[0.3px]">{{ user.username }}</div>
         <div class="mt-1 text-[13px] opacity-90">浙江大学 · 计算机科学与技术</div>
       </div>
 
@@ -62,7 +62,7 @@
 
       <div class="mt-4 mx-auto max-w-[640px]">
         <van-cell
-          class="bg-white text-[#e45b5b] mx-2 my-3 rounded-[14px] shadow-[0_10px_24px_rgba(0,0,0,0.05)] border border-[#f1c7c7] transition duration-200 cursor-pointer hover:bg-[#fff4f4] hover:text-[#d63b3b] hover:shadow-[0_10px_24px_rgba(255,140,140,0.18)] hover:-translate-y-[2px]"
+          class="bg-white text-[#e45b5b] my-3 rounded-[14px] shadow-[0_10px_24px_rgba(0,0,0,0.05)] border border-[#f1c7c7] transition duration-200 cursor-pointer hover:bg-[#fff4f4] hover:text-[#d63b3b] hover:shadow-[0_10px_24px_rgba(255,140,140,0.18)] hover:-translate-y-[2px]"
           center
           clickable
           @click="onLogout"

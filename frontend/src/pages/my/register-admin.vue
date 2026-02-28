@@ -1,29 +1,24 @@
 <template>
-
   <div class="page">
-    <!-- Logo区域优化 - 调整大小和间距 -->
     <div class="logo-container">
       <div class="logo">
         <img src="/Zhejiang_University_Logo.svg.png" alt="Logo" class="logo-img" />
-        <p class="logo-text">注册页</p>
+        <p class="logo-text">管理员注册</p>
       </div>
     </div>
 
-    <!-- 表单卡片 - 增加立体感和统一风格 -->
     <div class="form-card">
       <van-form @submit="onSubmit">
-        <!-- 用户名输入框 -->
-        <van-field 
-          v-model="form.username" 
-          label="用户名" 
-          placeholder="请输入用户名" 
-          clearable 
+        <van-field
+          v-model="form.username"
+          label="用户名"
+          placeholder="请输入用户名"
+          clearable
           @update:value="saveForm"
           class="custom-field"
           required
         />
-        
-        <!-- 密码输入框 -->
+
         <van-field
           v-model="form.password"
           :type="showPassword ? 'text' : 'password'"
@@ -40,8 +35,7 @@
             </div>
           </template>
         </van-field>
-        
-        <!-- 确认密码输入框 -->
+
         <van-field
           v-model="form.confirmPassword"
           :type="showConfirmPassword ? 'text' : 'password'"
@@ -59,37 +53,41 @@
           </template>
         </van-field>
 
-        <!-- 注册按钮 -->
+        <van-field
+          v-model="form.adminSecret"
+          :type="showAdminSecret ? 'text' : 'password'"
+          label="管理员密钥"
+          placeholder="请输入管理员密钥"
+          clearable
+          @update:value="saveForm"
+          class="custom-field"
+          required
+        >
+          <template #right-icon>
+            <div class="password-toggle" @click.stop="showAdminSecret = !showAdminSecret">
+              <van-icon :name="showAdminSecret ? 'eye-o' : 'closed-eye'" color="#999" />
+            </div>
+          </template>
+        </van-field>
+
         <div class="register-button-box">
-          <van-button 
-            block 
-            round 
-            type="primary" 
-            native-type="submit"
-            class="register-button"
-          >
-            注册
+          <van-button block round type="primary" native-type="submit" class="register-button">
+            注册管理员
           </van-button>
         </div>
       </van-form>
 
-      <!-- 登录链接 -->
       <div class="login-link">
-        <router-link to="/my/login" class="login-btn">
-          已有账号？去登录
-        </router-link>
+        <router-link to="/my/register" class="login-btn">普通用户注册</router-link>
       </div>
       <div class="login-link mt-2">
-        <router-link to="/my/register-admin" class="login-btn">
-          管理员注册入口
-        </router-link>
+        <router-link to="/my/login" class="login-btn">已有账号？去登录</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// 原有逻辑保持不变，仅增加返回按钮功能
 import { ref, onMounted, watch } from 'vue'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import { showToast, showSuccessToast, showFailToast } from 'vant'
@@ -98,82 +96,74 @@ import { isSuccessResponse } from '@/utils/request'
 
 const router = useRouter()
 
-const STORAGE_KEY = "jobmate_register_form";
-const form = ref({ username: '', password: '', confirmPassword: '' })
+const STORAGE_KEY = 'jobmate_register_admin_form'
+const form = ref({ username: '', password: '', confirmPassword: '', adminSecret: '' })
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+const showAdminSecret = ref(false)
 
 function saveForm() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      username: form.value.username,
-      password: form.value.password,
-      confirmPassword: form.value.confirmPassword
-    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(form.value))
   } catch (e) {
-    console.error("保存表单数据失败:", e);
+    console.error('保存表单数据失败:', e)
   }
 }
 
 onMounted(() => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.username) form.value.username = parsed.username;
-      if (parsed.password) form.value.password = parsed.password;
-      if (parsed.confirmPassword) form.value.confirmPassword = parsed.confirmPassword;
-    }
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (!saved) return
+    const parsed = JSON.parse(saved)
+    form.value.username = parsed.username || ''
+    form.value.password = parsed.password || ''
+    form.value.confirmPassword = parsed.confirmPassword || ''
+    form.value.adminSecret = parsed.adminSecret || ''
   } catch (e) {
-    console.error("恢复表单数据失败:", e);
+    console.error('恢复表单数据失败:', e)
   }
-});
+})
 
-let saveTimer: ReturnType<typeof setTimeout> | null = null;
+let saveTimer: ReturnType<typeof setTimeout> | null = null
 function debouncedSave() {
-  if (saveTimer) clearTimeout(saveTimer);
+  if (saveTimer) clearTimeout(saveTimer)
   saveTimer = setTimeout(() => {
-    saveForm();
-  }, 300);
+    saveForm()
+  }, 300)
 }
 
-watch(form, debouncedSave, { deep: true });
+watch(form, debouncedSave, { deep: true })
 
 onBeforeRouteLeave(() => {
-  saveForm();
-});
+  saveForm()
+})
 
 async function onSubmit() {
-  if (!form.value.username) return showToast({ type: 'fail', message: '用户名不能为空' });
+  if (!form.value.username.trim()) return showToast({ type: 'fail', message: '用户名不能为空' })
   if (!form.value.password || form.value.password.length < 6) return showToast('密码长度不能少于6位')
   if (form.value.password !== form.value.confirmPassword) return showToast('两次输入的密码不一致')
-  
-  console.log('注册请求发送中:', form.value)
+  if (!form.value.adminSecret.trim()) return showToast('管理员密钥不能为空')
+
   const res = await auth.register(
     form.value.username.trim(),
     form.value.password.trim(),
-    "USER"
-  ).catch((e) => {
-    console.error('注册请求失败:', e)
-    return { code: 500, message: '网络错误，请稍后重试', data: null }
-  })
+    'ADMIN',
+    form.value.adminSecret.trim(),
+  ).catch(() => ({ code: 500, message: '网络错误，请稍后重试', data: null }))
 
   if (!isSuccessResponse(res)) return showFailToast(res.message || '注册失败')
 
-  localStorage.removeItem(STORAGE_KEY);
-
+  localStorage.removeItem(STORAGE_KEY)
   showSuccessToast({
-    message: '注册成功，请登录',
-    duration: 800,
+    message: '管理员注册成功，请登录',
+    duration: 1000,
   })
-
-  router.push('/my/login')
+  router.push('/my/login-admin')
 }
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
-
 
 .page {
   height: 80vh;
@@ -186,18 +176,6 @@ async function onSubmit() {
   align-items: center;
 }
 
-
-.custom-nav-bar {
-  --van-nav-bar-background-color: #ffffff;
-  --van-nav-bar-title-text-color: #2d3748;
-  --van-nav-bar-title-font-size: 18px;
-  --van-nav-bar-title-font-weight: 500;
-  --van-nav-bar-left-text-color: var(--van-primary-color);
-  --van-nav-bar-left-font-size: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-/* Logo区域优化 */
 .logo-container {
   margin: 24px 0 32px;
   display: flex;
@@ -224,7 +202,6 @@ async function onSubmit() {
   font-weight: 400;
 }
 
-
 .form-card {
   width: 100%;
   max-width: 400px;
@@ -235,9 +212,8 @@ async function onSubmit() {
   box-sizing: border-box;
 }
 
-
 .custom-field {
-  --van-field-label-width: 80px;
+  --van-field-label-width: 90px;
   --van-field-input-height: 44px;
   --van-field-font-size: 15px;
   margin-bottom: 16px;
@@ -254,7 +230,6 @@ async function onSubmit() {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-
 .password-toggle {
   cursor: pointer;
   padding: 0 12px;
@@ -268,11 +243,8 @@ async function onSubmit() {
   color: var(--van-primary-color);
 }
 
-
 .register-button-box {
   margin-top: 24px;
-  margin-left: 0;
-  margin-right: 0;
 }
 
 .register-button {
@@ -282,20 +254,7 @@ async function onSubmit() {
   height: 48px;
   background-color: var(--van-primary-color);
   border: none;
-  transition: all 0.3s ease;
 }
-
-.register-button:hover {
-  background-color: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
-}
-
-.register-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
-}
-
 
 .login-link {
   margin-top: 16px;

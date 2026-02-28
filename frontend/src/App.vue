@@ -33,9 +33,9 @@ import { RouterView } from "vue-router";
   width: min(420px, calc(100% - 32px));
   padding: 8px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 15px 45px rgba(15, 23, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  background: var(--tabbar-bg);
+  border: 1px solid var(--tabbar-border);
+  box-shadow: var(--tabbar-shadow);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   z-index: 100;
@@ -44,14 +44,14 @@ import { RouterView } from "vue-router";
 .glass-tabbar :deep(.van-tabbar-item) {
   border-radius: 999px;
   background: transparent;
-  color: #0f172a;
+  color: var(--tabbar-text);
   font-weight: 600;
 }
 
 .glass-tabbar :deep(.van-tabbar-item--active) {
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
-  color: #0f172a;
+  background: var(--tabbar-active-bg);
+  box-shadow: var(--tabbar-active-shadow);
+  color: var(--tabbar-text);
 }
 
 .glass-tabbar :deep(.van-icon) {

@@ -14,7 +14,7 @@
           fit="cover"
           :src="defaultAvatar"
         />
-        <div class="mt-3 text-[18px] font-bold tracking-[0.3px]">{{ user.name }}</div>
+        <div class="mt-3 text-[18px] font-bold tracking-[0.3px]">{{ user.username }}</div>
         <div class="mt-1 text-[13px] opacity-90">系统管理员</div>
       </div>
 
@@ -103,7 +103,7 @@
           <h3 class="text-lg font-bold mb-4">用户管理</h3>
           <div class="flex-1 overflow-y-auto">
             <van-list>
-              <van-cell v-for="u in userList" :key="u.id" :title="u.name" :label="u.role" />
+              <van-cell v-for="u in userList" :key="u.id" :title="u.username" :label="u.role" />
             </van-list>
             <div v-if="userList.length === 0" class="text-center text-gray-400 mt-10">暂无用户数据</div>
           </div>
@@ -215,6 +215,7 @@ import * as auth from "@/services/auth";
 import * as userService from "@/services/user";
 import * as jobService from "@/services/job";
 import * as activityService from "@/services/activity";
+import { isSuccessResponse } from "@/utils/request";
 
 const router = useRouter();
 const defaultAvatar = '/Zhejiang_University_Logo.svg.png';
@@ -316,7 +317,7 @@ onMounted(() => {
         router.push({ path: "/my/login" });
         return;
     }
-    if (currentUser.role !== 'admin') {
+    if (currentUser.role !== 'ADMIN') {
         showToast("无权访问管理员后台");
         router.push({ path: "/" });
         return;
@@ -379,7 +380,7 @@ watch(showActivityMgr, async (val) => {
 async function fetchUsers() {
   try {
     const res = await userService.getUsers();
-    if(res.code === 0) userList.value = res.data || [];
+    if (isSuccessResponse(res)) userList.value = res.data || [];
   } catch(e) { console.error(e); }
 }
 
@@ -393,8 +394,8 @@ async function fetchMoreJobs() {
       page_size: jobPageSize.value,
     });
 
-    if (res.code === 0) {
-      const list = res.data || [];
+    if (isSuccessResponse(res)) {
+      const list = res.data?.content || [];
       jobList.value.push(...list);
       if (list.length < jobPageSize.value) {
         jobHasMore.value = false;
@@ -416,8 +417,8 @@ async function fetchMoreActivities() {
       page_size: activityPageSize.value,
     });
 
-    if (res.code === 0) {
-      const list = res.data || [];
+    if (isSuccessResponse(res)) {
+      const list = res.data?.content || [];
       activityList.value.push(...list);
       if (list.length < activityPageSize.value) {
         activityHasMore.value = false;

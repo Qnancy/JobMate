@@ -165,52 +165,158 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed } from "vue";
+<script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { fetchFairs, fetchFavouriteFairIds, fetchFavouriteJobIds, fetchJobTags,fetchJobs } from "@/utils/mockData";
+import { showToast } from "vant";
+import { getJob, type Job } from "@/services/job";
+import { getActivities, type Activity } from "@/services/activity";
 import { subscribe, unsubscribe } from "@/services/subscription";
+import { isSuccessResponse } from "@/utils/request";
 
 const router = useRouter();
 
 const searchValue = ref("");
 const activeName = ref("job");
 
+type JobCard = {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  salary: string;
+  description: string;
+  publishDate: string;
+  category: string;
+};
 
-const jobTags = await fetchJobTags();
+type FairCard = {
+  id: number;
+  status: string;
+  type: string;
+  title: string;
+  date: string;
+  location: string;
+  companies: number;
+};
+
+const RECRUIT_TYPE_MAP: Record<string, string> = {
+  INTERN: '实习',
+  CAMPUS: '校招',
+  EXPERIENCED: '社招',
+};
+
+const FAV_JOBS_KEY = 'jobmate_favorite_jobs';
+const FAV_FAIRS_KEY = 'jobmate_favorite_fairs';
+
+function readFavoriteIds(key: string): number[] {
+  try {
+    const raw = localStorage.getItem(key);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.map((item) => Number(item)).filter((item) => !Number.isNaN(item)) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeFavoriteIds(key: string, ids: number[]) {
+  localStorage.setItem(key, JSON.stringify(ids));
+}
+
+function normalizeTimeText(value?: string | null) {
+  if (!value) return '时间待定';
+  return value;
+}
+
+function getActivityStatus(time?: string | null) {
+  if (!time) return '状态未知';
+  const date = new Date(time.replace(' ', 'T'));
+  if (Number.isNaN(date.getTime())) return '状态未知';
+  return date.getTime() > Date.now() ? '即将开始' : '已结束';
+}
+
+function mapJobToCard(job: Job): JobCard {
+  return {
+    id: job.id,
+    title: job.position,
+    company: job.company?.name || '未知企业',
+    location: job.location || '地点待定',
+    type: RECRUIT_TYPE_MAP[job.recruit_type] || job.recruit_type,
+    salary: '面议',
+    description: job.extra || '暂无更多描述',
+    publishDate: '最新发布',
+    category: RECRUIT_TYPE_MAP[job.recruit_type] || '全部',
+  };
+}
+
+function mapActivityToCard(item: Activity): FairCard {
+  return {
+    id: item.id,
+    status: getActivityStatus(item.time),
+    type: '宣讲会',
+    title: item.title,
+    date: normalizeTimeText(item.time),
+    location: item.location || '地点待定',
+    companies: item.company?.name ? 1 : 0,
+  };
+}
+
+const jobTags = ['全部', '实习', '校招', '社招'];
 const selectedJobTag = ref("全部");
 
-const favorites = ref({
+const favorites = ref<{ jobs: number[]; fairs: number[] }>({
   jobs: [],
   fairs: []
 });
 
-const animatingJobs = ref(new Set());
-const animatingFairs = ref(new Set());
+const animatingJobs = ref<Set<number>>(new Set());
+const animatingFairs = ref<Set<number>>(new Set());
 
-const jobs = await fetchJobs();
-const fairs = await fetchFairs();
+const jobs = ref<JobCard[]>([]);
+const fairs = ref<FairCard[]>([]);
 
 const filteredJobs = computed(() => {
   if (selectedJobTag.value === "全部") {
-    return jobs;
+    return jobs.value;
   }
-  return jobs.filter(job => job.category === selectedJobTag.value);
+  return jobs.value.filter(job => job.category === selectedJobTag.value);
 });
 
+async function fetchJobsAndActivities() {
+  try {
+    const [jobRes, activityRes] = await Promise.all([
+      getJob({ page: 1, page_size: 50 }),
+      getActivities({ page: 1, page_size: 50 }),
+    ]);
 
-favorites.value.jobs = await fetchFavouriteJobIds()
-favorites.value.fairs = await fetchFavouriteFairIds()
+    if (isSuccessResponse(jobRes)) {
+      jobs.value = (jobRes.data?.content || []).map(mapJobToCard);
+    }
 
-function viewJobDetail(job) {
+    if (isSuccessResponse(activityRes)) {
+      fairs.value = (activityRes.data?.content || []).map(mapActivityToCard);
+    }
+  } catch (error) {
+    showToast('加载列表失败');
+  }
+}
+
+onMounted(() => {
+  favorites.value.jobs = readFavoriteIds(FAV_JOBS_KEY);
+  favorites.value.fairs = readFavoriteIds(FAV_FAIRS_KEY);
+  fetchJobsAndActivities();
+});
+
+function viewJobDetail(job: JobCard) {
   router.push({ path: `/info/job/${job.id}` });
 }
 
-function viewFairDetail(fair) {
+function viewFairDetail(fair: FairCard) {
   router.push({ path: `/info/activity/${fair.id}` });
 }
 
-function toggleFavorite(type, id) {
+function toggleFavorite(type: 'job' | 'fair', id: number) {
   const numId = Number(id);
   const set = type === 'job' ? favorites.value.jobs : favorites.value.fairs;
   const animSet = type === 'job' ? animatingJobs : animatingFairs;
@@ -224,12 +330,16 @@ function toggleFavorite(type, id) {
   if (isFav) {
     const idx = set.indexOf(numId);
     if (idx !== -1) set.splice(idx, 1);
-    // 后端取消订阅（占位）
     unsubscribe({ type: type === 'job' ? 'job' : 'activity', id: numId }).catch(() => {});
   } else {
     set.push(numId);
-    // 后端订阅（占位）
     subscribe({ type: type === 'job' ? 'job' : 'activity', id: numId }).catch(() => {});
+  }
+
+  if (type === 'job') {
+    writeFavoriteIds(FAV_JOBS_KEY, favorites.value.jobs);
+  } else {
+    writeFavoriteIds(FAV_FAIRS_KEY, favorites.value.fairs);
   }
 }
 </script>

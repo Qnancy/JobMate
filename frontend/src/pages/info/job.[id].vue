@@ -68,11 +68,13 @@
     </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { fetchJobDetail,fetchIsJobFavorite } from '@/utils/mockData';
 import { useRoute } from 'vue-router';
+import { showToast } from 'vant';
+import { getJobById } from '@/services/job';
 import { subscribe, unsubscribe } from '@/services/subscription';
+import { isSuccessResponse } from '@/utils/request';
 
 // const props = defineProps({
 //   params: {
@@ -83,32 +85,112 @@ import { subscribe, unsubscribe } from '@/services/subscription';
 const route = useRoute();
 
 
-const fair = ref(null);
-const isLoading = ref(true);
+const FAVORITE_KEY = 'jobmate_favorite_jobs';
 
-console.log(route.params.id);
+type JobDetailView = {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  salary: string;
+  fullDescription: string;
+  requirements: string;
+  companyType: string;
+  companySize: string;
+  link: string;
+};
 
-
-const job = await fetchJobDetail(route.params.id);
-console.log(job);
-const isFavorite = ref(await fetchIsJobFavorite(route.params.id));
-const heartAnimating = ref(false);
-
-
-onMounted(async () => {
-
+const job = ref<JobDetailView>({
+  id: 0,
+  title: '',
+  company: '',
+  location: '地点待定',
+  type: '',
+  salary: '面议',
+  fullDescription: '暂无职位描述',
+  requirements: '暂无任职要求',
+  companyType: '未知',
+  companySize: '规模未知',
+  link: '',
 });
 
-function toggleFavorite(type, id) {
+const isFavorite = ref(false);
+const heartAnimating = ref(false);
+
+function readFavoriteIds() {
+  try {
+    const raw = localStorage.getItem(FAVORITE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.map((item) => Number(item)) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeFavoriteIds(ids: number[]) {
+  localStorage.setItem(FAVORITE_KEY, JSON.stringify(ids));
+}
+
+function mapRecruitType(type: string) {
+  const map: Record<string, string> = {
+    INTERN: '实习',
+    CAMPUS: '校招',
+    EXPERIENCED: '社招',
+  };
+  return map[type] || type;
+}
+
+async function loadJob() {
+  const id = Number(route.params.id);
+  if (!id) return;
+
+  try {
+    const res = await getJobById(id);
+    if (!isSuccessResponse(res) || !res.data) {
+      showToast(res.message || '获取职位详情失败');
+      return;
+    }
+
+    const item = res.data;
+    job.value = {
+      id: item.id,
+      title: item.position,
+      company: item.company?.name || '未知企业',
+      location: item.location || '地点待定',
+      type: mapRecruitType(item.recruit_type),
+      salary: '面议',
+      fullDescription: item.extra || '暂无职位描述',
+      requirements: '请以企业招聘要求为准',
+      companyType: item.company?.type || '未知',
+      companySize: '规模未知',
+      link: item.link || '',
+    };
+
+    isFavorite.value = readFavoriteIds().includes(item.id);
+  } catch {
+    showToast('获取职位详情失败');
+  }
+}
+
+onMounted(async () => {
+  await loadJob();
+});
+
+function toggleFavorite(type: 'job', id: number) {
   if (type !== 'job') return;
   heartAnimating.value = true;
   setTimeout(() => heartAnimating.value = false, 180);
   const numId = Number(id);
+  const ids = readFavoriteIds();
   if (isFavorite.value) {
     isFavorite.value = false;
+    writeFavoriteIds(ids.filter((item) => item !== numId));
     unsubscribe({ type: 'job', id: numId }).catch(() => {});
   } else {
     isFavorite.value = true;
+    if (!ids.includes(numId)) ids.push(numId);
+    writeFavoriteIds(ids);
     subscribe({ type: 'job', id: numId }).catch(() => {});
   }
 }

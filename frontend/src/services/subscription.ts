@@ -1,4 +1,5 @@
 import { api } from "@/utils/request";
+import { currentUser } from "./auth";
 
 export type SubscribableType = "job" | "activity";
 
@@ -8,11 +9,27 @@ export interface SubscriptionPayload {
 }
 
 export function subscribe(payload: SubscriptionPayload) {
-  // 后端接口占位：发送订阅指令
-  return api.post<unknown>("/subscribe", payload);
+  const user = currentUser();
+  if (!user) {
+    return Promise.reject(new Error('请先登录'));
+  }
+
+  if (payload.type === 'job') {
+    return api.post<unknown>("/jobs/subscriptions", {
+      user_id: user.id,
+      job_info_id: payload.id,
+    });
+  }
+
+  return api.post<unknown>("/activities/subscriptions", {
+    user_id: user.id,
+    activity_info_id: payload.id,
+  });
 }
 
 export function unsubscribe(payload: SubscriptionPayload) {
-  // 后端接口占位：取消订阅指令
-  return api.post<unknown>("/unsubscribe", payload);
+  if (payload.type === 'job') {
+    return api.del(`/jobs/subscriptions/${payload.id}`);
+  }
+  return api.del(`/activities/subscriptions/${payload.id}`);
 }

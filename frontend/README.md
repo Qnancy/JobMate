@@ -18,11 +18,36 @@
 
 ## 🧑‍💻 启动开发环境
 
+先配置后端 API 地址（仅首次需要）：
+
+```
+copy .env.example .env.local
+```
+
+然后编辑 `.env.local`：
+
+```
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
 ```
  pnpm run dev
 ```
 
 **启动后可在浏览器访问**`http://localhost:5173`（或终端显示的端口）。
+
+## ✅ 本地联调快速验证
+
+```bash
+pnpm run build
+pnpm run dev
+```
+
+打开浏览器开发者工具 Network，验证登录链路：
+
+- `POST /api/auth/login`
+- `GET /api/users/me`
+- 后续请求 Header 携带 `Authorization: Bearer <token>`
 
 ## 🏗️ 打包构建
 

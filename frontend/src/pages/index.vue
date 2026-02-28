@@ -1,9 +1,9 @@
 <template>
-      <div class="min-h-screen bg-gradient-to-b from-sky-50 to-white">
+    <div class="min-h-screen home-page">
     <main  class="p-4">
         <!-- Logo区域 -->
         <div class="text-center py-8">
-            <div class="w-20 h-20 mx-auto bg-white rounded-2xl flex items-center justify-center shadow-lg mb-4">
+        <div class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center shadow-lg mb-4 home-logo-card">
                 <!-- <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg> -->
@@ -11,8 +11,8 @@
                     <img src="/Zhejiang_University_Logo.svg.png" alt="浙大Logo" class="w-12 h-12" />
                 </p>
         </div>
-        <h2 class="text-2xl font-bold text-blue-800">浙大就业信息平台</h2>
-        <p class="text-sky-600 mt-2">助力浙大学子，开启职业未来</p>
+        <h2 class="text-2xl font-bold home-title">浙大就业信息平台</h2>
+        <p class="mt-2 home-subtitle">助力浙大学子，开启职业未来</p>
     </div>
     
     <!-- 搜索框 -->
@@ -21,7 +21,7 @@
           v-model="searchQuery"
           type="text" 
           placeholder="搜索职位、招聘会..."
-          class="w-full px-4 py-3 pl-12 rounded-xl border-2 border-sky-200 focus:border-sky-400 focus:outline-none shadow-sm text-gray-700"
+                    class="w-full px-4 py-3 pl-12 rounded-xl border-2 focus:outline-none shadow-sm home-search-input"
           @keyup.enter="handleSearch"
         />
         <svg class="w-5 h-5 text-sky-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,7 +29,7 @@
         </svg>
         <button 
         @click="handleSearch"
-          class="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-300 text-gray-700 px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-sky-600 hover:text-white transition"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-lg text-sm font-medium transition home-search-btn"
           >
           搜索
         </button>
@@ -39,7 +39,7 @@
       <div class="space-y-4">
         <button 
           @click="$router.push('/info?tab=job')"
-          class="w-full bg-gradient-to-r from-sky-100 to-blue-100 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+                    class="w-full text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 home-feature-btn"
         >
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -49,28 +49,28 @@
         
         <button 
           @click="$router.push('/info?tab=fair')"
-          class="w-full bg-gradient-to-r from-blue-100 to-blue-100 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+                    class="w-full text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 home-feature-btn"
         >
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
-          查看招聘会
+                    查看活动
         </button>
       </div>
 
       <!-- 统计数据 -->
       <div class="mt-8 grid grid-cols-3 gap-3">
-        <div class="bg-white rounded-xl p-4 text-center shadow-md border border-sky-100">
-          <div class="text-2xl font-bold text-sky-600">{{ 42 }}</div>
-          <div class="text-xs text-gray-500 mt-1">在招职位</div>
+                <div class="rounded-xl p-4 text-center shadow-md border home-stat-card">
+                    <div class="text-2xl font-bold home-stat-number">{{ 42 }}</div>
+                    <div class="text-xs mt-1 home-stat-label">在招职位</div>
         </div>
-        <div class="bg-white rounded-xl p-4 text-center shadow-md border border-sky-100">
-          <div class="text-2xl font-bold text-blue-600">{{ 42 }}</div>
-          <div class="text-xs text-gray-500 mt-1">招聘会</div>
+                <div class="rounded-xl p-4 text-center shadow-md border home-stat-card">
+                    <div class="text-2xl font-bold home-stat-number">{{ 42 }}</div>
+                    <div class="text-xs mt-1 home-stat-label">招聘会</div>
         </div>
-        <div class="bg-white rounded-xl p-4 text-center shadow-md border border-sky-100">
-          <div class="text-2xl font-bold text-blue-800">500+</div>
-          <div class="text-xs text-gray-500 mt-1">合作企业</div>
+                <div class="rounded-xl p-4 text-center shadow-md border home-stat-card">
+                    <div class="text-2xl font-bold home-stat-number">500+</div>
+                    <div class="text-xs mt-1 home-stat-label">合作企业</div>
         </div>
     </div>
     </main>
@@ -103,13 +103,13 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-const q = ref('')
+const searchQuery = ref('')
 const router = useRouter()
 
-function onSearch() {
-    const keyword = (q.value || '').trim()
+function handleSearch() {
+    const keyword = (searchQuery.value || '').trim()
     if (!keyword) return
-    router.push({ path: '/info/search', query: { q: keyword } })
+    router.push({ path: '/info/search', query: { keywords: keyword } })
 }
 
 function goInfo(tab = '') {
@@ -144,6 +144,59 @@ onMounted(() => {
 
 <style scoped>
 @import "tailwindcss";
+.home-page {
+    background: var(--home-bg);
+}
+
+.home-logo-card {
+    background: var(--home-surface);
+}
+
+.home-title {
+    color: var(--home-title);
+}
+
+.home-subtitle {
+    color: var(--home-subtitle);
+}
+
+.home-search-input {
+    border-color: var(--home-input-border);
+    color: var(--home-input-text);
+    background: var(--home-input-bg);
+}
+
+.home-search-input:focus {
+    border-color: var(--home-input-focus);
+}
+
+.home-search-btn {
+    background: var(--home-search-btn-bg);
+    color: var(--home-search-btn-text);
+}
+
+.home-search-btn:hover {
+    background: var(--home-search-btn-hover-bg);
+    color: var(--home-search-btn-hover-text);
+}
+
+.home-feature-btn {
+    background: var(--home-feature-bg);
+    color: var(--home-feature-text);
+}
+
+.home-stat-card {
+    background: var(--home-surface);
+    border-color: var(--home-stat-border);
+}
+
+.home-stat-number {
+    color: var(--home-stat-number);
+}
+
+.home-stat-label {
+    color: var(--home-stat-label);
+}
 /* .page-root {
     min-height: 100vh;
     background: linear-gradient(180deg, #f4f7ff 0%, #ffffff 35%);

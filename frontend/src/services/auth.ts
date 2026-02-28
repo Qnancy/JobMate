@@ -1,45 +1,51 @@
-import { api } from "@/utils/request";
+import { api, type ApiResponse, isSuccessResponse, TOKEN_KEY } from "@/utils/request";
 
 export type User = {
   id: number
-  name: string
-  role: string
-  create_at?: string
+  username: string
+  role: 'ADMIN' | 'USER'
+  created_at?: string
 }
 
-export async function register(name: string, password: string, role: string) {
+type LoginData = {
+  token: string
+  token_type: 'Bearer'
+}
+
+export async function register(username: string, password: string, role: User['role'], admin_secret: string | null = null) {
   return api.post<User>('/users/register', {
-    name,
+    username,
     password,
     role,
+    admin_secret,
   });
 }
 
-export async function login(name: string, password: string) {
-  // 内置管理员账号 (Mock逻辑，实际项目中应由后端处理)
-  if (name === 'admin' && password === 'admin') {
-    const adminUser: User = { id: 0, name: 'admin', role: 'admin', create_at: new Date().toISOString() }
-    setCurrentUser(adminUser)
-    return { code: 0, message: 'ok', data: adminUser }
-  }
-
-  // 内置访客账号
-  if (name === 'user' && password === 'user') {
-    const guestUser: User = { id: -1, name: 'user', role: 'user', create_at: new Date().toISOString() }
-    setCurrentUser(guestUser)
-    return { code: 0, message: 'ok', data: guestUser }
-  }
-
-  // 真实 API 调用
-  const res = await api.post<User>('/users/login', {
-    name,
+export async function login(username: string, password: string): Promise<ApiResponse<User | null>> {
+  const loginRes = await api.post<LoginData>('/auth/login', {
+    username,
     password,
   });
-  
-  if (res.code === 0 && res.data) {
-    setCurrentUser(res.data);
+
+  if (!isSuccessResponse(loginRes) || !loginRes.data?.token) {
+    return {
+      code: loginRes.code,
+      message: loginRes.message,
+      data: null,
+    };
   }
-  return res;
+
+  localStorage.setItem(TOKEN_KEY, loginRes.data.token);
+  const meRes = await getMe();
+  if (isSuccessResponse(meRes) && meRes.data) {
+    setCurrentUser(meRes.data);
+  }
+
+  return meRes;
+}
+
+export function getMe() {
+  return api.get<User>('/users/me');
 }
 
 
@@ -101,6 +107,8 @@ function setCurrentUser(user: User) {
 // }
 
 export function logout() {
+  api.post<null>('/auth/logout', {}).catch(() => undefined)
+  localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(CURRENT_KEY)
 }
 
