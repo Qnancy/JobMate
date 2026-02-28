@@ -1,0 +1,3556 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "JobMateAPI",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "summary": "用户登录",
+        "deprecated": false,
+        "description": "用户登录接口，实现登录认证操作\n\n登录完成后，后续请求应携带返回的 `token`\n\n不用携带 `token` 的接口：\n\n- 用户登录\n- 用户注册\n",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "title": "用户名"
+                  },
+                  "password": {
+                    "type": "string",
+                    "title": "用户密码"
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ]
+              },
+              "example": {
+                "username": "user",
+                "password": "666"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "title": "响应状态码",
+                      "description": "与HTTP响应状态码一致"
+                    },
+                    "message": {
+                      "type": "string",
+                      "title": "响应消息"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "title": "JWT"
+                        },
+                        "token_type": {
+                          "type": "string",
+                          "const": "Bearer",
+                          "title": "Token 类型"
+                        }
+                      },
+                      "title": "响应数据",
+                      "required": [
+                        "token",
+                        "token_type"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                },
+                "example": {
+                  "code": 40,
+                  "message": "aute cillum id",
+                  "data": {
+                    "token": "dolor sed Ut",
+                    "token_type": "Bearer"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "用户登出",
+        "deprecated": false,
+        "description": "登出当前用户\n\n在 JWT 无状态认证的场景下，登出的核心逻辑是**客户端主动删除令牌（Token）**，所以调用完登出接口后，客户端应删除存储的 JWT 令牌，后续请求不再携带\n\n```javascript\n// 客户端删除令牌\nlocalStorage.removeTiem(\"token\")\n```\n",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "title": "响应状态码",
+                      "description": "与HTTP响应状态码一致"
+                    },
+                    "message": {
+                      "type": "string",
+                      "title": "响应消息"
+                    },
+                    "data": {
+                      "type": "null",
+                      "title": "响应数据"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                },
+                "example": {
+                  "code": 200,
+                  "message": "登出成功",
+                  "data": null
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/users/register": {
+      "post": {
+        "summary": "用户注册",
+        "deprecated": false,
+        "description": "1. 前端应支持对密码安全性的校验（密码长度不少于6位等）\n2. 如果要创建管理员账户，需要额外输入一个后台定义的管理员密钥\n3. 推荐的前端做法：可以做成两个界面\n    1. 普通用户创建：只提供用户名和密码两个表单，用户填写\n    2. 管理员创建：提供用户名、密码、密钥三个表单\n\n这样就不需要用户填写 `role` 这个字段了，由前端在两个页面完成填充即可",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "title": "用户名",
+                    "maxLength": 31,
+                    "minLength": 1,
+                    "description": "唯一"
+                  },
+                  "password": {
+                    "type": "string",
+                    "title": "用户密码",
+                    "description": "响应中不会返回",
+                    "minLength": 1
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "ADMIN",
+                      "USER"
+                    ],
+                    "title": "用户角色"
+                  },
+                  "admin_secret": {
+                    "type": "string",
+                    "title": "管理员密钥",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "admin_secret",
+                  "username",
+                  "password",
+                  "role"
+                ]
+              },
+              "examples": {
+                "1": {
+                  "value": {
+                    "username": "user",
+                    "password": "666",
+                    "role": "USER",
+                    "admin_secret": null
+                  },
+                  "summary": "示例 1"
+                },
+                "2": {
+                  "value": {
+                    "username": "镇国辉",
+                    "password": "PPa4YHXwRkgvwwz",
+                    "role": "ADMIN",
+                    "admin_secret": "ADMINKEY"
+                  },
+                  "summary": "示例 2"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E7%94%A8%E6%88%B7%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 64,
+                  "message": "ea",
+                  "data": {
+                    "id": 33,
+                    "username": "节宇轩",
+                    "role": "USER",
+                    "create_at": "2026-06-15 20:00:59"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/users/me": {
+      "delete": {
+        "summary": "删除用户",
+        "deprecated": false,
+        "description": "删除当前用户自己的账户",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWithNullData"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "删除成功",
+                  "data": null
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "更新用户信息",
+        "deprecated": false,
+        "description": "仅支持更新用户名、密码",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "title": "用户名",
+                    "description": "唯一",
+                    "maxLength": 31,
+                    "minLength": 1,
+                    "nullable": true
+                  },
+                  "password": {
+                    "type": "string",
+                    "title": "用户密码",
+                    "description": "响应中不会返回",
+                    "minLength": 1,
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ]
+              },
+              "examples": {
+                "1": {
+                  "value": {
+                    "username": "阳燕",
+                    "password": "EjA70uRAzInrQ27"
+                  },
+                  "summary": "示例 1"
+                },
+                "2": {
+                  "value": {
+                    "username": "那拉丽芬",
+                    "password": null
+                  },
+                  "summary": "示例 2"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E7%94%A8%E6%88%B7%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 25,
+                  "message": "sit",
+                  "data": {
+                    "id": 81,
+                    "username": "石国珍",
+                    "role": "USER",
+                    "create_at": "2025-06-15 07:56:55"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "获取当前用户",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E7%94%A8%E6%88%B7%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 83,
+                  "message": "laborum reprehenderit",
+                  "data": {
+                    "id": 90,
+                    "username": "伯国英",
+                    "role": "ADMIN",
+                    "created_at": "2025-03-15 14:07:22"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/companies": {
+      "post": {
+        "summary": "增加企业",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "title": "企业名称"
+                  },
+                  "type": {
+                    "type": "string",
+                    "title": "企业类型",
+                    "enum": [
+                      "STATE",
+                      "PRIVATE",
+                      "FOREIGN"
+                    ]
+                  }
+                },
+                "required": [
+                  "name",
+                  "type"
+                ]
+              },
+              "example": {
+                "name": "ZJU",
+                "type": "STATE"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E4%BC%81%E4%B8%9A%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 45,
+                  "message": "culpa dolore minim nulla",
+                  "data": {
+                    "id": 72,
+                    "name": "董超栋",
+                    "type": "STATE"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/失败响应模板",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/服务器内部错误",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "获取企业分页列表",
+        "deprecated": false,
+        "description": "批量查询企业并返回分页结果",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": 1,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": 10,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {},
+                  "$ref": "#/components/schemas/%E4%BC%81%E4%B8%9A%E5%88%86%E9%A1%B5%E5%93%8D%E5%BA%94%E6%A8%A1%E7%89%88"
+                },
+                "examples": {
+                  "1": {
+                    "summary": "示例 1",
+                    "value": {
+                      "code": 200,
+                      "message": "get 3",
+                      "data": {
+                        "content": [
+                          {
+                            "id": 94,
+                            "name": "斯国华",
+                            "type": "STATE"
+                          },
+                          {
+                            "id": 7,
+                            "name": "零熙瑶",
+                            "type": "FOREIGN"
+                          },
+                          {
+                            "id": 33,
+                            "name": "翁霞",
+                            "type": "STATE"
+                          }
+                        ],
+                        "total": 100,
+                        "count": 3,
+                        "page": 30,
+                        "page_size": 3,
+                        "total_pages": 34
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "示例 2",
+                    "value": {
+                      "code": 200,
+                      "message": "get 0",
+                      "data": {
+                        "content": [],
+                        "total": 25,
+                        "count": 0,
+                        "page": 31,
+                        "page_size": 46,
+                        "total_pages": 15
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "500": {
+            "$ref": "#/components/responses/服务器内部错误",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/companies/{id}": {
+      "delete": {
+        "summary": "删除企业",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWithNullData"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "success",
+                  "data": null
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/失败响应模板",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/服务器内部错误",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "更新企业信息",
+        "deprecated": false,
+        "description": "仅传递需要更新的字段值，不更新的字段置为 null",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": 1,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "title": "企业名称",
+                    "nullable": true
+                  },
+                  "type": {
+                    "type": "string",
+                    "title": "企业类型",
+                    "enum": [
+                      "STATE",
+                      "PRIVATE",
+                      "FOREIGN"
+                    ],
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "type"
+                ]
+              },
+              "example": {
+                "name": "南建国",
+                "type": "STATE"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E4%BC%81%E4%B8%9A%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "success",
+                  "data": {
+                    "id": 17,
+                    "name": "赏玲",
+                    "type": "FOREIGN"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/失败响应模板",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/服务器内部错误",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "根据 id 获取企业信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": 1,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E4%BC%81%E4%B8%9A%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "success",
+                  "data": {
+                    "id": 82,
+                    "name": "拱玉英",
+                    "type": "STATE"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/失败响应模板",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/服务器内部错误",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/companies/search": {
+      "get": {
+        "summary": "条件搜索企业",
+        "deprecated": false,
+        "description": "条件搜索企业并返回分页结果，关键词包括企业名称，过滤条件为企业类型",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": 1,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": 10,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "example": "companyname",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "example": "STATE",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "STATE",
+                "PRIVATE",
+                "FOREIGN"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {},
+                  "$ref": "#/components/schemas/%E4%BC%81%E4%B8%9A%E5%88%86%E9%A1%B5%E5%93%8D%E5%BA%94%E6%A8%A1%E7%89%88"
+                },
+                "examples": {
+                  "1": {
+                    "summary": "示例 1",
+                    "value": {
+                      "code": 41,
+                      "message": "dolor nulla culpa",
+                      "data": {
+                        "content": [
+                          {
+                            "id": 4,
+                            "name": "植秀兰",
+                            "type": "FOREIGN"
+                          },
+                          {
+                            "id": 57,
+                            "name": "令狐榕融",
+                            "type": "PRIVATE"
+                          },
+                          {
+                            "id": 30,
+                            "name": "拉斌",
+                            "type": "PRIVATE"
+                          }
+                        ],
+                        "total": 21,
+                        "count": 3,
+                        "page": 98,
+                        "page_size": 28,
+                        "total_pages": 9
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "示例 2",
+                    "value": {
+                      "code": 87,
+                      "message": "id amet",
+                      "data": {
+                        "content": [],
+                        "total": 29,
+                        "count": 71,
+                        "page": 20,
+                        "page_size": 88,
+                        "total_pages": 82
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "500": {
+            "$ref": "#/components/responses/服务器内部错误",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/jobs": {
+      "post": {
+        "summary": "增加招聘信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company_id": {
+                    "type": "integer",
+                    "title": "所属企业 ID"
+                  },
+                  "recruit_type": {
+                    "type": "string",
+                    "title": "招聘类型",
+                    "enum": [
+                      "INTERN",
+                      "CAMPUS",
+                      "EXPERIENCED"
+                    ]
+                  },
+                  "position": {
+                    "type": "string",
+                    "title": "岗位名称",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "link": {
+                    "type": "string",
+                    "title": "投递链接",
+                    "nullable": true
+                  },
+                  "location": {
+                    "type": "string",
+                    "title": "工作城市",
+                    "nullable": true
+                  },
+                  "extra": {
+                    "type": "string",
+                    "title": "备注信息",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "company_id",
+                  "recruit_type",
+                  "position",
+                  "link",
+                  "location",
+                  "extra"
+                ]
+              },
+              "example": {
+                "company_id": 87,
+                "recruit_type": "CAMPUS",
+                "position": "voluptate sint",
+                "link": "https://sleepy-lace.biz/",
+                "location": "magna sint nulla amet",
+                "extra": "aliqua in nisi nostrud ea"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E6%8B%9B%E8%81%98%E4%BF%A1%E6%81%AF%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 77,
+                  "message": "pariatur ea adipisicing irure magna",
+                  "data": {
+                    "id": 60,
+                    "company": {
+                      "id": 96,
+                      "name": "溥涛",
+                      "type": "FOREIGN"
+                    },
+                    "recruit_type": "INTERN",
+                    "position": "nisi elit non v",
+                    "link": "https://empty-warming.biz/",
+                    "location": "ad",
+                    "extra": "mollit ipsum"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/失败响应模板",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/服务器内部错误",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "获取招聘信息分页列表",
+        "deprecated": false,
+        "description": "分页查询招聘信息列表，不带筛选功能",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页号",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "页大小",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E6%8B%9B%E8%81%98%E4%BF%A1%E6%81%AF%E5%88%86%E9%A1%B5%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "examples": {
+                  "1": {
+                    "summary": "示例 1",
+                    "value": {
+                      "code": 29,
+                      "message": "cupidatat exercitation nisi occaecat",
+                      "data": {
+                        "content": [
+                          {
+                            "id": 78,
+                            "company": {
+                              "id": 49,
+                              "name": "斋浩",
+                              "type": "STATE"
+                            },
+                            "recruit_type": "EXPERIENCED",
+                            "position": "in mollit",
+                            "link": "https://delicious-fireplace.net/",
+                            "location": "labore veniam esse enim ea",
+                            "extra": null
+                          }
+                        ],
+                        "total": 69,
+                        "count": 83,
+                        "page": 99,
+                        "page_size": 22,
+                        "total_pages": 38
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "示例 2",
+                    "value": {
+                      "code": 84,
+                      "message": "est amet laboris nulla",
+                      "data": {
+                        "content": [],
+                        "total": 38,
+                        "count": 19,
+                        "page": 17,
+                        "page_size": 85,
+                        "total_pages": 24
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/jobs/{id}": {
+      "delete": {
+        "summary": "删除招聘信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWithNullData"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "success",
+                  "data": null
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/失败响应模板",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/服务器内部错误",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "更新招聘信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company_id": {
+                    "type": "integer",
+                    "title": "所属企业 ID",
+                    "nullable": true
+                  },
+                  "recruit_type": {
+                    "type": "string",
+                    "title": "招聘类型",
+                    "enum": [
+                      "INTERN",
+                      "CAMPUS",
+                      "EXPERIENCED"
+                    ],
+                    "nullable": true
+                  },
+                  "position": {
+                    "type": "string",
+                    "title": "岗位名称",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "nullable": true
+                  },
+                  "link": {
+                    "type": "string",
+                    "title": "投递链接",
+                    "nullable": true
+                  },
+                  "location": {
+                    "type": "string",
+                    "title": "工作城市",
+                    "nullable": true
+                  },
+                  "extra": {
+                    "type": "string",
+                    "title": "备注信息",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "company_id",
+                  "recruit_type",
+                  "position",
+                  "link",
+                  "location",
+                  "extra"
+                ]
+              },
+              "examples": {
+                "1": {
+                  "value": {
+                    "company_id": 52,
+                    "recruit_type": "CAMPUS",
+                    "position": "occaecat consequat esse officia dolor",
+                    "link": "https://pessimistic-pharmacopoeia.name/",
+                    "location": "dolore",
+                    "extra": "fugiat officia do"
+                  },
+                  "summary": "示例 1"
+                },
+                "2": {
+                  "value": {
+                    "company_id": 67,
+                    "recruit_type": "EXPERIENCED",
+                    "position": null,
+                    "link": "https://miserable-approach.org/",
+                    "location": null,
+                    "extra": null
+                  },
+                  "summary": "示例 2"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E6%8B%9B%E8%81%98%E4%BF%A1%E6%81%AF%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "examples": {
+                  "1": {
+                    "summary": "示例 1",
+                    "value": {
+                      "code": 100,
+                      "message": "deserunt pariatur nostrud ea",
+                      "data": {
+                        "id": 56,
+                        "company": {
+                          "id": 48,
+                          "name": "滑浩然",
+                          "type": "FOREIGN"
+                        },
+                        "recruit_type": "CAMPUS",
+                        "position": "sed",
+                        "link": "https://immense-sanity.net/",
+                        "location": "ut in aliqua sed",
+                        "extra": null
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "示例 2",
+                    "value": {
+                      "code": 65,
+                      "message": "deserunt et consequat",
+                      "data": {
+                        "id": 23,
+                        "company": {
+                          "id": 67,
+                          "name": "巢宇航",
+                          "type": "STATE"
+                        },
+                        "recruit_type": "CAMPUS",
+                        "position": "labore do voluptate exercitation",
+                        "link": "https://self-reliant-dusk.biz/",
+                        "location": null,
+                        "extra": "nostrud eiusmod"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/失败响应模板",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/服务器内部错误",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "根据 id 获取招聘信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E6%8B%9B%E8%81%98%E4%BF%A1%E6%81%AF%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 30,
+                  "message": "aliqua magna",
+                  "data": {
+                    "id": 20,
+                    "company": {
+                      "id": 14,
+                      "name": "休艺涵",
+                      "type": "STATE"
+                    },
+                    "recruit_type": "CAMPUS",
+                    "position": "consequat",
+                    "link": "https://dense-fog.org/",
+                    "location": "enim",
+                    "extra": null
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/jobs/search": {
+      "get": {
+        "summary": "条件搜索招聘信息",
+        "deprecated": false,
+        "description": "条件搜索招聘信息，关键字包含企业名称、岗位名称、城市名称，过滤条件为招聘类型",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页号",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "页大小",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "企业名称、岗位名称、城市名称",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "recruit_type",
+            "in": "query",
+            "description": "招聘类型",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "INTERN",
+                "CAMPUS",
+                "EXPERIENCED"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E6%8B%9B%E8%81%98%E4%BF%A1%E6%81%AF%E5%88%86%E9%A1%B5%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "examples": {
+                  "1": {
+                    "summary": "示例 1",
+                    "value": {
+                      "code": 8,
+                      "message": "deserunt",
+                      "data": {
+                        "content": [
+                          {
+                            "id": 66,
+                            "company": {
+                              "id": 44,
+                              "name": "旅国华",
+                              "type": "FOREIGN"
+                            },
+                            "recruit_type": "EXPERIENCED",
+                            "position": "minim adipisicing",
+                            "link": "https://known-lamp.com/",
+                            "location": null,
+                            "extra": null
+                          },
+                          {
+                            "id": 63,
+                            "company": {
+                              "id": 40,
+                              "name": "储敬彪",
+                              "type": "STATE"
+                            },
+                            "recruit_type": "EXPERIENCED",
+                            "position": "pariatur ipsum commodo veniam",
+                            "link": "https://first-finer.name/",
+                            "location": null,
+                            "extra": null
+                          },
+                          {
+                            "id": 68,
+                            "company": {
+                              "id": 76,
+                              "name": "淡国荣",
+                              "type": "STATE"
+                            },
+                            "recruit_type": "INTERN",
+                            "position": "commodo et non laborum",
+                            "link": "https://present-cork.net/",
+                            "location": "velit sint",
+                            "extra": null
+                          }
+                        ],
+                        "total": 34,
+                        "count": 21,
+                        "page": 78,
+                        "page_size": 58,
+                        "total_pages": 56
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "示例 2",
+                    "value": {
+                      "code": 20,
+                      "message": "nisi dolor",
+                      "data": {
+                        "content": [],
+                        "total": 39,
+                        "count": 11,
+                        "page": 65,
+                        "page_size": 76,
+                        "total_pages": 42
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/activities": {
+      "post": {
+        "summary": "增加宣讲会信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company_id": {
+                    "type": "integer",
+                    "title": "所属企业 id"
+                  },
+                  "title": {
+                    "type": "string",
+                    "title": "宣讲会标题"
+                  },
+                  "time": {
+                    "type": "string",
+                    "title": "时间"
+                  },
+                  "link": {
+                    "type": "string",
+                    "title": "报名链接",
+                    "nullable": true
+                  },
+                  "location": {
+                    "type": "string",
+                    "title": "活动地点",
+                    "nullable": true
+                  },
+                  "extra": {
+                    "type": "string",
+                    "title": "备注",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "company_id",
+                  "title",
+                  "location",
+                  "time",
+                  "link",
+                  "extra"
+                ]
+              },
+              "examples": {
+                "1": {
+                  "value": {
+                    "company_id": 10,
+                    "title": "无论谁修订依然尽管哎考虑到",
+                    "time": "2026-04-24 16:31:30",
+                    "link": "https://handy-custody.biz/",
+                    "location": "velit dolore sunt reprehenderit",
+                    "extra": "ex"
+                  },
+                  "summary": "示例 1"
+                },
+                "2": {
+                  "value": {
+                    "company_id": 94,
+                    "title": "好在依然篝火笔直喔耶钟",
+                    "time": "2026-02-16 00:58:21",
+                    "link": null,
+                    "location": null,
+                    "extra": null
+                  },
+                  "summary": "示例 2"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E5%AE%A3%E8%AE%B2%E4%BC%9A%E4%BF%A1%E6%81%AF%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 18,
+                  "message": "ullamco eu velit occaecat",
+                  "data": {
+                    "id": 46,
+                    "company": {
+                      "id": 21,
+                      "name": "宫奕泽",
+                      "type": "STATE"
+                    },
+                    "link": "https://ill-widow.net/",
+                    "title": "只哎哟胡说操作捺",
+                    "time": "2025-02-19 20:54:47",
+                    "location": null,
+                    "extra": null
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/失败响应模板",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "获取宣讲会分页列表",
+        "deprecated": false,
+        "description": "获取全部宣讲会信息。不带筛选功能",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页号",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "页大小",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E5%AE%A3%E8%AE%B2%E4%BC%9A%E4%BF%A1%E6%81%AF%E5%88%86%E9%A1%B5%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "examples": {
+                  "1": {
+                    "summary": "示例 1",
+                    "value": {
+                      "code": 24,
+                      "message": "quis id ut in",
+                      "data": {
+                        "content": [
+                          {
+                            "id": 1,
+                            "company": {
+                              "id": 31,
+                              "name": "接建军",
+                              "type": "PRIVATE"
+                            },
+                            "link": "https://upset-provision.name/",
+                            "title": "沿着哈勇敢啊呸好啊格外作为轻松围绕着",
+                            "time": "2025-02-14 16:31:32",
+                            "location": null,
+                            "extra": null
+                          },
+                          {
+                            "id": 65,
+                            "company": {
+                              "id": 11,
+                              "name": "戴语汐",
+                              "type": "STATE"
+                            },
+                            "link": "https://ornate-designation.com/",
+                            "title": "几乎赦免哼嘘捶做嗯",
+                            "time": "2025-05-16 23:27:19",
+                            "location": null,
+                            "extra": "eu aute veniam id"
+                          },
+                          {
+                            "id": 22,
+                            "company": {
+                              "id": 86,
+                              "name": "太叔磊",
+                              "type": "FOREIGN"
+                            },
+                            "link": "https://courteous-aircraft.biz/",
+                            "title": "哇哦哪个撞啊啊极抓嗯",
+                            "time": "2026-02-20 04:38:43",
+                            "location": "laborum",
+                            "extra": null
+                          }
+                        ],
+                        "total": 94,
+                        "count": 26,
+                        "page": 13,
+                        "page_size": 83,
+                        "total_pages": 16
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "示例 2",
+                    "value": {
+                      "code": 93,
+                      "message": "non exercitation ut in",
+                      "data": {
+                        "content": [],
+                        "total": 31,
+                        "count": 17,
+                        "page": 22,
+                        "page_size": 91,
+                        "total_pages": 82
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/activities/{id}": {
+      "delete": {
+        "summary": "删除宣讲会",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWithNullData"
+                },
+                "example": {
+                  "code": 79,
+                  "message": "laborum qui est",
+                  "data": null
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "更新宣讲会信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company_id": {
+                    "type": "integer",
+                    "title": "所属企业 id",
+                    "nullable": true
+                  },
+                  "link": {
+                    "type": "string",
+                    "title": "报名链接",
+                    "nullable": true
+                  },
+                  "title": {
+                    "type": "string",
+                    "title": "宣讲会标题",
+                    "nullable": true
+                  },
+                  "time": {
+                    "type": "string",
+                    "title": "时间",
+                    "nullable": true
+                  },
+                  "location": {
+                    "type": "string",
+                    "title": "活动地点",
+                    "description": "填具体地址（如紫金港北教）",
+                    "nullable": true
+                  },
+                  "extra": {
+                    "type": "string",
+                    "title": "备注",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "company_id",
+                  "link",
+                  "title",
+                  "time",
+                  "location",
+                  "extra"
+                ]
+              },
+              "examples": {
+                "1": {
+                  "value": {
+                    "company_id": 97,
+                    "link": "https://grumpy-testing.name/",
+                    "title": "咬箱子骨碌碌遍及抽",
+                    "time": "2025-01-16 06:09:24",
+                    "location": "sunt in aliqua consectetur",
+                    "extra": "mollit cupidatat in"
+                  },
+                  "summary": "示例 1"
+                },
+                "2": {
+                  "value": {
+                    "company_id": 87,
+                    "link": "https://stupendous-airbus.net/",
+                    "title": "如果简直一旦直到无论谁并列于中庭并且脊梁",
+                    "time": "2025-09-30 02:35:10",
+                    "location": null,
+                    "extra": null
+                  },
+                  "summary": "示例 2"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E5%AE%A3%E8%AE%B2%E4%BC%9A%E4%BF%A1%E6%81%AF%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 67,
+                  "message": "sit pariatur id",
+                  "data": {
+                    "id": 11,
+                    "company": {
+                      "id": 98,
+                      "name": "钮丽芬",
+                      "type": "FOREIGN"
+                    },
+                    "link": "https://silver-pension.name/",
+                    "title": "整齐浴盆笔直但是朝向最细",
+                    "time": "2025-10-26 10:08:18",
+                    "location": null,
+                    "extra": null
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "根据 id 获取宣讲会信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E5%AE%A3%E8%AE%B2%E4%BC%9A%E4%BF%A1%E6%81%AF%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 4,
+                  "message": "amet culpa",
+                  "data": {
+                    "id": 96,
+                    "company": {
+                      "id": 100,
+                      "name": "延梓晨",
+                      "type": "PRIVATE"
+                    },
+                    "link": "https://untried-populist.org/",
+                    "title": "嗯拎除了以免画敲哎呀关于噢噢",
+                    "time": "2026-10-09 15:49:06",
+                    "location": "laborum nisi veniam est",
+                    "extra": "ex mollit officia sint"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/activities/search": {
+      "get": {
+        "summary": "条件搜索宣讲会信息",
+        "deprecated": false,
+        "description": "条件搜索宣讲会信息，关键字包含宣讲会标题、企业名称、宣讲会地点",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页号",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "页大小",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "宣讲会标题、企业名称、宣讲会地点",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E5%AE%A3%E8%AE%B2%E4%BC%9A%E4%BF%A1%E6%81%AF%E5%88%86%E9%A1%B5%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "examples": {
+                  "1": {
+                    "summary": "示例 1",
+                    "value": {
+                      "code": 61,
+                      "message": "et nisi",
+                      "data": {
+                        "content": [
+                          {
+                            "id": 67,
+                            "company": {
+                              "id": 9,
+                              "name": "轩辕熙瑶",
+                              "type": "FOREIGN"
+                            },
+                            "link": "https://serpentine-conversation.net/",
+                            "title": "惟独秋海棠可用性吞",
+                            "time": "2025-12-28 20:25:18",
+                            "location": "laborum",
+                            "extra": null
+                          }
+                        ],
+                        "total": 64,
+                        "count": 60,
+                        "page": 42,
+                        "page_size": 80,
+                        "total_pages": 15
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "示例 2",
+                    "value": {
+                      "code": 11,
+                      "message": "enim sunt nulla qui aliqua",
+                      "data": {
+                        "content": [],
+                        "total": 16,
+                        "count": 5,
+                        "page": 71,
+                        "page_size": 62,
+                        "total_pages": 8
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/jobs/subscriptions": {
+      "post": {
+        "summary": "增加招聘信息订阅",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer",
+                    "title": "订阅用户 ID"
+                  },
+                  "job_info_id": {
+                    "type": "integer",
+                    "title": "订阅信息 ID"
+                  }
+                },
+                "required": [
+                  "user_id",
+                  "job_info_id"
+                ]
+              },
+              "example": {
+                "user_id": 93,
+                "job_info_id": 45
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E6%8B%9B%E8%81%98%E4%BF%A1%E6%81%AF%E8%AE%A2%E9%98%85%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 30,
+                  "message": "consequat est",
+                  "data": {
+                    "id": 30,
+                    "job_info": {
+                      "id": 13,
+                      "company": {
+                        "id": 4,
+                        "name": "桥敬彪",
+                        "type": "STATE"
+                      },
+                      "recruit_type": "CAMPUS",
+                      "position": "laboris ad sunt",
+                      "link": "https://narrow-cosset.net/",
+                      "location": null,
+                      "extra": "commodo voluptate eu in"
+                    },
+                    "subscribed_at": "dolor"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "获取招聘信息订阅分页列表",
+        "deprecated": false,
+        "description": "获取某用户的招聘信息订阅分页列表，不带筛选功能",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页号",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "页大小",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E6%8B%9B%E8%81%98%E4%BC%9A%E8%AE%A2%E9%98%85%E5%93%8D%E5%BA%94%E5%88%86%E9%A1%B5%E6%A8%A1%E6%9D%BF"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/jobs/subscriptions/{id}": {
+      "delete": {
+        "summary": "删除招聘信息订阅",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订阅 ID",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                },
+                "example": {
+                  "code": 52,
+                  "message": "laborum amet aliqua officia",
+                  "data": null
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/activities/subscriptions": {
+      "post": {
+        "summary": "增加宣讲会信息订阅",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "",
+            "required": true,
+            "example": "application/json",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer",
+                    "title": "订阅用户 ID"
+                  },
+                  "activity_info_id": {
+                    "type": "integer",
+                    "title": "订阅信息 ID"
+                  }
+                },
+                "required": [
+                  "user_id",
+                  "activity_info_id"
+                ]
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E5%AE%A3%E8%AE%B2%E4%BC%9A%E4%BF%A1%E6%81%AF%E8%AE%A2%E9%98%85%E5%93%8D%E5%BA%94%E6%A8%A1%E6%9D%BF"
+                },
+                "example": {
+                  "code": 36,
+                  "message": "dolor",
+                  "data": {
+                    "id": 63,
+                    "activity_info": {
+                      "id": 34,
+                      "company": {
+                        "id": 38,
+                        "name": "茅玉梅",
+                        "type": "PRIVATE"
+                      },
+                      "link": "https://mediocre-sonata.com/",
+                      "title": "关于热反对在拍坏惟独",
+                      "time": "2025-11-24 08:50:03",
+                      "location": null,
+                      "extra": "ad fugiat ea aute cupidatat"
+                    },
+                    "subscribed_at": "elit incididunt"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "获取宣讲会订阅分页列表",
+        "deprecated": false,
+        "description": "获取全部宣讲会订阅信息。不带筛选功能",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页号",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "页大小",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/%E5%AE%A3%E8%AE%B2%E4%BC%9A%E8%AE%A2%E9%98%85%E5%93%8D%E5%BA%94%E5%88%86%E9%A1%B5%E6%A8%A1%E6%9D%BF"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/activities/subscriptions/{id}": {
+      "delete": {
+        "summary": "删除宣讲会订阅",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWithNullData"
+                },
+                "example": {
+                  "code": 83,
+                  "message": "tempor nulla",
+                  "data": null
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "type": "object",
+            "properties": {},
+            "title": "响应数据"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "PageResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "title": "数据列表",
+                "minItems": 0
+              },
+              "total": {
+                "type": "integer",
+                "title": "数据总量",
+                "description": "数据库中所有的数据总量"
+              },
+              "count": {
+                "type": "integer",
+                "title": "数据数量",
+                "description": "当前页数据总量"
+              },
+              "page": {
+                "type": "integer",
+                "title": "数据页号",
+                "description": "当前结果所属数据页号"
+              },
+              "page_size": {
+                "type": "integer",
+                "title": "分页大小",
+                "description": "当前分页大小"
+              },
+              "total_pages": {
+                "type": "integer",
+                "title": "数据总页",
+                "description": "数据库中所有数据总页数"
+              }
+            },
+            "title": "响应数据",
+            "required": [
+              "content",
+              "total",
+              "page",
+              "page_size",
+              "total_pages",
+              "count"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "ApiResponseWithNullData": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "type": "null",
+            "title": "响应数据"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "ID"
+          },
+          "username": {
+            "type": "string",
+            "title": "用户名",
+            "maxLength": 31,
+            "minLength": 1,
+            "description": "唯一"
+          },
+          "password": {
+            "type": "string",
+            "title": "用户密码",
+            "description": "响应中不会返回",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ],
+            "title": "用户角色"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "创建时间",
+            "description": "后台填充"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "role",
+          "created_at",
+          "password"
+        ]
+      },
+      "用户响应模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "title": "响应数据",
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "title": "ID"
+              },
+              "username": {
+                "type": "string",
+                "title": "用户名",
+                "maxLength": 31,
+                "minLength": 1,
+                "description": "唯一"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "ADMIN",
+                  "USER"
+                ],
+                "title": "用户角色"
+              },
+              "created_at": {
+                "type": "string",
+                "title": "创建时间",
+                "description": "后台填充"
+              }
+            },
+            "required": [
+              "id",
+              "username",
+              "role",
+              "created_at"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "Company": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "企业 ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "企业名称"
+          },
+          "type": {
+            "type": "string",
+            "title": "企业类型",
+            "enum": [
+              "STATE",
+              "PRIVATE",
+              "FOREIGN"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type"
+        ]
+      },
+      "企业响应模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "title": "响应数据",
+            "$ref": "#/components/schemas/Company"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "企业分页响应模版": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Company"
+                },
+                "title": "数据列表",
+                "minItems": 0
+              },
+              "total": {
+                "type": "integer",
+                "title": "数据总量",
+                "description": "数据库中所有的数据总量"
+              },
+              "count": {
+                "type": "integer",
+                "title": "数据数量",
+                "description": "当前页数据总量"
+              },
+              "page": {
+                "type": "integer",
+                "title": "数据页号",
+                "description": "当前结果所属数据页号"
+              },
+              "page_size": {
+                "type": "integer",
+                "title": "分页大小",
+                "description": "当前分页大小"
+              },
+              "total_pages": {
+                "type": "integer",
+                "title": "数据总页",
+                "description": "数据库中所有数据总页数"
+              }
+            },
+            "title": "响应数据",
+            "required": [
+              "content",
+              "total",
+              "page",
+              "page_size",
+              "total_pages",
+              "count"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "JobInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "ID"
+          },
+          "company": {
+            "$ref": "#/components/schemas/Company",
+            "title": "所属企业"
+          },
+          "recruit_type": {
+            "type": "string",
+            "title": "招聘类型",
+            "enum": [
+              "INTERN",
+              "CAMPUS",
+              "EXPERIENCED"
+            ]
+          },
+          "position": {
+            "type": "string",
+            "title": "岗位名称",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "link": {
+            "type": "string",
+            "title": "投递链接",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "title": "工作城市",
+            "nullable": true
+          },
+          "extra": {
+            "type": "string",
+            "title": "备注信息",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "recruit_type",
+          "position",
+          "link",
+          "location",
+          "extra"
+        ]
+      },
+      "招聘信息响应模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "title": "响应数据",
+            "$ref": "#/components/schemas/JobInfo"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "招聘信息分页响应模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/JobInfo"
+                },
+                "title": "数据列表",
+                "minItems": 0
+              },
+              "total": {
+                "type": "integer",
+                "title": "数据总量",
+                "description": "数据库中所有的数据总量"
+              },
+              "count": {
+                "type": "integer",
+                "title": "数据数量",
+                "description": "当前页数据总量"
+              },
+              "page": {
+                "type": "integer",
+                "title": "数据页号",
+                "description": "当前结果所属数据页号"
+              },
+              "page_size": {
+                "type": "integer",
+                "title": "分页大小",
+                "description": "当前分页大小"
+              },
+              "total_pages": {
+                "type": "integer",
+                "title": "数据总页",
+                "description": "数据库中所有数据总页数"
+              }
+            },
+            "title": "响应数据",
+            "required": [
+              "content",
+              "total",
+              "page",
+              "page_size",
+              "total_pages",
+              "count"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "ActivityInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "ID"
+          },
+          "company": {
+            "$ref": "#/components/schemas/Company",
+            "title": "所属企业"
+          },
+          "title": {
+            "type": "string",
+            "title": "宣讲会标题"
+          },
+          "time": {
+            "type": "string",
+            "title": "时间"
+          },
+          "link": {
+            "type": "string",
+            "title": "报名链接",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "title": "活动地点",
+            "description": "填具体地址（如紫金港北教）",
+            "nullable": true
+          },
+          "extra": {
+            "type": "string",
+            "title": "备注",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "title",
+          "location",
+          "time",
+          "link",
+          "extra"
+        ]
+      },
+      "宣讲会信息响应模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "title": "响应数据",
+            "$ref": "#/components/schemas/ActivityInfo"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "宣讲会信息分页响应模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ActivityInfo"
+                },
+                "title": "数据列表",
+                "minItems": 0
+              },
+              "total": {
+                "type": "integer",
+                "title": "数据总量",
+                "description": "数据库中所有的数据总量"
+              },
+              "count": {
+                "type": "integer",
+                "title": "数据数量",
+                "description": "当前页数据总量"
+              },
+              "page": {
+                "type": "integer",
+                "title": "数据页号",
+                "description": "当前结果所属数据页号"
+              },
+              "page_size": {
+                "type": "integer",
+                "title": "分页大小",
+                "description": "当前分页大小"
+              },
+              "total_pages": {
+                "type": "integer",
+                "title": "数据总页",
+                "description": "数据库中所有数据总页数"
+              }
+            },
+            "title": "响应数据",
+            "required": [
+              "content",
+              "total",
+              "page",
+              "page_size",
+              "total_pages",
+              "count"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "JobSubscription": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "ID"
+          },
+          "user": {
+            "title": "订阅用户",
+            "$ref": "#/components/schemas/User"
+          },
+          "job_info": {
+            "$ref": "#/components/schemas/JobInfo",
+            "title": "订阅信息"
+          },
+          "subscribed_at": {
+            "type": "string",
+            "description": "后台填充",
+            "title": "订阅时间"
+          }
+        },
+        "required": [
+          "id",
+          "user",
+          "subscribed_at",
+          "job_info"
+        ]
+      },
+      "招聘信息订阅响应模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "title": "ID"
+              },
+              "job_info": {
+                "$ref": "#/components/schemas/JobInfo",
+                "title": "订阅信息"
+              },
+              "subscribed_at": {
+                "type": "string",
+                "description": "后台填充",
+                "title": "订阅时间"
+              }
+            },
+            "title": "响应数据",
+            "required": [
+              "id",
+              "job_info",
+              "subscribed_at"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "招聘会订阅响应分页模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "title": "ID"
+                    },
+                    "job_info": {
+                      "$ref": "#/components/schemas/JobInfo",
+                      "title": "订阅信息"
+                    },
+                    "subscribed_at": {
+                      "type": "string",
+                      "description": "后台填充",
+                      "title": "订阅时间"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "job_info",
+                    "subscribed_at"
+                  ]
+                },
+                "title": "数据列表",
+                "minItems": 0
+              },
+              "total": {
+                "type": "integer",
+                "title": "数据总量",
+                "description": "数据库中所有的数据总量"
+              },
+              "count": {
+                "type": "integer",
+                "title": "数据数量",
+                "description": "当前页数据总量"
+              },
+              "page": {
+                "type": "integer",
+                "title": "数据页号",
+                "description": "当前结果所属数据页号"
+              },
+              "page_size": {
+                "type": "integer",
+                "title": "分页大小",
+                "description": "当前分页大小"
+              },
+              "total_pages": {
+                "type": "integer",
+                "title": "数据总页",
+                "description": "数据库中所有数据总页数"
+              }
+            },
+            "title": "响应数据",
+            "required": [
+              "content",
+              "total",
+              "page",
+              "page_size",
+              "total_pages",
+              "count"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "ActivitySubscription": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "ID"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User",
+            "title": "订阅用户"
+          },
+          "activity_info": {
+            "$ref": "#/components/schemas/ActivityInfo",
+            "title": "订阅信息"
+          },
+          "subscribed_at": {
+            "type": "string",
+            "title": "订阅时间",
+            "description": "后台填充"
+          }
+        },
+        "required": [
+          "id",
+          "user",
+          "subscribed_at",
+          "activity_info"
+        ]
+      },
+      "宣讲会信息订阅响应模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "title": "响应数据",
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "title": "ID"
+              },
+              "activity_info": {
+                "$ref": "#/components/schemas/ActivityInfo",
+                "title": "订阅信息"
+              },
+              "subscribed_at": {
+                "type": "string",
+                "title": "订阅时间",
+                "description": "后台填充"
+              }
+            },
+            "required": [
+              "id",
+              "activity_info",
+              "subscribed_at"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "宣讲会订阅响应分页模板": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "响应状态码",
+            "description": "与HTTP响应状态码一致"
+          },
+          "message": {
+            "type": "string",
+            "title": "响应消息"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "title": "ID"
+                    },
+                    "activity_info": {
+                      "$ref": "#/components/schemas/ActivityInfo",
+                      "title": "订阅信息"
+                    },
+                    "subscribed_at": {
+                      "type": "string",
+                      "title": "订阅时间",
+                      "description": "后台填充"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "activity_info",
+                    "subscribed_at"
+                  ]
+                },
+                "title": "数据列表",
+                "minItems": 0
+              },
+              "total": {
+                "type": "integer",
+                "title": "数据总量",
+                "description": "数据库中所有的数据总量"
+              },
+              "count": {
+                "type": "integer",
+                "title": "数据数量",
+                "description": "当前页数据总量"
+              },
+              "page": {
+                "type": "integer",
+                "title": "数据页号",
+                "description": "当前结果所属数据页号"
+              },
+              "page_size": {
+                "type": "integer",
+                "title": "分页大小",
+                "description": "当前分页大小"
+              },
+              "total_pages": {
+                "type": "integer",
+                "title": "数据总页",
+                "description": "数据库中所有数据总页数"
+              }
+            },
+            "title": "响应数据",
+            "required": [
+              "content",
+              "total",
+              "page",
+              "page_size",
+              "total_pages",
+              "count"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      }
+    },
+    "responses": {
+      "成功响应模板": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiResponse"
+            }
+          }
+        }
+      },
+      "服务器内部错误": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "examples": {
+              "示例": {
+                "summary": "示例",
+                "value": {
+                  "code": 500,
+                  "message": "Internal server error",
+                  "data": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "失败响应模板": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "examples": {
+              "示例": {
+                "summary": "示例",
+                "value": {
+                  "code": 400,
+                  "message": "failed",
+                  "data": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "分页相应格式": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {}
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "list",
+                    "total",
+                    "page",
+                    "page_size"
+                  ]
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "servers": [],
+  "security": []
+}
