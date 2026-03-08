@@ -29,11 +29,11 @@
             <template #title>
               <div class="flex items-center gap-2 text-left">
                 <van-icon name="friends-o" class="text-[22px] text-[#2f69c8]" />
-                <span class="text-[#1f2a44] text-[15px] font-semibold">用户管理</span>
+                <span class="text-[#1f2a44] text-[15px] font-semibold">用户信息</span>
               </div>
             </template>
             <template #label>
-                <span class="text-xs text-gray-400">查看与管理所有用户信息</span>
+                <span class="text-xs text-gray-400">当前 API 仅支持查看当前登录用户</span>
             </template>
           </van-cell>
           <van-cell
@@ -100,7 +100,7 @@
       <!-- User Management Popup -->
       <van-popup v-model:show="showUserMgr" position="bottom" :style="{ height: '80%' }" round>
         <div class="p-4 h-full flex flex-col">
-          <h3 class="text-lg font-bold mb-4">用户管理</h3>
+          <h3 class="text-lg font-bold mb-4">用户信息</h3>
           <div class="flex-1 overflow-y-auto">
             <van-list>
               <van-cell v-for="u in userList" :key="u.id" :title="u.username" :label="u.role" />
@@ -146,7 +146,7 @@
           <div class="flex-1 overflow-y-auto">
              <van-cell-group>
               <van-swipe-cell v-for="act in activityList" :key="act.id">
-                <van-cell :title="act.title" :label="`${act.time} | ${act.location || '暂无地点'}`" :value="act.status || ''" />
+                <van-cell :title="act.title" :label="`${act.time} | ${act.location || '暂无地点'}`" />
                 <template #right>
                   <van-button square text="编辑" type="primary" class="h-full" @click="openActivityEdit(act)" />
                   <van-button square text="删除" type="danger" class="h-full" @click="handleDeleteActivity(act.id)" />
@@ -199,7 +199,6 @@
           <van-field v-model="activityForm.location" label="地点" placeholder="请输入地点" />
           <van-field v-model="activityForm.link" label="链接" placeholder="请输入报名链接" />
           <van-field v-model="activityForm.extra" label="备注" placeholder="其他信息" />
-          <van-field v-model="activityForm.status" label="状态" placeholder="例如: 报名中" />
         </van-form>
       </van-dialog>
 
@@ -296,7 +295,6 @@ type ActivityForm = {
   link: string;
   location: string;
   extra: string;
-  status: string;
 };
 
 const activityForm = reactive<ActivityForm>({
@@ -306,7 +304,6 @@ const activityForm = reactive<ActivityForm>({
   link: '',
   location: '',
   extra: '',
-  status: '',
 });
 
 
@@ -380,7 +377,11 @@ watch(showActivityMgr, async (val) => {
 async function fetchUsers() {
   try {
     const res = await userService.getUsers();
-    if (isSuccessResponse(res)) userList.value = res.data || [];
+    if (isSuccessResponse(res)) {
+      userList.value = res.data || [];
+      return;
+    }
+    showToast(res.message || '获取用户信息失败');
   } catch(e) { console.error(e); }
 }
 
@@ -457,6 +458,11 @@ function openJobEdit(job: jobService.Job | null) {
 
 async function saveJob() {
   try {
+    if (!jobForm.company_id || !jobForm.position.trim()) {
+      showToast('公司ID和职位名称不能为空');
+      return;
+    }
+
     // Convert empty strings to null for optional fields if needed, or keep as is.
     // Based on curl example, location can be null.
     const payload: jobService.JobPayload = {
@@ -469,10 +475,18 @@ async function saveJob() {
     };
 
     if (editingJob.value) {
-      await jobService.updateJob(editingJob.value.id, payload);
+      const res = await jobService.updateJob(editingJob.value.id, payload);
+      if (!isSuccessResponse(res)) {
+        showToast(res.message || '更新失败');
+        return;
+      }
       showSuccessToast('更新成功');
     } else {
-      await jobService.createJob(payload);
+      const res = await jobService.createJob(payload);
+      if (!isSuccessResponse(res)) {
+        showToast(res.message || '发布失败');
+        return;
+      }
       showSuccessToast('发布成功');
     }
     jobPage.value = 1;
@@ -485,7 +499,11 @@ async function saveJob() {
 function handleDeleteJob(id: number) {
   showConfirmDialog({ title: '确认删除', message: '确定要删除这个职位吗？' })
     .then(async () => {
-      await jobService.deleteJob(id);
+      const res = await jobService.deleteJob(id);
+      if (!isSuccessResponse(res)) {
+        showToast(res.message || '删除失败');
+        return;
+      }
       showSuccessToast('删除成功');
       jobPage.value = 1;
       jobHasMore.value = true;
@@ -505,7 +523,6 @@ function openActivityEdit(act: activityService.Activity | null) {
       link: act.link || '',
       location: act.location || '',
       extra: act.extra || '',
-      status: act.status || '',
     });
   } else {
     Object.assign(activityForm, {
@@ -515,7 +532,6 @@ function openActivityEdit(act: activityService.Activity | null) {
       link: '',
       location: '',
       extra: '',
-      status: '',
     });
   }
   showActivityEdit.value = true;
@@ -523,6 +539,11 @@ function openActivityEdit(act: activityService.Activity | null) {
 
 async function saveActivity() {
   try {
+    if (!activityForm.company_id || !activityForm.title.trim() || !activityForm.time.trim()) {
+      showToast('公司ID、标题和时间不能为空');
+      return;
+    }
+
     const payload: activityService.ActivityPayload = {
       company_id: Number(activityForm.company_id) || 0,
       title: activityForm.title,
@@ -530,14 +551,21 @@ async function saveActivity() {
       link: activityForm.link || null,
       location: activityForm.location || null,
       extra: activityForm.extra || null,
-      status: activityForm.status || undefined,
     };
 
     if (editingActivity.value) {
-      await activityService.updateActivity(editingActivity.value.id, payload);
+      const res = await activityService.updateActivity(editingActivity.value.id, payload);
+      if (!isSuccessResponse(res)) {
+        showToast(res.message || '更新失败');
+        return;
+      }
       showSuccessToast('更新成功');
     } else {
-      await activityService.createActivity(payload);
+      const res = await activityService.createActivity(payload);
+      if (!isSuccessResponse(res)) {
+        showToast(res.message || '发布失败');
+        return;
+      }
       showSuccessToast('发布成功');
     }
     activityPage.value = 1;
@@ -550,7 +578,11 @@ async function saveActivity() {
 function handleDeleteActivity(id: number) {
   showConfirmDialog({ title: '确认删除', message: '确定要删除这个宣讲会吗？' })
     .then(async () => {
-      await activityService.deleteActivity(id);
+      const res = await activityService.deleteActivity(id);
+      if (!isSuccessResponse(res)) {
+        showToast(res.message || '删除失败');
+        return;
+      }
       showSuccessToast('删除成功');
       activityPage.value = 1;
       activityHasMore.value = true;

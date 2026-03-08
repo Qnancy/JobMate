@@ -1,4 +1,4 @@
-import { api, type ApiResponse, isSuccessResponse, TOKEN_KEY } from "@/utils/request";
+import { api, request, type ApiResponse, isSuccessResponse, TOKEN_KEY } from "@/utils/request";
 
 export type User = {
   id: number
@@ -107,7 +107,7 @@ function setCurrentUser(user: User) {
 // }
 
 export function logout() {
-  api.post<null>('/auth/logout', {}).catch(() => undefined)
+  request<null>('/auth/logout', { method: 'POST' }).catch(() => undefined)
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(CURRENT_KEY)
 }

@@ -10,7 +10,6 @@ export interface Activity {
   link: string | null;
   location: string | null;
   extra: string | null;
-  status?: string; // 若后端返回状态，保持可选以兼容旧页面
 }
 
 // 创建/更新时的请求体：传 company_id 等基础字段
@@ -21,7 +20,6 @@ export interface ActivityPayload {
   link: string | null;
   location: string | null;
   extra: string | null;
-  status?: string;
 }
 
 // 列表分页

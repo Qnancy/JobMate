@@ -61,15 +61,15 @@
       <!-- 统计数据 -->
       <div class="mt-8 grid grid-cols-3 gap-3">
                 <div class="rounded-xl p-4 text-center shadow-md border home-stat-card">
-                    <div class="text-2xl font-bold home-stat-number">{{ 42 }}</div>
+                    <div class="text-2xl font-bold home-stat-number">{{ stats.jobs }}</div>
                     <div class="text-xs mt-1 home-stat-label">在招职位</div>
         </div>
                 <div class="rounded-xl p-4 text-center shadow-md border home-stat-card">
-                    <div class="text-2xl font-bold home-stat-number">{{ 42 }}</div>
+                    <div class="text-2xl font-bold home-stat-number">{{ stats.fairs }}</div>
                     <div class="text-xs mt-1 home-stat-label">招聘会</div>
         </div>
                 <div class="rounded-xl p-4 text-center shadow-md border home-stat-card">
-                    <div class="text-2xl font-bold home-stat-number">500+</div>
+                    <div class="text-2xl font-bold home-stat-number">{{ stats.companies }}</div>
                     <div class="text-xs mt-1 home-stat-label">合作企业</div>
         </div>
     </div>
@@ -99,9 +99,13 @@
     </div> -->
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { getJob } from '@/services/job'
+import { getActivities } from '@/services/activity'
+import { getCompany } from '@/services/company'
+import { isSuccessResponse } from '@/utils/request'
 
 const searchQuery = ref('')
 const router = useRouter()
@@ -112,28 +116,24 @@ function handleSearch() {
     router.push({ path: '/info/search', query: { keywords: keyword } })
 }
 
-function goInfo(tab = '') {
-    const query = tab ? { tab } : {}
-    router.push({ path: '/info', query })
-}
-
-// 平台统计数据（后端未接入时使用占位数据）
-const stats = ref({ fairs: null, jobs: null, companies: null })
+// 平台统计数据
+const stats = ref({ fairs: 0, jobs: 0, companies: 0 })
 
 async function fetchStats() {
     try {
-        const res = await fetch('/api/stats')
-        if (!res.ok) throw new Error('network')
-        const data = await res.json()
-        // 期望返回字段：{ fairs: number, jobs: number, companies: number }
+        const [jobRes, activityRes, companyRes] = await Promise.all([
+            getJob({ page: 1, page_size: 1 }),
+            getActivities({ page: 1, page_size: 1 }),
+            getCompany({ page: 1, page_size: 1 }),
+        ])
+
         stats.value = {
-            fairs: data.fairs ?? 0,
-            jobs: data.jobs ?? 0,
-            companies: data.companies ?? 0,
+            jobs: isSuccessResponse(jobRes) ? Number(jobRes.data?.total || 0) : 0,
+            fairs: isSuccessResponse(activityRes) ? Number(activityRes.data?.total || 0) : 0,
+            companies: isSuccessResponse(companyRes) ? Number(companyRes.data?.total || 0) : 0,
         }
     } catch (e) {
-        // 后端尚未就绪时使用占位数据，后续替换为真实接口即可
-        stats.value = { fairs: 12, jobs: 238, companies: 64 }
+        stats.value = { fairs: 0, jobs: 0, companies: 0 }
     }
 }
 

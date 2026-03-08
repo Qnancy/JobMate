@@ -15,8 +15,7 @@ export function isSuccessCode(code: number) {
 }
 
 export function isSuccessResponse<T = any>(res: ApiResponse<T>) {
-  if (isSuccessCode(res.code)) return true;
-  return res.data !== undefined && res.data !== null;
+  return isSuccessCode(res.code);
 }
 
 /**
