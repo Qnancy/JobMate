@@ -45,6 +45,19 @@ $ ./mvnw spring-boot:run
 
 如果你不想进行本地的环境部署，或者本地环境部署有问题，可以使用提供的开发容器
 
+**使用容器之前，请先在项目根目录创建 `.env` 文件，并添加下述内容**：
+
+```txt
+MYSQL_ROOT_PASSWORD=YourRootPasswordHere
+MYSQL_DATABASE=YourDatabaseNameHere
+MYSQL_USER=YourUsernameHere
+MYSQL_PASSWORD=YourUserPasswordHere
+
+REDIS_PASSWORD=YourRedisPasswordHere
+```
+
+**同时不要忘记在 `application.yml` 中修改你的配置**
+
 开发容器基于 docker-compose 进行多容器编排，主开发容器为 jobmate-app，内部已经打包好 Java + mvn 等开发工具和环境，并配置了必要的开发工具
 
 ```shell

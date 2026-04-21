@@ -18,12 +18,8 @@ services:
       - jobmate-network
   mysql:
     image: mysql:8.0
-    user: "1000:1000"
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=jobmate_db
-      - MYSQL_USER=jobmate_admin
-      - MYSQL_PASSWORD=jobmate_password
+    env_file:
+      - .env
     volumes:
       - mysql-data:/var/lib/mysql
     ports:
@@ -31,22 +27,23 @@ services:
     networks:
       - jobmate-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-p$${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 10s
       retries: 5
   redis:
     image: redis:7.2-alpine
+    env_file:
+      - .env
     volumes:
       - redis-data:/data
     ports:
       - 6379:6379
-    environment:
-      - REDIS_PASSWORD=jobmate_password
+    command: ["sh", "-c", "redis-server --requirepass ${REDIS_PASSWORD}"]
     networks:
       - jobmate-network
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "{REDIS_PASSWORD}", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD} ping"]
       interval: 5s
       timeout: 10s
       retries: 5
