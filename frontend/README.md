@@ -1,25 +1,89 @@
-# JubMate FE
+# JubMate 前端项目
 
-## Installation
+**JubMate 的前端代码仓库，基于 Vite + Vue 3 + TypeScript 开发。**
 
-Recommend to use [pnpm](https://pnpm.io/) as package manager.
+## 🚀 安装依赖
 
-```bash
-pnpm install
+**推荐使用**[pnpm](https://pnpm.io/) 作为包管理工具，以获得更好的性能与一致性。
+
+```
+ pnpm install
 ```
 
-## Development
+**如果本地还没有安装pnpm，请先执行：**
 
-```bash
-pnpm run dev
+```
+ npm install -g pnpm
 ```
 
-## Build
+## 🧑‍💻 启动开发环境
+
+先配置后端 API 地址（仅首次需要）：
+
+```
+copy .env.example .env.local
+```
+
+然后编辑 `.env.local`：
+
+```
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
+```
+ pnpm run dev
+```
+
+**启动后可在浏览器访问**`http://localhost:5173`（或终端显示的端口）。
+
+## ✅ 本地联调快速验证
 
 ```bash
 pnpm run build
+pnpm run dev
 ```
 
-## Note when developing
+打开浏览器开发者工具 Network，验证登录链路：
 
-Pages: Add pages in `src/pages` folder. See https://uvr.esm.is/guide/file-based-routing.html for more details.
+- `POST /api/auth/login`
+- `GET /api/users/me`
+- 后续请求 Header 携带 `Authorization: Bearer <token>`
+
+## 🏗️ 打包构建
+
+```
+ pnpm run build
+```
+
+**构建结果将输出到**`dist/` 目录中。
+
+## 📁 项目结构说明
+
+`src/pages/` —— 页面组件目录（基于文件的自动路由）** **详情参考：[Vite File-based Routing 指南](https://uvr.esm.is/guide/file-based-routing.html)
+
+## 🌿 Git 开发流程规范
+
+**为避免代码冲突、保持主分支稳定，请遵守以下规范：**
+
+1. **不要直接推送到**`main` 分支。
+
+2. **每次开发新功能或修复问题时，新建一个分支：**
+
+   ```
+    git checkout -b dev/fe
+   ```
+
+3. **开发完成后推送到远程：**
+
+   ```
+    git push origin dev/fe
+   ```
+
+4. **确认无误后合并到**`main`。
+
+5. **每次拉取更新后请执行**`pnpm install`，确保依赖一致。
+
+## TODO
+- [ ] 收藏逻辑
+- [ ] 报名逻辑
+- [ ] 管理员的一些系统设置？
