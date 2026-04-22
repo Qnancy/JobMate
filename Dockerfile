@@ -14,6 +14,7 @@ RUN groupadd -g 1000 jobmate && \
 # Install dependencies
 RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
     sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/ports.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
     apt-get update && apt-get install -y --no-install-recommends \
     maven \
     sudo \
@@ -43,4 +44,5 @@ WORKDIR /home/jobmate/JobMate
 USER jobmate
 
 # Default command
-CMD ["sleep", "infinity"]
+# CMD ["sleep", "infinity"]
+CMD ["bash", "-c", "mvn spring-boot:run"]

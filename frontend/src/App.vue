@@ -1,6 +1,19 @@
 <script setup lang="ts">
 // import HelloWorld from './components/HelloWorld.vue'
 import { RouterView } from "vue-router";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const hideTabbar = computed(() => {
+  const authPages = new Set([
+    "/my/login",
+    "/my/register",
+    "/my/login-admin",
+    "/my/register-admin",
+  ]);
+  return authPages.has(route.path);
+});
 </script>
 
 <template>
@@ -13,6 +26,7 @@ import { RouterView } from "vue-router";
 </Suspense>
 
   <van-tabbar
+    v-if="!hideTabbar"
     route
     class="glass-tabbar"
     :fixed="false"

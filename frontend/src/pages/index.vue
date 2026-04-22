@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen home-page">
+    <div class="home-page">
     <main  class="p-4">
         <!-- Logo区域 -->
         <div class="text-center py-8">
@@ -146,6 +146,8 @@ onMounted(() => {
 @import "tailwindcss";
 .home-page {
     background: var(--home-bg);
+    min-height: calc(100vh + 140px);
+    padding-bottom: 160px;
 }
 
 .home-logo-card {

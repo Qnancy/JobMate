@@ -140,7 +140,10 @@ async function onSubmit() {
 
   localStorage.removeItem(STORAGE_KEY);
   showToast("登录成功");
-  const target = res?.data?.role === 'ADMIN' ? '/admin' : '/my';
+  const redirect = router.currentRoute.value.query.redirect;
+  const target = typeof redirect === "string"
+    ? redirect
+    : (res?.data?.role === 'ADMIN' ? '/admin' : '/my');
   router.push({ path: target });
 }
 </script>
@@ -153,7 +156,7 @@ async function onSubmit() {
   padding: 32px 16px;
   font-family: 'Noto Sans SC', sans-serif;
   background-color: #f8f9fa;
-  height: 80vh;
+  min-height: calc(100vh + 140px);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

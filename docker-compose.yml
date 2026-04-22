@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    working_dir: /home/jobmate/JobMate/backend
     volumes:
       - .:/home/jobmate/JobMate:cached
     depends_on:
@@ -11,39 +12,78 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=jobmate_db
+      - DB_USER=jobmate_dev
+      - DB_PASSWORD=JobMate@123
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     ports:
       - 8080:8080
+    networks:
+      - jobmate-network
+    # 显式指定启动命令，确保在正确的目录下运行
+    command: mvn spring-boot:run
+
+  frontend:
+    image: node:20-alpine
+    container_name: jobmate-frontend
+    working_dir: /home/jobmate/JobMate/frontend
+    volumes:
+      - .:/home/jobmate/JobMate:cached
+      - frontend-node-modules:/home/jobmate/JobMate/frontend/node_modules
+    depends_on:
+      - app
+    environment:
+      - VITE_API_BASE_URL=http://app:8080
+    ports:
       - 5173:5173
     networks:
       - jobmate-network
+    command: sh -c "corepack enable && pnpm install && pnpm dev --host 0.0.0.0 --port 5173"
+
   mysql:
     image: mysql:8.0
+    container_name: jobmate-mysql
     env_file:
       - .env
+    environment:
+      # 核心修改：这三行会让 MySQL 启动时自动建库、建人、授权
+      - MYSQL_DATABASE=jobmate_db
+      - MYSQL_USER=jobmate_dev
+      - MYSQL_PASSWORD=JobMate@123
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3307:3306"
     networks:
       - jobmate-network
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD}"]
+      # 修正：使用 $$ 来确保变量在容器内解析，而不是在宿主机解析
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 10s
       retries: 5
+
   redis:
     image: redis:7.2-alpine
+    container_name: jobmate-redis
     env_file:
       - .env
     volumes:
       - redis-data:/data
     ports:
       - 6379:6379
-    command: ["sh", "-c", "redis-server --requirepass ${REDIS_PASSWORD}"]
+    command: ["sh", "-c", "redis-server --requirepass $${REDIS_PASSWORD}"]
     networks:
       - jobmate-network
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD} ping"]
+      test: ["CMD-SHELL", "redis-cli -a $${REDIS_PASSWORD} ping"]
       interval: 5s
       timeout: 10s
       retries: 5
@@ -55,3 +95,4 @@ networks:
 volumes:
   mysql-data:
   redis-data:
+  frontend-node-modules:
