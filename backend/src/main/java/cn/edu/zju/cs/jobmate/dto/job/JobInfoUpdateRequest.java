@@ -1,12 +1,15 @@
 package cn.edu.zju.cs.jobmate.dto.job;
 
 import cn.edu.zju.cs.jobmate.dto.common.UpdateRequest;
+import cn.edu.zju.cs.jobmate.enums.EducationRequirement;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
 import cn.edu.zju.cs.jobmate.utils.log.ToStringUtil;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * JobInfo update request DTO.
@@ -25,6 +28,19 @@ public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
     private String location;
     private String extra;
 
+    /**
+     * Optional new deadline. Pass {@code null} to leave it untouched. To explicitly
+     * clear an existing deadline, set {@link #clearDeadline} to true.
+     */
+    private LocalDateTime deadline;
+
+    /**
+     * If true, removes any previously set deadline regardless of {@link #deadline}.
+     */
+    private Boolean clearDeadline;
+
+    private EducationRequirement educationRequirement;
+
     @Override
     public boolean isUpdatable() {
         return companyId != null ||
@@ -32,7 +48,10 @@ public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
             position != null ||
             link != null ||
             location != null ||
-            extra != null;
+            extra != null ||
+            deadline != null ||
+            Boolean.TRUE.equals(clearDeadline) ||
+            educationRequirement != null;
     }
 
     @Override
@@ -43,6 +62,14 @@ public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
         if (link != null) { jobInfo.setLink(link); }
         if (location != null) { jobInfo.setLocation(location); }
         if (extra != null) { jobInfo.setExtra(extra); }
+        if (Boolean.TRUE.equals(clearDeadline)) {
+            jobInfo.setDeadline(null);
+        } else if (deadline != null) {
+            jobInfo.setDeadline(deadline);
+        }
+        if (educationRequirement != null) {
+            jobInfo.setEducationRequirement(educationRequirement);
+        }
     }
 
     @Override
@@ -54,6 +81,9 @@ public class JobInfoUpdateRequest implements UpdateRequest<JobInfo> {
             ", link=" + ToStringUtil.wrap(link) +
             ", location=" + ToStringUtil.wrap(location) +
             ", extra=" + ToStringUtil.wrap(extra) +
+            ", deadline=" + deadline +
+            ", clearDeadline=" + clearDeadline +
+            ", educationRequirement=" + educationRequirement +
             '}';
     }
 }

@@ -1,10 +1,13 @@
 package cn.edu.zju.cs.jobmate.dto.job;
 
 import cn.edu.zju.cs.jobmate.dto.company.CompanyResponse;
+import cn.edu.zju.cs.jobmate.enums.EducationRequirement;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * JobInf response DTO.
@@ -20,6 +23,11 @@ public class JobInfoResponse {
     private String link;
     private String location;
     private String extra;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deadline;
+
+    private EducationRequirement educationRequirement;
 
     /**
      * Convert from JobInfo entity to JobInfoResponse.
@@ -28,14 +36,18 @@ public class JobInfoResponse {
         if (jobInfo == null) {
             return null;
         }
-        return new JobInfoResponse(
-            jobInfo.getId(),
-            CompanyResponse.from(jobInfo.getCompany()),
-            jobInfo.getRecruitType(),
-            jobInfo.getPosition(),
-            jobInfo.getLink(),
-            jobInfo.getLocation(),
-            jobInfo.getExtra()
-        );
+        return JobInfoResponse.builder()
+            .id(jobInfo.getId())
+            .company(CompanyResponse.from(jobInfo.getCompany()))
+            .recruitType(jobInfo.getRecruitType())
+            .position(jobInfo.getPosition())
+            .link(jobInfo.getLink())
+            .location(jobInfo.getLocation())
+            .extra(jobInfo.getExtra())
+            .createdAt(jobInfo.getCreatedAt())
+            .updatedAt(jobInfo.getUpdatedAt())
+            .deadline(jobInfo.getDeadline())
+            .educationRequirement(jobInfo.getEducationRequirement())
+            .build();
     }
 }

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cn.edu.zju.cs.jobmate.configs.properties.CorsProperties;
 import cn.edu.zju.cs.jobmate.configs.properties.MonitorProperties;
+import cn.edu.zju.cs.jobmate.configs.properties.AdminProperties;
 import cn.edu.zju.cs.jobmate.configs.security.filters.*;
 import cn.edu.zju.cs.jobmate.configs.security.handlers.*;
 import cn.edu.zju.cs.jobmate.security.jwt.JwtBlacklistManager;
@@ -49,6 +50,7 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtBlacklistManager jwtBlacklistManager;
     private final MonitorProperties monitorProperties;
+    private final AdminProperties adminProperties;
     
     /**
      * Password encoder to validate user passwords.
@@ -129,7 +131,8 @@ public class SecurityConfig {
                     authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)),
                     responder,
                     mapper,
-                    jwtTokenProvider
+                    jwtTokenProvider,
+                    adminProperties
                 ),
                 UsernamePasswordAuthenticationFilter.class
             )

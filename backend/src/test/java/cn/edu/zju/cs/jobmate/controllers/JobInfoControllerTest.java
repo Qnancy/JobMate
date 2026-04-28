@@ -61,6 +61,7 @@ class JobInfoControllerTest extends ControllerTestStartUp {
             .andExpect(jsonPath("$.data.company.type").value("FOREIGN"))
             .andExpect(jsonPath("$.data.position").value("Java Developer"))
             .andExpect(jsonPath("$.data.location").value("Hangzhou"))
+            .andExpect(jsonPath("$.data.education_requirement").value("UNSPECIFIED"))
             .andExpect(jsonPath("$.data.extra").isEmpty());
     }
 
@@ -103,7 +104,8 @@ class JobInfoControllerTest extends ControllerTestStartUp {
             .andExpect(jsonPath("$.message").value("更新成功"))
             .andExpect(jsonPath("$.data.position").value("New Position"))
             .andExpect(jsonPath("$.data.link").value("https://example.com"))
-            .andExpect(jsonPath("$.data.location").value("New York"));
+            .andExpect(jsonPath("$.data.location").value("New York"))
+            .andExpect(jsonPath("$.data.education_requirement").value("UNSPECIFIED"));
     }
 
     @Test
@@ -126,6 +128,7 @@ class JobInfoControllerTest extends ControllerTestStartUp {
             .andExpect(jsonPath("$.message").value("查询成功"))
             .andExpect(jsonPath("$.data.position").value("Test Position"))
             .andExpect(jsonPath("$.data.location").value("Test City"))
+            .andExpect(jsonPath("$.data.education_requirement").value("UNSPECIFIED"))
             .andExpect(jsonPath("$.data.extra").isEmpty());
     }
 
@@ -189,6 +192,7 @@ class JobInfoControllerTest extends ControllerTestStartUp {
             .andExpect(jsonPath("$.message").value("查询成功"))
             .andExpect(jsonPath("$.data.content[0].position").value("Test Position"))
             .andExpect(jsonPath("$.data.content[0].location").value("Test City"))
+            .andExpect(jsonPath("$.data.content[0].education_requirement").value("UNSPECIFIED"))
             .andExpect(jsonPath("$.data.content[0].extra").isEmpty());
     }
 }

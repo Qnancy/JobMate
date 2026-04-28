@@ -12,9 +12,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 
+import cn.edu.zju.cs.jobmate.configs.properties.AdminProperties;
 import cn.edu.zju.cs.jobmate.dto.authentication.LoginRequest;
 import cn.edu.zju.cs.jobmate.dto.authentication.LoginResponse;
 import cn.edu.zju.cs.jobmate.dto.common.ApiResponse;
+import cn.edu.zju.cs.jobmate.enums.UserRole;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
 import cn.edu.zju.cs.jobmate.models.User;
 import cn.edu.zju.cs.jobmate.security.jwt.JwtTokenProvider;
@@ -35,17 +37,20 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     private final ResponseUtil responder;
     private final ObjectMapper mapper;
     private final JwtTokenProvider tokenProvider;
+    private final AdminProperties adminProperties;
 
     public LoginAuthenticationFilter(
         AuthenticationManager authenticationManager,
         ResponseUtil responder,
         ObjectMapper mapper,
-        JwtTokenProvider tokenProvider
+        JwtTokenProvider tokenProvider,
+        AdminProperties adminProperties
     ) {
         super(authenticationManager);
         this.responder = responder;
         this.mapper = mapper;
         this.tokenProvider = tokenProvider;
+        this.adminProperties = adminProperties;
         setFilterProcessesUrl("/api/auth/login");
     }
 
@@ -59,6 +64,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
                 request.getInputStream(),
                 LoginRequest.class
             );
+            request.setAttribute("loginRequest", loginRequest);
             log.info("Attempting authentication: {}", loginRequest);
             UsernamePasswordAuthenticationToken authRequest =
                 new UsernamePasswordAuthenticationToken(
@@ -80,6 +86,16 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     ) throws IOException, ServletException {
         // Get user details.
         User user = (User) authResult.getPrincipal();
+        LoginRequest loginRequest = (LoginRequest) request.getAttribute("loginRequest");
+
+        // Admin secret is verified by backend for admin login requests.
+        if (user.getRole() == UserRole.ADMIN &&
+            loginRequest != null &&
+            loginRequest.getAdminSecret() != null &&
+            !loginRequest.getAdminSecret().trim().equals(adminProperties.getSecret())) {
+            responder.writeResponse(response, ApiResponse.error(ErrorCode.INVALID_ADMIN_SECRET));
+            return;
+        }
 
         // Generate JWT token.
         try {

@@ -29,9 +29,8 @@ router.beforeEach((to) => {
     }
   }
 
-  if (token && isPublicPage && to.path !== '/404') {
-    return { path: '/' }
-  }
+  // 不再在「已有 token」时禁止访问登录页：过期/无效 token 仍能打开登录页重新登录，
+  // 否则会被重定向到首页，表现为「怎么都登不进去」。
 
   return true
 })

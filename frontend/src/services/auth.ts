@@ -1,4 +1,5 @@
 import { api, request, type ApiResponse, isSuccessResponse, TOKEN_KEY } from "@/utils/request";
+import { favoriteStore } from "@/utils/favoriteStore";
 
 export type User = {
   id: number
@@ -21,11 +22,22 @@ export async function register(username: string, password: string, role: User['r
   });
 }
 
-export async function login(username: string, password: string): Promise<ApiResponse<User | null>> {
-  const loginRes = await api.post<LoginData>('/auth/login', {
-    username,
-    password,
-  });
+export async function login(
+  username: string,
+  password: string,
+  admin_secret: string | null = null,
+): Promise<ApiResponse<User | null>> {
+  let loginRes: ApiResponse<LoginData>;
+  try {
+    loginRes = await api.post<LoginData>('/auth/login', {
+      username,
+      password,
+      admin_secret,
+    });
+  } catch {
+    // request 内已对 HTTP 错误 toast；此处吞掉异常，避免页面未捕获 Promise + 重复提示
+    return { code: 401, message: '', data: null };
+  }
 
   if (!isSuccessResponse(loginRes) || !loginRes.data?.token) {
     return {
@@ -36,12 +48,28 @@ export async function login(username: string, password: string): Promise<ApiResp
   }
 
   localStorage.setItem(TOKEN_KEY, loginRes.data.token);
-  const meRes = await getMe();
-  if (isSuccessResponse(meRes) && meRes.data) {
-    setCurrentUser(meRes.data);
+  try {
+    const meRes = await getMe();
+    if (isSuccessResponse(meRes) && meRes.data) {
+      setCurrentUser(meRes.data);
+      // 登录后把收藏夹 fresh 一下；失败不阻塞登录流程
+      favoriteStore.loadFromServer().catch(() => undefined);
+      return meRes;
+    }
+    localStorage.removeItem(TOKEN_KEY);
+    return {
+      code: meRes.code,
+      message: meRes.message || "获取用户信息失败，请重试登录",
+      data: null,
+    };
+  } catch {
+    localStorage.removeItem(TOKEN_KEY);
+    return {
+      code: 500,
+      message: "",
+      data: null,
+    };
   }
-
-  return meRes;
 }
 
 export function getMe() {
@@ -110,6 +138,8 @@ export function logout() {
   request<null>('/auth/logout', { method: 'POST' }).catch(() => undefined)
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(CURRENT_KEY)
+  // 清掉收藏状态，避免不同账户切换时串味
+  favoriteStore.clearAll()
 }
 
 export function currentUser(): User | null {

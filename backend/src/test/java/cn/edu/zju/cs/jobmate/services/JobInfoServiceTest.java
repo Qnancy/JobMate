@@ -2,6 +2,7 @@ package cn.edu.zju.cs.jobmate.services;
 
 import cn.edu.zju.cs.jobmate.dto.job.*;
 import cn.edu.zju.cs.jobmate.enums.CompanyType;
+import cn.edu.zju.cs.jobmate.enums.EducationRequirement;
 import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.exceptions.BusinessException;
 import cn.edu.zju.cs.jobmate.exceptions.ErrorCode;
@@ -22,6 +23,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -71,6 +75,7 @@ class JobInfoServiceTest {
         assertNotNull(result);
         assertEquals(position, result.getPosition());
         assertEquals(location, result.getLocation());
+        assertEquals(EducationRequirement.UNSPECIFIED, result.getEducationRequirement());
         assertEquals(company, result.getCompany());
         verify(jobInfoRepository).save(any(JobInfo.class));
         verify(companyService).getById(companyId);
@@ -284,7 +289,13 @@ class JobInfoServiceTest {
             2
         );
 
-        when(jobInfoRepository.findAll(any(Specification.class), any(PageRequest.class)))
+        when(jobInfoRepository.searchByFulltext(
+            eq("keyword"),
+            eq("keyword"),
+            eq("CAMPUS"),
+            isNull(),
+            any(org.springframework.data.domain.Pageable.class)
+        ))
             .thenReturn(pageResult);
 
         Page<JobInfo> result = jobInfoService.query(dto);
@@ -292,6 +303,12 @@ class JobInfoServiceTest {
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
         assertEquals(2, result.getContent().size());
-        verify(jobInfoRepository).findAll(any(Specification.class), any(PageRequest.class));
+        verify(jobInfoRepository).searchByFulltext(
+            eq("keyword"),
+            eq("keyword"),
+            eq("CAMPUS"),
+            isNull(),
+            any(org.springframework.data.domain.Pageable.class)
+        );
     }
 }

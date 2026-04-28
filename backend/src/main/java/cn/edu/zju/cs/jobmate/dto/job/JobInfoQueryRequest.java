@@ -27,6 +27,11 @@ public class JobInfoQueryRequest extends PageRequest {
      */
     private RecruitType recruitType;
 
+    /**
+     * When set, restrict results to jobs of this company (can combine with {@code keyword}).
+     */
+    private Long companyId;
+
     @Override
     public String toString() {
         return "JobInfoQueryRequest{" +
@@ -34,6 +39,7 @@ public class JobInfoQueryRequest extends PageRequest {
                 ", pageSize=" + getPageSize() +
                 ", keyword=" + ToStringUtil.wrap(keyword) +
                 ", recruitType=" + recruitType +
-                "}";
+                ", companyId=" + companyId +
+                '}';
     }
 }

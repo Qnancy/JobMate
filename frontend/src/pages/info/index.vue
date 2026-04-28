@@ -10,265 +10,267 @@
     })"
   />
   <div class="min-h-screen bg-gradient-to-b from-sky-50 to-white">
-  <van-tabs v-model:active="activeName" class="glass-tabs" >
+  <van-tabs v-model:active="activeName" class="glass-tabs">
     <van-tab title="职位" name="job">
-         <main class="p-4">
-      <!-- 筛选标签 -->
-      <div class="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
-        <button 
-          v-for="tag in jobTags" 
-          :key="tag"
-          @click="selectedJobTag = tag"
-          :class="[
-            'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition',
-            selectedJobTag === tag 
-              ? 'bg-sky-500 text-white' 
-              : 'bg-white text-gray-600 border border-gray-200'
-          ]"
-        >
-          {{ tag }}
-        </button>
-      </div>
-
-      <!-- 职位卡片列表 -->
-      <div class="space-y-3">
-        <div 
-          v-for="job in filteredJobs" 
-          :key="job.id"
-          class="bg-white rounded-xl p-4 shadow-md border border-sky-50 hover:shadow-lg transition cursor-pointer"
-          @click="viewJobDetail(job)"
-        >
-          <div class="flex justify-between items-start">
-            <div class="flex-1">
-              <h3 class="font-bold text-gray-800 text-lg">{{ job.title }}</h3>
-              <p class="text-sky-600 font-medium mt-1">{{ job.company }}</p>
-              <div class="flex flex-wrap gap-2 mt-2">
-                <span class="px-2 py-0.5 bg-sky-50 text-sky-600 text-xs rounded">{{ job.location }}</span>
-                <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded">{{ job.type }}</span>
-                <span class="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded">{{ job.salary }}</span>
-              </div>
-              <p class="text-gray-500 text-sm mt-2 line-clamp-2">{{ job.description }}</p>
-            </div>
-            <button 
-              @click.stop="toggleFavorite('job', job.id)"
-              class="p-2 ml-2"
-            >
-              <svg 
-                class="w-6 h-6 transition-transform duration-150" 
+      <main class="p-4">
+        <div class="space-y-3 pb-3 mb-4">
+          <div>
+            <p class="text-xs text-slate-500 font-medium mb-1.5 px-0.5">招聘类型</p>
+            <div class="flex gap-2 overflow-x-auto scrollbar-hide items-center">
+              <button
+                v-for="tag in jobTags"
+                :key="'r-' + tag"
+                type="button"
+                @click="onSelectJobTag(tag)"
                 :class="[
-                  favorites.jobs.includes(job.id) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300',
-                  animatingJobs.has(job.id) ? 'scale-125' : ''
+                  'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition shrink-0',
+                  selectedJobTag === tag
+                    ? 'bg-sky-500 text-white'
+                    : 'bg-white text-gray-600 border border-gray-200',
                 ]"
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
-            </button>
-          </div>
-          <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
-            <span class="text-xs text-gray-400">{{ job.publishDate }}</span>
-            <button 
-              @click.stop="viewJobDetail(job)"
-              class="text-sky-500 text-sm font-medium hover:text-sky-600"
-            >
-              查看详情 →
-            </button>
-          </div>
-        </div>
-      </div>
-    </main>
-    </van-tab>
-    <van-tab title="活动" name="event">
-          <main  class="p-4">
-      <!-- 招聘会卡片列表 -->
-      <div class="space-y-4">
-        <div 
-          v-for="fair in fairs" 
-          :key="fair.id"
-          class="bg-white rounded-xl overflow-hidden shadow-md border border-sky-50 hover:shadow-lg transition"
-        >
-          <div class="h-2 bg-white"></div>
-          <div class="p-4">
-            <div class="flex justify-between items-start">
-              <div class="flex-1" @click="viewFairDetail(fair)">
-                <div class="flex items-center gap-2">
-                  <span 
-                    :class="[
-                      'px-2 py-0.5 text-xs font-medium rounded',
-                      fair.status === '报名中' ? 'bg-green-100 text-green-600' : 
-                      fair.status === '即将开始' ? 'bg-orange-100 text-orange-600' : 
-                      'bg-gray-100 text-gray-600'
-                    ]"
-                  >
-                    {{ fair.status }}
-                  </span>
-                  <span class="text-xs text-gray-400">{{ fair.type }}</span>
-                </div>
-                <h3 class="font-bold text-gray-800 text-lg mt-2">{{ fair.title }}</h3>
-                <div class="mt-3 space-y-1.5 text-sm text-gray-600">
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    {{ fair.date }}
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    {{ fair.location }}
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                    </svg>
-                    参展企业 {{ fair.companies }} 家
-                  </div>
-                </div>
-              </div>
-              <button 
-                @click.stop="toggleFavorite('fair', fair.id)"
-                class="p-2"
-              >
-                <svg 
-                  class="w-6 h-6 transition-transform duration-150" 
-                  :class="[
-                    favorites.fairs.includes(fair.id) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300',
-                    animatingFairs.has(fair.id) ? 'scale-125' : ''
-                  ]"
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                </svg>
+                {{ tag }}
               </button>
             </div>
-            <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
-              <span></span>
-            <button 
-              @click="$router.push({ path: `/info/activity/${fair.id}` })"              
-              class="text-sky-500 text-sm font-medium hover:text-sky-600"
-            >
-              查看详情 →
-            </button>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 font-medium mb-1.5 px-0.5">学历要求</p>
+            <div class="flex gap-2 overflow-x-auto scrollbar-hide items-center">
+              <button
+                v-for="opt in educationOptions"
+                :key="'e-' + opt.tier"
+                type="button"
+                @click="onSelectEducationTier(opt.tier)"
+                :class="[
+                  'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition shrink-0',
+                  selectedEducationTier === opt.tier
+                    ? 'bg-violet-500 text-white'
+                    : 'bg-white text-gray-600 border border-gray-200',
+                ]"
+              >
+                {{ opt.label }}
+              </button>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+
+        <div class="space-y-3">
+          <JobItemCard
+            v-for="job in filteredJobs"
+            :key="job.id"
+            :job="job"
+            :favorited="isJobFavorited(job.id)"
+            :animating="animatingJobs.has(job.id)"
+            @view="viewJobDetail"
+            @toggle-favorite="toggleFavorite('job', $event)"
+          />
+        </div>
+      </main>
+    </van-tab>
+
+    <van-tab title="活动" name="event">
+      <main class="p-4">
+        <div class="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
+          <button
+            v-for="tag in fairTags"
+            :key="tag"
+            @click="onSelectFairTag(tag)"
+            :class="[
+              'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition',
+              selectedFairTag === tag
+                ? 'bg-sky-500 text-white'
+                : 'bg-white text-gray-600 border border-gray-200',
+            ]"
+          >
+            {{ tag }}
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <FairItemCard
+            v-for="fair in filteredFairs"
+            :key="fair.id"
+            :fair="fair"
+            :favorited="isActivityFavorited(fair.id)"
+            :animating="animatingFairs.has(fair.id)"
+            @view="viewFairDetail"
+            @toggle-favorite="toggleFavorite('fair', $event)"
+          />
+        </div>
+      </main>
     </van-tab>
   </van-tabs>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { withReturnFrom } from "@/utils/returnNavigation";
 import { showToast } from "vant";
-import { getJob, type Job } from "@/services/job";
-import { getActivities, type Activity } from "@/services/activity";
-import { subscribe, unsubscribe } from "@/services/subscription";
+import {
+  getJob,
+  jobMatchesEducationTier,
+  type JobEducationFilterTier,
+} from "@/services/job";
+import { getActivities } from "@/services/activity";
 import { isSuccessResponse } from "@/utils/request";
+import { favoriteStore } from "@/utils/favoriteStore";
+import JobItemCard from "./components/JobItemCard.vue";
+import FairItemCard from "./components/FairItemCard.vue";
+import {
+  mapJobToCard,
+  mapActivityToCard,
+  type JobCard,
+  type FairCard,
+} from "./components/cards";
 
 const router = useRouter();
+const route = useRoute();
 
 const searchValue = ref("");
 const activeName = ref("job");
 
-type JobCard = {
-  id: number;
-  title: string;
-  company: string;
-  location: string;
-  type: string;
-  salary: string;
-  description: string;
-  publishDate: string;
-  category: string;
-};
+const jobTags = ['全部', '实习', '校招'];
+const selectedJobTag = ref("全部");
 
-type FairCard = {
-  id: number;
-  status: string;
-  type: string;
-  title: string;
-  date: string;
-  location: string;
-  companies: number;
-};
+/** 学历筛选：用 tier 存状态，避免用中文串做 === 比较导致筛选失效 */
+const educationOptions: { tier: JobEducationFilterTier; label: string }[] = [
+  { tier: "ALL", label: "不限" },
+  { tier: "BACHELOR", label: "本科及以上" },
+  { tier: "MASTER", label: "硕士及以上" },
+  { tier: "PHD", label: "博士及以上" },
+];
+const selectedEducationTier = ref<JobEducationFilterTier>("ALL");
 
-const RECRUIT_TYPE_MAP: Record<string, string> = {
-  INTERN: '实习',
-  CAMPUS: '校招',
-  EXPERIENCED: '社招',
-};
+const fairTags = ['全部', '宣讲会', '双选会', '名企探访'];
+const selectedFairTag = ref("全部");
 
-const FAV_JOBS_KEY = 'jobmate_favorite_jobs';
-const FAV_FAIRS_KEY = 'jobmate_favorite_fairs';
+/** 从路由回填筛选时跳过，避免与「写回 URL」互相触发 */
+let syncingFromRoute = false;
 
-function readFavoriteIds(key: string): number[] {
-  try {
-    const raw = localStorage.getItem(key);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.map((item) => Number(item)).filter((item) => !Number.isNaN(item)) : [];
-  } catch {
-    return [];
+/** 招聘类型 chips → URL 参数 */
+function jobTagToQueryParam(tag: string): "all" | "intern" | "campus" {
+  if (tag === "实习") return "intern";
+  if (tag === "校招") return "campus";
+  return "all";
+}
+
+function queryParamToJobTag(raw: string | undefined): string {
+  if (raw === "intern") return "实习";
+  if (raw === "campus") return "校招";
+  return "全部";
+}
+
+function educationTierToQuery(t: JobEducationFilterTier): "all" | "bachelor" | "master" | "phd" {
+  switch (t) {
+    case "BACHELOR":
+      return "bachelor";
+    case "MASTER":
+      return "master";
+    case "PHD":
+      return "phd";
+    default:
+      return "all";
   }
 }
 
-function writeFavoriteIds(key: string, ids: number[]) {
-  localStorage.setItem(key, JSON.stringify(ids));
+function queryParamToEducationTier(raw: string | undefined): JobEducationFilterTier {
+  switch ((raw || "all").toLowerCase()) {
+    case "bachelor":
+      return "BACHELOR";
+    case "master":
+      return "MASTER";
+    case "phd":
+      return "PHD";
+    default:
+      return "ALL";
+  }
 }
 
-function normalizeTimeText(value?: string | null) {
-  if (!value) return '时间待定';
-  return value;
+function fairTagToQueryParam(tag: string): "all" | "lecture" | "double" | "visit" {
+  if (tag === "宣讲会") return "lecture";
+  if (tag === "双选会") return "double";
+  if (tag === "名企探访") return "visit";
+  return "all";
 }
 
-function getActivityStatus(time?: string | null) {
-  if (!time) return '状态未知';
-  const date = new Date(time.replace(' ', 'T'));
-  if (Number.isNaN(date.getTime())) return '状态未知';
-  return date.getTime() > Date.now() ? '即将开始' : '已结束';
+function queryParamToFairTag(raw: string | undefined): string {
+  switch ((raw || "all").toLowerCase()) {
+    case "lecture":
+      return "宣讲会";
+    case "double":
+      return "双选会";
+    case "visit":
+      return "名企探访";
+    default:
+      return "全部";
+  }
 }
 
-function mapJobToCard(job: Job): JobCard {
-  return {
-    id: job.id,
-    title: job.position,
-    company: job.company?.name || '未知企业',
-    location: job.location || '地点待定',
-    type: RECRUIT_TYPE_MAP[job.recruit_type] || job.recruit_type,
-    salary: '面议',
-    description: job.extra || '暂无更多描述',
-    publishDate: '最新发布',
-    category: RECRUIT_TYPE_MAP[job.recruit_type] || '全部',
-  };
+function isInfoListRoute(): boolean {
+  return route.path === "/info" || route.path === "/info/";
 }
 
-function mapActivityToCard(item: Activity): FairCard {
-  return {
-    id: item.id,
-    status: getActivityStatus(item.time),
-    type: '宣讲会',
-    title: item.title,
-    date: normalizeTimeText(item.time),
-    location: item.location || '地点待定',
-    companies: item.company?.name ? 1 : 0,
-  };
+/** 把当前 Tab 与筛选写入 URL，便于详情页 `from` 带回后恢复 */
+function syncFiltersToUrl() {
+  if (!isInfoListRoute() || syncingFromRoute) return;
+  const q: Record<string, string> = {};
+  if (activeName.value === "event") {
+    q.tab = "event";
+    const fc = fairTagToQueryParam(selectedFairTag.value);
+    if (fc !== "all") q.fair_cat = fc;
+  } else {
+    q.tab = "job";
+    const jc = jobTagToQueryParam(selectedJobTag.value);
+    if (jc !== "all") q.job_cat = jc;
+    const ed = educationTierToQuery(selectedEducationTier.value);
+    if (ed !== "all") q.edu = ed;
+  }
+  router.replace({ path: "/info", query: q });
 }
 
-const jobTags = ['全部', '实习', '校招', '社招'];
-const selectedJobTag = ref("全部");
+function applyRouteToFilters() {
+  if (!isInfoListRoute()) return;
+  const tabRaw = (route.query.tab as string) || "job";
+  syncingFromRoute = true;
+  try {
+    if (tabRaw === "fair" || tabRaw === "event") {
+      activeName.value = "event";
+    } else {
+      activeName.value = "job";
+    }
+    selectedJobTag.value = queryParamToJobTag(route.query.job_cat as string | undefined);
+    selectedEducationTier.value = queryParamToEducationTier(route.query.edu as string | undefined);
+    selectedFairTag.value = queryParamToFairTag(route.query.fair_cat as string | undefined);
+  } finally {
+    nextTick(() => {
+      syncingFromRoute = false;
+    });
+  }
+}
 
-const favorites = ref<{ jobs: number[]; fairs: number[] }>({
-  jobs: [],
-  fairs: []
-});
+function onSelectJobTag(tag: string) {
+  selectedJobTag.value = tag;
+  syncFiltersToUrl();
+}
+
+function onSelectEducationTier(tier: JobEducationFilterTier) {
+  selectedEducationTier.value = tier;
+  syncFiltersToUrl();
+}
+
+function onSelectFairTag(tag: string) {
+  selectedFairTag.value = tag;
+  syncFiltersToUrl();
+}
+
+function isJobFavorited(id: number) {
+  return favoriteStore.isFavorited('JOB', id);
+}
+function isActivityFavorited(id: number) {
+  return favoriteStore.isFavorited('ACTIVITY', id);
+}
 
 const animatingJobs = ref<Set<number>>(new Set());
 const animatingFairs = ref<Set<number>>(new Set());
@@ -277,10 +279,20 @@ const jobs = ref<JobCard[]>([]);
 const fairs = ref<FairCard[]>([]);
 
 const filteredJobs = computed(() => {
-  if (selectedJobTag.value === "全部") {
-    return jobs.value;
+  let list = jobs.value;
+  if (selectedJobTag.value !== "全部") {
+    list = list.filter((job) => job.category === selectedJobTag.value);
   }
-  return jobs.value.filter(job => job.category === selectedJobTag.value);
+  if (selectedEducationTier.value !== "ALL") {
+    const tier = selectedEducationTier.value;
+    list = list.filter((job) => jobMatchesEducationTier(job.educationKey, tier));
+  }
+  return list;
+});
+
+const filteredFairs = computed(() => {
+  if (selectedFairTag.value === "全部") return fairs.value;
+  return fairs.value.filter((fair) => fair.type === selectedFairTag.value);
 });
 
 async function fetchJobsAndActivities() {
@@ -293,57 +305,58 @@ async function fetchJobsAndActivities() {
     if (isSuccessResponse(jobRes)) {
       jobs.value = (jobRes.data?.content || []).map(mapJobToCard);
     }
-
     if (isSuccessResponse(activityRes)) {
       fairs.value = (activityRes.data?.content || []).map(mapActivityToCard);
+    }
+
+    if (jobs.value.length > 0) {
+      favoriteStore.syncForIds('JOB', jobs.value.map((j) => j.id));
+    }
+    if (fairs.value.length > 0) {
+      favoriteStore.syncForIds('ACTIVITY', fairs.value.map((f) => f.id));
     }
   } catch (error) {
     showToast('加载列表失败');
   }
 }
 
+watch(
+  () => route.fullPath,
+  () => {
+    if (!isInfoListRoute()) return;
+    applyRouteToFilters();
+  },
+  { immediate: true },
+);
+
+watch(activeName, () => {
+  syncFiltersToUrl();
+});
+
 onMounted(() => {
-  favorites.value.jobs = readFavoriteIds(FAV_JOBS_KEY);
-  favorites.value.fairs = readFavoriteIds(FAV_FAIRS_KEY);
   fetchJobsAndActivities();
 });
 
 function viewJobDetail(job: JobCard) {
-  router.push({ path: `/info/job/${job.id}` });
+  router.push(withReturnFrom(`/info/job/${job.id}`, route));
 }
 
 function viewFairDetail(fair: FairCard) {
-  router.push({ path: `/info/activity/${fair.id}` });
+  router.push(withReturnFrom(`/info/activity/${fair.id}`, route));
 }
 
 function toggleFavorite(type: 'job' | 'fair', id: number) {
   const numId = Number(id);
-  const set = type === 'job' ? favorites.value.jobs : favorites.value.fairs;
   const animSet = type === 'job' ? animatingJobs : animatingFairs;
-  const isFav = set.includes(numId);
+  const targetType = type === 'job' ? 'JOB' : 'ACTIVITY';
 
-  // 触发动画
   animSet.value.add(numId);
   setTimeout(() => animSet.value.delete(numId), 180);
 
-  // 本地切换
-  if (isFav) {
-    const idx = set.indexOf(numId);
-    if (idx !== -1) set.splice(idx, 1);
-    unsubscribe({ type: type === 'job' ? 'job' : 'activity', id: numId }).catch(() => {});
-  } else {
-    set.push(numId);
-    subscribe({ type: type === 'job' ? 'job' : 'activity', id: numId }).catch(() => {});
-  }
-
-  if (type === 'job') {
-    writeFavoriteIds(FAV_JOBS_KEY, favorites.value.jobs);
-  } else {
-    writeFavoriteIds(FAV_FAIRS_KEY, favorites.value.fairs);
-  }
+  favoriteStore.toggle(targetType, numId).catch(() => {
+    showToast('收藏操作失败');
+  });
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

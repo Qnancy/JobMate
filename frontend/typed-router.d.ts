@@ -44,6 +44,20 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/admin/activities': RouteRecordInfo<
+      '/admin/activities',
+      '/admin/activities',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/admin/jobs': RouteRecordInfo<
+      '/admin/jobs',
+      '/admin/jobs',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/info/': RouteRecordInfo<
       '/info/',
       '/info',
@@ -58,9 +72,16 @@ declare module 'vue-router/auto-routes' {
       { id: ParamValue<false> },
       | never
     >,
-    '/info/components/list': RouteRecordInfo<
-      '/info/components/list',
-      '/info/components/list',
+    '/info/components/FairItemCard': RouteRecordInfo<
+      '/info/components/FairItemCard',
+      '/info/components/FairItemCard',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/info/components/JobItemCard': RouteRecordInfo<
+      '/info/components/JobItemCard',
+      '/info/components/JobItemCard',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -82,6 +103,13 @@ declare module 'vue-router/auto-routes' {
     '/my/': RouteRecordInfo<
       '/my/',
       '/my',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/my/favorites': RouteRecordInfo<
+      '/my/favorites',
+      '/my/favorites',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -159,6 +187,18 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/admin/activities.vue': {
+      routes:
+        | '/admin/activities'
+      views:
+        | never
+    }
+    'src/pages/admin/jobs.vue': {
+      routes:
+        | '/admin/jobs'
+      views:
+        | never
+    }
     'src/pages/info/index.vue': {
       routes:
         | '/info/'
@@ -171,9 +211,15 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/info/components/list.vue': {
+    'src/pages/info/components/FairItemCard.vue': {
       routes:
-        | '/info/components/list'
+        | '/info/components/FairItemCard'
+      views:
+        | never
+    }
+    'src/pages/info/components/JobItemCard.vue': {
+      routes:
+        | '/info/components/JobItemCard'
       views:
         | never
     }
@@ -192,6 +238,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/my/index.vue': {
       routes:
         | '/my/'
+      views:
+        | never
+    }
+    'src/pages/my/favorites.vue': {
+      routes:
+        | '/my/favorites'
       views:
         | never
     }

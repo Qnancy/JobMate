@@ -1,5 +1,7 @@
 package cn.edu.zju.cs.jobmate.repositories;
 
+import java.util.Optional;
+
 import cn.edu.zju.cs.jobmate.models.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -18,4 +20,12 @@ public interface CompanyRepository extends JpaRepository<Company, Long>, JpaSpec
      * @return true if exists
      */
     boolean existsByName(String name);
+
+    /**
+     * Find company by exact name match.
+     *
+     * @param name company name
+     * @return optional company
+     */
+    Optional<Company> findByName(String name);
 }

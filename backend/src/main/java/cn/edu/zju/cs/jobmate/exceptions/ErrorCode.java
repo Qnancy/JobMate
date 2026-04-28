@@ -50,6 +50,15 @@ public enum ErrorCode {
     JOB_SUBSCRIPTION_NOT_FOUND          (4011, HttpStatus.NOT_FOUND, "招聘订阅不存在"),
     USER_NOT_FOUND                      (4012, HttpStatus.NOT_FOUND, "用户不存在"),
 
+    // LLM / promotion parsing (admin).
+    LLM_NOT_CONFIGURED(6001, HttpStatus.SERVICE_UNAVAILABLE, "未配置大模型 API，请设置环境变量 OPENAI_API_KEY 或配置 app.llm.api-key"),
+    LLM_UPSTREAM_ERROR(6002, HttpStatus.BAD_GATEWAY, "大模型服务暂时不可用"),
+    LLM_INVALID_OUTPUT(6003, HttpStatus.BAD_REQUEST, "大模型返回结果解析失败"),
+
+    // Favorites.
+    FAVORITE_TARGET_NOT_FOUND(7001, HttpStatus.NOT_FOUND, "收藏对象不存在"),
+    FAVORITE_NOT_FOUND       (7002, HttpStatus.NOT_FOUND, "收藏记录不存在"),
+
     // Unknown Errors.
     UNKNOWN_ERROR(9999, HttpStatus.INTERNAL_SERVER_ERROR, "未知错误");
 

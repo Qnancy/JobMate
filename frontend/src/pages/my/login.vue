@@ -135,16 +135,24 @@ async function onSubmit() {
   if (!form.value.password || form.value.password.length < 6)
     return showToast("请输入至少 6 位密码");
 
-  const res = await auth.login(form.value.username.trim(), form.value.password);
-  if (!isSuccessResponse(res)) return showToast(res.message || "登录失败");
+  try {
+    const res = await auth.login(form.value.username.trim(), form.value.password);
+    if (!isSuccessResponse(res)) {
+      if (res.message?.trim()) showToast(res.message);
+      return;
+    }
 
-  localStorage.removeItem(STORAGE_KEY);
-  showToast("登录成功");
-  const redirect = router.currentRoute.value.query.redirect;
-  const target = typeof redirect === "string"
-    ? redirect
-    : (res?.data?.role === 'ADMIN' ? '/admin' : '/my');
-  router.push({ path: target });
+    localStorage.removeItem(STORAGE_KEY);
+    showToast("登录成功");
+    const redirect = router.currentRoute.value.query.redirect;
+    const target = typeof redirect === "string"
+      ? redirect
+      : (res?.data?.role === 'ADMIN' ? '/admin' : '/my');
+    router.push({ path: target });
+  } catch {
+    /* auth.login 已尽量返回结构体；此处兜底避免未捕获异常导致界面异常 */
+    showToast("登录请求失败，请稍后重试");
+  }
 }
 </script>
 

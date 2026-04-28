@@ -9,12 +9,12 @@ import cn.edu.zju.cs.jobmate.models.Company;
 import cn.edu.zju.cs.jobmate.repositories.ActivityInfoRepository;
 import cn.edu.zju.cs.jobmate.services.ActivityInfoService;
 import cn.edu.zju.cs.jobmate.services.CompanyService;
-import cn.edu.zju.cs.jobmate.utils.query.QuerySpecBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,13 +91,28 @@ public class ActivityInfoServiceImpl implements ActivityInfoService {
         return activityInfoRepository.findAll(dto.toPageable());
     }
 
+    /**
+     * Empty keyword falls back to plain pagination ordered by {@code time DESC}
+     * so the most recent activities surface first; non-empty keyword routes to
+     * the MySQL 8 ngram FULLTEXT search on
+     * {@code activity_infos(title, location, extra)} + {@code companies(name)},
+     * ordered by combined BOOLEAN-mode relevance.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<ActivityInfo> query(ActivityInfoQueryRequest dto) {
-        Specification<ActivityInfo> spec = QuerySpecBuilder.build(
-            dto.getKeyword(),
-            QuerySpecBuilder.Fields.of("company.name", "title", "location")
-        );
-        return activityInfoRepository.findAll(spec, dto.toPageable());
+        String keyword = dto.getKeyword() == null ? "" : dto.getKeyword().trim();
+        Pageable basePageable = dto.toPageable();
+
+        if (keyword.isEmpty()) {
+            Pageable sorted = org.springframework.data.domain.PageRequest.of(
+                basePageable.getPageNumber(),
+                basePageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "time")
+            );
+            return activityInfoRepository.findAll(sorted);
+        }
+
+        return activityInfoRepository.searchByFulltext(keyword, basePageable);
     }
 }

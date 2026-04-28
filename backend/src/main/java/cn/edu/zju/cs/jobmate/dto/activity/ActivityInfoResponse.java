@@ -1,6 +1,7 @@
 package cn.edu.zju.cs.jobmate.dto.activity;
 
 import cn.edu.zju.cs.jobmate.dto.company.CompanyResponse;
+import cn.edu.zju.cs.jobmate.enums.ActivityType;
 import cn.edu.zju.cs.jobmate.models.ActivityInfo;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class ActivityInfoResponse {
     private CompanyResponse company;
     private String title;
     private LocalDateTime time;
+    private ActivityType type;
     private String link;
     private String location;
     private String extra;
@@ -34,6 +36,7 @@ public class ActivityInfoResponse {
             CompanyResponse.from(activityInfo.getCompany()),
             activityInfo.getTitle(),
             activityInfo.getTime(),
+            activityInfo.getType(),
             activityInfo.getLink(),
             activityInfo.getLocation(),
             activityInfo.getExtra()

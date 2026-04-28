@@ -115,6 +115,7 @@ public class JobInfoIntegrationTest {
             .andExpect(jsonPath("$.data.position").value("Test Position"))
             .andExpect(jsonPath("$.data.link").isEmpty())
             .andExpect(jsonPath("$.data.location").value("Hangzhou"))
+            .andExpect(jsonPath("$.data.education_requirement").value("UNSPECIFIED"))
             .andExpect(jsonPath("$.data.extra").isEmpty());
     }
 
@@ -185,6 +186,7 @@ public class JobInfoIntegrationTest {
             .andExpect(jsonPath("$.data.position").value("Updated Position"))
             .andExpect(jsonPath("$.data.link").value("https://updated-link.com"))
             .andExpect(jsonPath("$.data.location").value(jobInfo.getLocation()))
+            .andExpect(jsonPath("$.data.education_requirement").value(jobInfo.getEducationRequirement().name()))
             .andExpect(jsonPath("$.data.extra").value(jobInfo.getExtra()));
     }
 
@@ -268,6 +270,7 @@ public class JobInfoIntegrationTest {
             .andExpect(jsonPath("$.data.position").value(jobInfo.getPosition()))
             .andExpect(jsonPath("$.data.link").value(jobInfo.getLink()))
             .andExpect(jsonPath("$.data.location").value(jobInfo.getLocation()))
+            .andExpect(jsonPath("$.data.education_requirement").value(jobInfo.getEducationRequirement().name()))
             .andExpect(jsonPath("$.data.extra").value(jobInfo.getExtra()));
     }
 

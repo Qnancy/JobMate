@@ -100,3 +100,23 @@ a:hover {
 
 
 @import "tailwindcss";
+
+/* Vant Toast 兜底样式：防止被 tailwind preflight 或主题 CSS 变量污染成「白框没内容」 */
+.van-toast {
+  background: rgba(50, 50, 51, 0.88) !important;
+  color: #fff !important;
+  min-width: 96px;
+  min-height: 40px;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+.van-toast__text,
+.van-toast .van-toast__text {
+  color: #fff !important;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.van-toast .van-icon,
+.van-toast .van-loading {
+  color: #fff !important;
+}

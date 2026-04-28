@@ -9,7 +9,9 @@ export interface BaseSearchParams {
   [key: string]: string | number | boolean | null | undefined;
 }
 
-export function searchJobs<T = any>(params: BaseSearchParams & { recruit_type?: JobType }) {
+export function searchJobs<T = any>(
+  params: BaseSearchParams & { recruit_type?: JobType; company_id?: number },
+) {
   return api.get<T>("/jobs/search", params);
 }
 

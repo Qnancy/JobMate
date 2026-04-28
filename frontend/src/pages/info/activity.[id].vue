@@ -1,18 +1,34 @@
 <template>
     <main class="pb-4">
       <div class="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 py-6">
-        <span 
-          :class="[
-            'px-3 py-1 text-xs font-medium rounded-full',
-            selectedFair.status === '报名中' ? 'bg-green-400 text-green-900' : 
-            selectedFair.status === '即将开始' ? 'bg-orange-400 text-orange-900' : 
-            'bg-gray-400 text-gray-900'
-          ]"
-        >
-          {{ selectedFair.status }}
-        </span>
-        <h2 class="text-xl font-bold mt-3">{{ selectedFair.title }}</h2>
-        <div class="mt-4 space-y-2 text-sm text-sky-100">
+        <div class="mb-3">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 text-white/90 hover:text-white active:opacity-80 transition"
+            aria-label="返回"
+            @click="goBack"
+          >
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            <span class="text-sm">返回</span>
+          </button>
+        </div>
+        <div class="flex flex-col items-start gap-3">
+          <span
+            :class="[
+              'shrink-0 px-3 py-1 text-xs font-medium rounded-full leading-none',
+              selectedFair.status === '报名中'
+                ? 'bg-green-400 text-green-900'
+                : selectedFair.status === '即将开始'
+                  ? 'bg-orange-400 text-orange-900'
+                  : 'bg-gray-400 text-gray-900',
+            ]"
+          >
+            {{ selectedFair.status }}
+          </span>
+          <h2 class="text-xl font-bold w-full">{{ selectedFair.title }}</h2>
+          <div class="w-full space-y-2 text-sm text-sky-100">
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -25,6 +41,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
             {{ selectedFair.location }}
+          </div>
           </div>
         </div>
       </div>
@@ -71,14 +88,14 @@
         >
           <svg 
             class="w-5 h-5" 
-            :class="favorites.fairs.includes(selectedFair.id) ? 'fill-sky-500' : ''"
+            :class="isFavorite ? 'fill-sky-500' : ''"
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
           </svg>
-          {{ favorites.fairs.includes(selectedFair.id) ? '已收藏' : '收藏' }}
+          {{ isFavorite ? '已收藏' : '收藏' }}
         </button>
         <button class="flex-[2] py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl font-bold">
           立即报名
@@ -87,15 +104,20 @@
     </main>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { showToast } from 'vant';
 import { getActivityById } from '@/services/activity';
-import { subscribe, unsubscribe } from '@/services/subscription';
 import { isSuccessResponse } from '@/utils/request';
+import { favoriteStore } from '@/utils/favoriteStore';
+import { navigateBackPreferFrom } from '@/utils/returnNavigation';
 
 const route = useRoute();
-const FAVORITE_KEY = 'jobmate_favorite_fairs';
+const router = useRouter();
+
+function goBack() {
+  navigateBackPreferFrom(router, route, { path: '/info', query: { tab: 'event' } });
+}
 
 type FairDetailView = {
   id: number;
@@ -121,22 +143,8 @@ const selectedFair = ref<FairDetailView>({
   companyList: []
 });
 
-const favorites = ref<{ fairs: number[] }>({ fairs: [] });
 const isLoading = ref(true);
-
-function readFavoriteIds() {
-  try {
-    const raw = localStorage.getItem(FAVORITE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.map((item) => Number(item)).filter((item) => !Number.isNaN(item)) : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeFavoriteIds(ids: number[]) {
-  localStorage.setItem(FAVORITE_KEY, JSON.stringify(ids));
-}
+const isFavorite = computed(() => favoriteStore.isFavorited('ACTIVITY', selectedFair.value.id));
 
 function getActivityStatus(time?: string | null) {
   if (!time) return '状态未知';
@@ -177,26 +185,18 @@ async function load() {
     showToast('获取活动详情失败');
   }
 
-  favorites.value.fairs = readFavoriteIds();
+  // 确认后端侧的收藏状态（登录时）
+  if (selectedFair.value.id) {
+    favoriteStore.syncForIds('ACTIVITY', [selectedFair.value.id]);
+  }
   isLoading.value = false;
 }
 
 function toggleFavorite(type: 'fair', id: number) {
-  if (!id) return;
-  if (type !== 'fair') return;
-  const numId = Number(id);
-  const ids = readFavoriteIds();
-  if (favorites.value.fairs.includes(numId)) {
-    const next = ids.filter((item) => item !== numId);
-    writeFavoriteIds(next);
-    favorites.value.fairs = next;
-    unsubscribe({ type: 'activity', id: numId }).catch(() => {});
-  } else {
-    if (!ids.includes(numId)) ids.push(numId);
-    writeFavoriteIds(ids);
-    favorites.value.fairs = ids;
-    subscribe({ type: 'activity', id: numId }).catch(() => {});
-  }
+  if (!id || type !== 'fair') return;
+  favoriteStore.toggle('ACTIVITY', Number(id)).catch(() => {
+    showToast('收藏操作失败');
+  });
 }
 
 onMounted(load);

@@ -82,7 +82,6 @@ import { isSuccessResponse } from '@/utils/request'
 const router = useRouter()
 
 const STORAGE_KEY = 'jobmate_login_admin_form'
-const ADMIN_LOGIN_SECRET = String(import.meta.env.VITE_ADMIN_LOGIN_SECRET || 'ADMINKEY').trim()
 const form = ref({ username: '', password: '', adminSecret: '' })
 const showPassword = ref(false)
 const showAdminSecret = ref(false)
@@ -135,19 +134,29 @@ async function onSubmit() {
   if (!form.value.username) return showToast('请输入用户名')
   if (!form.value.password || form.value.password.length < 6) return showToast('请输入至少 6 位密码')
   if (!form.value.adminSecret.trim()) return showToast('请输入管理员密钥')
-  if (form.value.adminSecret.trim() !== ADMIN_LOGIN_SECRET) return showToast('管理员密钥不正确')
 
-  const res = await auth.login(form.value.username.trim(), form.value.password)
-  if (!isSuccessResponse(res)) return showToast(res.message || '登录失败')
+  try {
+    const res = await auth.login(
+      form.value.username.trim(),
+      form.value.password,
+      form.value.adminSecret.trim(),
+    )
+    if (!isSuccessResponse(res)) {
+      if (res.message?.trim()) showToast(res.message)
+      return
+    }
 
-  if (res.data?.role !== 'ADMIN') {
-    auth.logout()
-    return showToast('该账号不是管理员')
+    if (res.data?.role !== 'ADMIN') {
+      auth.logout()
+      return showToast('该账号不是管理员')
+    }
+
+    localStorage.removeItem(STORAGE_KEY)
+    showToast('登录成功')
+    router.push({ path: '/admin' })
+  } catch {
+    showToast('登录请求失败，请稍后重试')
   }
-
-  localStorage.removeItem(STORAGE_KEY)
-  showToast('登录成功')
-  router.push({ path: '/admin' })
 }
 </script>
 
