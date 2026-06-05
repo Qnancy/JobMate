@@ -13,7 +13,6 @@
           label="用户名"
           placeholder="请输入管理员用户名"
           clearable
-          @update:value="saveForm"
           class="custom-field"
         />
 
@@ -24,7 +23,6 @@
           label="密码"
           placeholder="请输入管理员密码"
           clearable
-          @update:value="saveForm"
           class="custom-field"
         >
           <template #right-icon>
@@ -41,7 +39,6 @@
           label="管理员密钥"
           placeholder="请输入管理员密钥"
           clearable
-          @update:value="saveForm"
           class="custom-field"
         >
           <template #right-icon>
@@ -73,62 +70,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watchEffect } from 'vue'
-import { useRouter, onBeforeRouteLeave } from 'vue-router'
+import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import * as auth from '@/services/auth'
 import { isSuccessResponse } from '@/utils/request'
 
 const router = useRouter()
+const route = useRoute()
 
-const STORAGE_KEY = 'jobmate_login_admin_form'
+/** 登录成功后跳转：支持守卫传入的 ?redirect=（仅允许站内同源路径） */
+function resolvePostLoginPath(): string {
+  const raw = route.query.redirect
+  if (typeof raw !== 'string' || !raw.startsWith('/') || raw.startsWith('//')) {
+    return '/admin'
+  }
+  return raw
+}
+
+const LEGACY_LOGIN_ADMIN_FORM_KEY = 'jobmate_login_admin_form'
 const form = ref({ username: '', password: '', adminSecret: '' })
 const showPassword = ref(false)
 const showAdminSecret = ref(false)
 
-function saveForm() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      username: form.value.username,
-      password: form.value.password,
-      adminSecret: form.value.adminSecret,
-    }))
-  } catch (e) {
-    console.error('保存表单数据失败:', e)
-  }
+try {
+  localStorage.removeItem(LEGACY_LOGIN_ADMIN_FORM_KEY)
+} catch {
+  /* ignore */
 }
-
-onMounted(() => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (!saved) return
-    const parsed = JSON.parse(saved)
-    if (parsed.username) form.value.username = parsed.username
-    if (parsed.password) form.value.password = parsed.password
-    if (parsed.adminSecret) form.value.adminSecret = parsed.adminSecret
-  } catch (e) {
-    console.error('恢复表单数据失败:', e)
-  }
-})
-
-let saveTimer: ReturnType<typeof setTimeout> | null = null
-function debouncedSave() {
-  if (saveTimer) clearTimeout(saveTimer)
-  saveTimer = setTimeout(() => {
-    saveForm()
-  }, 300)
-}
-
-watchEffect(() => {
-  form.value.username
-  form.value.password
-  form.value.adminSecret
-  debouncedSave()
-})
-
-onBeforeRouteLeave(() => {
-  saveForm()
-})
 
 async function onSubmit() {
   if (!form.value.username) return showToast('请输入用户名')
@@ -151,9 +120,8 @@ async function onSubmit() {
       return showToast('该账号不是管理员')
     }
 
-    localStorage.removeItem(STORAGE_KEY)
     showToast('登录成功')
-    router.push({ path: '/admin' })
+    router.replace(resolvePostLoginPath())
   } catch {
     showToast('登录请求失败，请稍后重试')
   }

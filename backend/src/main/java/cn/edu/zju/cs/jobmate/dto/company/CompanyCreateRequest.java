@@ -22,9 +22,20 @@ public class CompanyCreateRequest implements CreateRequest<Company> {
     @NotNull(message = "Company type cannot be null")
     private CompanyType type;
 
+    /** 企业简介，可选 */
+    private String description;
+
     @Override
     public Company toModel() {
-        return new Company(name, type);
+        return new Company(name, type, blankToNull(description));
+    }
+
+    private static String blankToNull(String s) {
+        if (s == null) {
+            return null;
+        }
+        String t = s.trim();
+        return t.isEmpty() ? null : t;
     }
 
     @Override
@@ -32,6 +43,7 @@ public class CompanyCreateRequest implements CreateRequest<Company> {
         return "CompanyCreateRequest{" +
                 "name=" + ToStringUtil.wrap(name) +
                 ", type=" + type +
+                ", description=" + ToStringUtil.wrap(description) +
                 '}';
     }
 }

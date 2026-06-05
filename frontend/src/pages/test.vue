@@ -145,7 +145,7 @@
             <span class="text-xs text-gray-400">{{ job.publishDate }}</span>
             <button 
               @click="viewJobDetail(job)"
-              class="text-sky-500 text-sm font-medium hover:text-sky-600"
+              :class="DETAIL_VIEW_CTA_CLASS"
             >
               查看详情 →
             </button>
@@ -218,12 +218,16 @@
                 </svg>
               </button>
             </div>
-            <button 
-              @click="viewFairDetail(fair)"
-              class="w-full mt-4 py-2.5 bg-gradient-to-r from-sky-500 to-blue-500 text-white rounded-lg font-medium hover:from-sky-600 hover:to-blue-600 transition"
-            >
-              查看详情
-            </button>
+            <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+              <span></span>
+              <button
+                type="button"
+                @click="viewFairDetail(fair)"
+                :class="DETAIL_VIEW_CTA_CLASS"
+              >
+                查看详情 →
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -390,6 +394,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { DETAIL_VIEW_CTA_CLASS } from '@/constants/detailViewCta'
 
 // 页面状态
 const currentPage = ref('home')

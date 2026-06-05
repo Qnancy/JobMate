@@ -15,6 +15,8 @@ public class CompanyResponse {
     private Long id;
     private String name;
     private CompanyType type;
+    /** 企业简介，可能为空 */
+    private String description;
 
     /**
      * Convert from Company entity to CompanyResponse
@@ -23,10 +25,11 @@ public class CompanyResponse {
         if (company == null) {
             return null;
         }
-        return new CompanyResponse(
-            company.getId(),
-            company.getName(),
-            company.getType()
-        );
+        return CompanyResponse.builder()
+            .id(company.getId())
+            .name(company.getName())
+            .type(company.getType())
+            .description(company.getDescription())
+            .build();
     }
 }

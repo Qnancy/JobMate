@@ -30,6 +30,14 @@ public class BusinessException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
+    /**
+     * Constructor with a custom message (keeps {@link ErrorCode} for HTTP mapping).
+     */
+    public BusinessException(ErrorCode errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
     public ErrorCode getErrorCode() {
         return errorCode;
     }

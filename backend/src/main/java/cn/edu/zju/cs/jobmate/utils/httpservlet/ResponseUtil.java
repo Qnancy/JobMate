@@ -2,6 +2,7 @@ package cn.edu.zju.cs.jobmate.utils.httpservlet;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,11 @@ public class ResponseUtil {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.setStatus(apiResponse.getCode());
+        // 避免 JSON API 返回 401 时仍带 WWW-Authenticate（例如 Basic realm），
+        // 经 Vite 同源代理后浏览器会弹出系统级「登录 localhost 」对话框。
+        if (apiResponse.getCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+            response.setHeader(HttpHeaders.WWW_AUTHENTICATE, null);
+        }
         try {
             mapper.writeValue(response.getOutputStream(), apiResponse);
         } catch (IOException e) {

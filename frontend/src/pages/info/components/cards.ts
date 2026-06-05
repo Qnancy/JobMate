@@ -21,6 +21,8 @@ export type JobCard = {
   description: string;
   publishDate: string;
   deadlineText: string | null;
+  /** 发布企业 id，用于跳转企业简介 */
+  companyId: number | null;
   category: string;
 };
 
@@ -98,6 +100,7 @@ export function mapJobToCard(job: Job): JobCard {
     publishDate: formatRelativeTime(job.created_at),
     deadlineText: formatDeadline(job.deadline),
     category: (recruit && RECRUIT_TYPE_MAP[recruit]) || '全部',
+    companyId: job.company?.id ?? null,
   };
 }
 

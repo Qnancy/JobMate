@@ -14,7 +14,6 @@
           label="用户名"
           placeholder="请输入用户名"
           clearable
-          @update:value="saveForm"
           class="custom-field"
           required
         />
@@ -25,7 +24,6 @@
           label="密码"
           placeholder="请输入至少6位密码"
           clearable
-          @update:value="saveForm"
           class="custom-field"
           required
         >
@@ -42,7 +40,6 @@
           label="确认密码"
           placeholder="请再次输入密码"
           clearable
-          @update:value="saveForm"
           class="custom-field"
           required
         >
@@ -59,7 +56,6 @@
           label="管理员密钥"
           placeholder="请输入管理员密钥"
           clearable
-          @update:value="saveForm"
           class="custom-field"
           required
         >
@@ -88,55 +84,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { useRouter, onBeforeRouteLeave } from 'vue-router'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { showToast, showSuccessToast, showFailToast } from 'vant'
 import * as auth from '@/services/auth'
 import { isSuccessResponse } from '@/utils/request'
 
 const router = useRouter()
 
-const STORAGE_KEY = 'jobmate_register_admin_form'
+const LEGACY_REGISTER_ADMIN_FORM_KEY = 'jobmate_register_admin_form'
 const form = ref({ username: '', password: '', confirmPassword: '', adminSecret: '' })
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const showAdminSecret = ref(false)
 
-function saveForm() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(form.value))
-  } catch (e) {
-    console.error('保存表单数据失败:', e)
-  }
+try {
+  localStorage.removeItem(LEGACY_REGISTER_ADMIN_FORM_KEY)
+} catch {
+  /* ignore */
 }
-
-onMounted(() => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (!saved) return
-    const parsed = JSON.parse(saved)
-    form.value.username = parsed.username || ''
-    form.value.password = parsed.password || ''
-    form.value.confirmPassword = parsed.confirmPassword || ''
-    form.value.adminSecret = parsed.adminSecret || ''
-  } catch (e) {
-    console.error('恢复表单数据失败:', e)
-  }
-})
-
-let saveTimer: ReturnType<typeof setTimeout> | null = null
-function debouncedSave() {
-  if (saveTimer) clearTimeout(saveTimer)
-  saveTimer = setTimeout(() => {
-    saveForm()
-  }, 300)
-}
-
-watch(form, debouncedSave, { deep: true })
-
-onBeforeRouteLeave(() => {
-  saveForm()
-})
 
 async function onSubmit() {
   if (!form.value.username.trim()) return showToast({ type: 'fail', message: '用户名不能为空' })
@@ -153,7 +119,6 @@ async function onSubmit() {
 
   if (!isSuccessResponse(res)) return showFailToast(res.message || '注册失败')
 
-  localStorage.removeItem(STORAGE_KEY)
   showSuccessToast({
     message: '管理员注册成功，请登录',
     duration: 1000,

@@ -23,12 +23,21 @@ public class Company extends BaseEntity {
     @Column(name = "type")
     private CompanyType type;
 
+    /** 企业简介（长文本，可选） */
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
     protected Company() {
     }
 
     public Company(String name, CompanyType type) {
+        this(name, type, null);
+    }
+
+    public Company(String name, CompanyType type, String description) {
         this.name = name;
         this.type = type;
+        this.description = description;
     }
 
     public String getName() {
@@ -47,12 +56,21 @@ public class Company extends BaseEntity {
         this.type = type;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return "Company{" +
                 "id=" + getId() +
                 ", name=" + ToStringUtil.wrap(name) +
                 ", type=" + type +
+                ", description=" + ToStringUtil.wrap(description) +
                 '}';
     }
 }

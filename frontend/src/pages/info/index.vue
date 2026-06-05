@@ -1,116 +1,135 @@
 <template>
-  <van-search
-    v-model="searchValue"
-    placeholder="搜索职位或活动"
-    @search="$router.push({
-      'path':'/info/search',
-      'query':{
-        'keywords': searchValue
-      }
-    })"
-  />
-  <div class="min-h-screen bg-gradient-to-b from-sky-50 to-white">
-  <van-tabs v-model:active="activeName" class="glass-tabs">
-    <van-tab title="职位" name="job">
-      <main class="p-4">
-        <div class="space-y-3 pb-3 mb-4">
-          <div>
-            <p class="text-xs text-slate-500 font-medium mb-1.5 px-0.5">招聘类型</p>
-            <div class="flex gap-2 overflow-x-auto scrollbar-hide items-center">
-              <button
-                v-for="tag in jobTags"
-                :key="'r-' + tag"
-                type="button"
-                @click="onSelectJobTag(tag)"
-                :class="[
-                  'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition shrink-0',
-                  selectedJobTag === tag
-                    ? 'bg-sky-500 text-white'
-                    : 'bg-white text-gray-600 border border-gray-200',
-                ]"
-              >
-                {{ tag }}
-              </button>
-            </div>
+  <div class="min-h-screen bg-gradient-to-b from-sky-50 to-white pb-8">
+    <header
+      class="sticky top-0 z-10 bg-white/85 backdrop-blur-md border-b border-sky-100 px-3 py-3 flex items-center gap-2 shadow-sm"
+    >
+      <button
+        type="button"
+        class="inline-flex items-center gap-1 text-sky-600 text-sm font-medium px-1 py-1 rounded-lg active:bg-sky-50"
+        @click="goBack"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        返回
+      </button>
+      <h1 class="text-[17px] font-bold text-gray-800 flex-1 text-center pr-16">{{ infoPageTitle }}</h1>
+    </header>
+
+    <div class="px-3 pt-2">
+      <van-search
+        v-model="searchValue"
+        shape="round"
+        :placeholder="searchPlaceholder"
+        @search="
+          $router.push({
+            path: '/info/search',
+            query: {
+              keywords: searchValue,
+              scope: isEventList ? 'activity' : 'job',
+            },
+          })
+        "
+      />
+    </div>
+
+    <main v-if="!isEventList" class="px-3 pb-6 pt-4">
+      <div class="space-y-3 pb-3 mb-4">
+        <div>
+          <p class="text-xs text-slate-500 font-medium mb-1.5 px-0.5">招聘类型</p>
+          <div class="flex gap-2 overflow-x-auto scrollbar-hide items-center">
+            <button
+              v-for="tag in jobTags"
+              :key="'r-' + tag"
+              type="button"
+              @click="onSelectJobTag(tag)"
+              :class="[
+                'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition shrink-0',
+                selectedJobTag === tag
+                  ? 'bg-sky-500 text-white'
+                  : 'bg-white text-gray-600 border border-gray-200',
+              ]"
+            >
+              {{ tag }}
+            </button>
           </div>
-          <div>
-            <p class="text-xs text-slate-500 font-medium mb-1.5 px-0.5">学历要求</p>
-            <div class="flex gap-2 overflow-x-auto scrollbar-hide items-center">
-              <button
-                v-for="opt in educationOptions"
-                :key="'e-' + opt.tier"
-                type="button"
-                @click="onSelectEducationTier(opt.tier)"
-                :class="[
-                  'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition shrink-0',
-                  selectedEducationTier === opt.tier
-                    ? 'bg-violet-500 text-white'
-                    : 'bg-white text-gray-600 border border-gray-200',
-                ]"
-              >
-                {{ opt.label }}
-              </button>
-            </div>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 font-medium mb-1.5 px-0.5">学历要求</p>
+          <div class="flex gap-2 overflow-x-auto scrollbar-hide items-center">
+            <button
+              v-for="opt in educationOptions"
+              :key="'e-' + opt.tier"
+              type="button"
+              @click="onSelectEducationTier(opt.tier)"
+              :class="[
+                'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition shrink-0',
+                selectedEducationTier === opt.tier
+                  ? 'bg-violet-500 text-white'
+                  : 'bg-white text-gray-600 border border-gray-200',
+              ]"
+            >
+              {{ opt.label }}
+            </button>
           </div>
         </div>
+      </div>
 
-        <div class="space-y-3">
-          <JobItemCard
-            v-for="job in filteredJobs"
-            :key="job.id"
-            :job="job"
-            :favorited="isJobFavorited(job.id)"
-            :animating="animatingJobs.has(job.id)"
-            @view="viewJobDetail"
-            @toggle-favorite="toggleFavorite('job', $event)"
-          />
-        </div>
-      </main>
-    </van-tab>
+      <div class="space-y-3">
+        <JobItemCard
+          v-for="job in filteredJobs"
+          :key="job.id"
+          :job="job"
+          :favorited="isJobFavorited(job.id)"
+          :animating="animatingJobs.has(job.id)"
+          @view="viewJobDetail"
+          @toggle-favorite="toggleFavorite('job', $event)"
+        />
+      </div>
+    </main>
 
-    <van-tab title="活动" name="event">
-      <main class="p-4">
-        <div class="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
-          <button
-            v-for="tag in fairTags"
-            :key="tag"
-            @click="onSelectFairTag(tag)"
-            :class="[
-              'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition',
-              selectedFairTag === tag
-                ? 'bg-sky-500 text-white'
-                : 'bg-white text-gray-600 border border-gray-200',
-            ]"
-          >
-            {{ tag }}
-          </button>
-        </div>
+    <main v-else class="px-3 pb-6 pt-4">
+      <div class="flex gap-2 overflow-x-auto scrollbar-hide items-center pb-2 mb-3">
+        <button
+          v-for="tag in fairTags"
+          :key="tag"
+          type="button"
+          @click="onSelectFairTag(tag)"
+          :class="[
+            'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition',
+            selectedFairTag === tag
+              ? 'bg-sky-500 text-white'
+              : 'bg-white text-gray-600 border border-gray-200',
+          ]"
+        >
+          {{ tag }}
+        </button>
+      </div>
 
-        <div class="space-y-4">
-          <FairItemCard
-            v-for="fair in filteredFairs"
-            :key="fair.id"
-            :fair="fair"
-            :favorited="isActivityFavorited(fair.id)"
-            :animating="animatingFairs.has(fair.id)"
-            @view="viewFairDetail"
-            @toggle-favorite="toggleFavorite('fair', $event)"
-          />
-        </div>
-      </main>
-    </van-tab>
-  </van-tabs>
+      <div class="space-y-4">
+        <FairItemCard
+          v-for="fair in filteredFairs"
+          :key="fair.id"
+          :fair="fair"
+          :favorited="isActivityFavorited(fair.id)"
+          :animating="animatingFairs.has(fair.id)"
+          @view="viewFairDetail"
+          @toggle-favorite="toggleFavorite('fair', $event)"
+        />
+      </div>
+    </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { withReturnFrom } from "@/utils/returnNavigation";
 import { showToast } from "vant";
 import {
-  getJob,
+  searchJob,
   jobMatchesEducationTier,
+  type Job,
   type JobEducationFilterTier,
 } from "@/services/job";
 import { getActivities } from "@/services/activity";
@@ -129,7 +148,6 @@ const router = useRouter();
 const route = useRoute();
 
 const searchValue = ref("");
-const activeName = ref("job");
 
 const jobTags = ['全部', '实习', '校招'];
 const selectedJobTag = ref("全部");
@@ -208,15 +226,49 @@ function queryParamToFairTag(raw: string | undefined): string {
   }
 }
 
+/** Vue Router 下单个 query 可能是 string | string[]，统一取首个有效字符串 */
+function firstQueryString(
+  v: string | string[] | null | undefined
+): string | undefined {
+  if (v == null) return undefined;
+  if (Array.isArray(v)) {
+    const x = v.find((s) => typeof s === "string" && s.length > 0);
+    return x;
+  }
+  return typeof v === "string" ? v : undefined;
+}
+
+/** 与首页入口一致：`tab=job` 为职位列表；`tab=event` / `tab=fair` 为活动列表 */
+const isEventList = computed(() => {
+  const tabRaw = firstQueryString(route.query.tab) || "job";
+  return tabRaw === "fair" || tabRaw === "event";
+});
+
+const infoPageTitle = computed(() =>
+  isEventList.value ? "招聘活动" : "所有职位",
+);
+
+const searchPlaceholder = computed(() =>
+  isEventList.value ? "搜索活动" : "搜索职位",
+);
+
+function goBack() {
+  if (typeof window !== "undefined" && window.history.length > 1) {
+    router.back();
+    return;
+  }
+  router.replace("/");
+}
+
 function isInfoListRoute(): boolean {
   return route.path === "/info" || route.path === "/info/";
 }
 
-/** 把当前 Tab 与筛选写入 URL，便于详情页 `from` 带回后恢复 */
+/** 把当前列表类型与筛选写入 URL，便于详情页 `from` 带回后恢复 */
 function syncFiltersToUrl() {
   if (!isInfoListRoute() || syncingFromRoute) return;
   const q: Record<string, string> = {};
-  if (activeName.value === "event") {
+  if (isEventList.value) {
     q.tab = "event";
     const fc = fairTagToQueryParam(selectedFairTag.value);
     if (fc !== "all") q.fair_cat = fc;
@@ -232,17 +284,11 @@ function syncFiltersToUrl() {
 
 function applyRouteToFilters() {
   if (!isInfoListRoute()) return;
-  const tabRaw = (route.query.tab as string) || "job";
   syncingFromRoute = true;
   try {
-    if (tabRaw === "fair" || tabRaw === "event") {
-      activeName.value = "event";
-    } else {
-      activeName.value = "job";
-    }
-    selectedJobTag.value = queryParamToJobTag(route.query.job_cat as string | undefined);
-    selectedEducationTier.value = queryParamToEducationTier(route.query.edu as string | undefined);
-    selectedFairTag.value = queryParamToFairTag(route.query.fair_cat as string | undefined);
+    selectedJobTag.value = queryParamToJobTag(firstQueryString(route.query.job_cat));
+    selectedEducationTier.value = queryParamToEducationTier(firstQueryString(route.query.edu));
+    selectedFairTag.value = queryParamToFairTag(firstQueryString(route.query.fair_cat));
   } finally {
     nextTick(() => {
       syncingFromRoute = false;
@@ -295,28 +341,64 @@ const filteredFairs = computed(() => {
   return fairs.value.filter((fair) => fair.type === selectedFairTag.value);
 });
 
-async function fetchJobsAndActivities() {
+/**
+ * 职位列表必须用 /jobs/search：服务端按类型筛选并排序。
+ * 原先 GET /jobs 只取库表前 N 条，若前 N 条全是校招，选「实习」后客户端再筛会得到 0 条。
+ */
+async function fetchJobList() {
   try {
-    const [jobRes, activityRes] = await Promise.all([
-      getJob({ page: 1, page_size: 50 }),
-      getActivities({ page: 1, page_size: 50 }),
-    ]);
+    const tag = selectedJobTag.value;
+    let rawJobs: Job[] = [];
 
-    if (isSuccessResponse(jobRes)) {
-      jobs.value = (jobRes.data?.content || []).map(mapJobToCard);
+    if (tag === "实习") {
+      const res = await searchJob({ page: 1, page_size: 50, recruit_type: "INTERN" });
+      if (isSuccessResponse(res)) {
+        rawJobs = res.data?.content || [];
+      }
+    } else if (tag === "校招") {
+      const [rCampus, rExp] = await Promise.all([
+        searchJob({ page: 1, page_size: 50, recruit_type: "CAMPUS" }),
+        searchJob({ page: 1, page_size: 50, recruit_type: "EXPERIENCED" }),
+      ]);
+      const byId = new Map<number, Job>();
+      if (isSuccessResponse(rCampus)) {
+        for (const j of rCampus.data?.content || []) byId.set(j.id, j);
+      }
+      if (isSuccessResponse(rExp)) {
+        for (const j of rExp.data?.content || []) byId.set(j.id, j);
+      }
+      rawJobs = [...byId.values()].sort((a, b) => {
+        const ta = new Date((a.created_at || "").replace(" ", "T")).getTime();
+        const tb = new Date((b.created_at || "").replace(" ", "T")).getTime();
+        return (Number.isNaN(tb) ? 0 : tb) - (Number.isNaN(ta) ? 0 : ta);
+      });
+    } else {
+      const res = await searchJob({ page: 1, page_size: 50 });
+      if (isSuccessResponse(res)) {
+        rawJobs = res.data?.content || [];
+      }
     }
+
+    jobs.value = rawJobs.map(mapJobToCard);
+    if (jobs.value.length > 0) {
+      favoriteStore.syncForIds("JOB", jobs.value.map((j) => j.id));
+    }
+  } catch {
+    showToast("加载职位失败");
+  }
+}
+
+async function fetchActivitiesList() {
+  try {
+    const activityRes = await getActivities({ page: 1, page_size: 50 });
     if (isSuccessResponse(activityRes)) {
       fairs.value = (activityRes.data?.content || []).map(mapActivityToCard);
     }
-
-    if (jobs.value.length > 0) {
-      favoriteStore.syncForIds('JOB', jobs.value.map((j) => j.id));
-    }
     if (fairs.value.length > 0) {
-      favoriteStore.syncForIds('ACTIVITY', fairs.value.map((f) => f.id));
+      favoriteStore.syncForIds("ACTIVITY", fairs.value.map((f) => f.id));
     }
-  } catch (error) {
-    showToast('加载列表失败');
+  } catch {
+    showToast("加载活动失败");
   }
 }
 
@@ -329,13 +411,23 @@ watch(
   { immediate: true },
 );
 
-watch(activeName, () => {
-  syncFiltersToUrl();
-});
+watch(
+  selectedJobTag,
+  async () => {
+    if (!isInfoListRoute() || isEventList.value) return;
+    await fetchJobList();
+  },
+  { immediate: true },
+);
 
-onMounted(() => {
-  fetchJobsAndActivities();
-});
+watch(
+  isEventList,
+  async (event) => {
+    if (!isInfoListRoute() || !event) return;
+    await fetchActivitiesList();
+  },
+  { immediate: true },
+);
 
 function viewJobDetail(job: JobCard) {
   router.push(withReturnFrom(`/info/job/${job.id}`, route));

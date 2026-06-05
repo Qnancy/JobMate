@@ -51,6 +51,20 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/admin/companies': RouteRecordInfo<
+      '/admin/companies',
+      '/admin/companies',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/admin/import': RouteRecordInfo<
+      '/admin/import',
+      '/admin/import',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/admin/jobs': RouteRecordInfo<
       '/admin/jobs',
       '/admin/jobs',
@@ -68,6 +82,20 @@ declare module 'vue-router/auto-routes' {
     '/info/activity.[id]': RouteRecordInfo<
       '/info/activity.[id]',
       '/info/activity/:id',
+      { id: ParamValue<true> },
+      { id: ParamValue<false> },
+      | never
+    >,
+    '/info/companies': RouteRecordInfo<
+      '/info/companies',
+      '/info/companies',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/info/company.[id]': RouteRecordInfo<
+      '/info/company.[id]',
+      '/info/company/:id',
       { id: ParamValue<true> },
       { id: ParamValue<false> },
       | never
@@ -193,6 +221,18 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/admin/companies.vue': {
+      routes:
+        | '/admin/companies'
+      views:
+        | never
+    }
+    'src/pages/admin/import.vue': {
+      routes:
+        | '/admin/import'
+      views:
+        | never
+    }
     'src/pages/admin/jobs.vue': {
       routes:
         | '/admin/jobs'
@@ -208,6 +248,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/info/activity.[id].vue': {
       routes:
         | '/info/activity.[id]'
+      views:
+        | never
+    }
+    'src/pages/info/companies.vue': {
+      routes:
+        | '/info/companies'
+      views:
+        | never
+    }
+    'src/pages/info/company.[id].vue': {
+      routes:
+        | '/info/company.[id]'
       views:
         | never
     }

@@ -67,8 +67,10 @@ export function parseEducationRequirement(
 export type JobEducationFilterTier = "ALL" | "BACHELOR" | "MASTER" | "PHD";
 
 /**
- * 资讯页学历：按「岗位对学历门槛」分层筛选（含不限/本科可投岗）。
- * 避免库里多为 UNSPECIFIED 时选本科档列表为空。
+ * 按「我具备的学历能投哪些岗」匹配（非岗位文案字面一致）。
+ * - 本科：仅「不限」「本科起」岗（硕博起对本科生过严，不展示）。
+ * - 硕士：不含「仅博士起」岗。
+ * - 博士：可投全部档位（本科起/硕士起/博士起/不限均符合「博士能投」）。
  */
 export function jobMatchesEducationTier(
   key: EducationRequirement,
@@ -86,16 +88,33 @@ export function jobMatchesEducationTier(
         key === "MASTER_AND_ABOVE"
       );
     case "PHD":
-      return key === "PHD_AND_ABOVE";
+      return true;
   }
 }
 
-/** 招聘类型：兼容 snake_case / camelCase */
+const RECRUIT_TYPE_KEYS = new Set<string>(["INTERN", "CAMPUS", "EXPERIENCED"]);
+
+function coerceRecruitTypeRaw(v: unknown): string | undefined {
+  if (v == null) return undefined;
+  if (typeof v === "object" && v !== null && "name" in v) {
+    return coerceRecruitTypeRaw((v as { name: unknown }).name);
+  }
+  if (typeof v !== "string") return undefined;
+  let s = v.trim();
+  if (s.startsWith("RecruitType.")) {
+    s = s.slice("RecruitType.".length);
+  }
+  s = s.toUpperCase();
+  if (RECRUIT_TYPE_KEYS.has(s)) return s;
+  return undefined;
+}
+
+/** 招聘类型：兼容 snake_case / camelCase、Jackson 枚举串、嵌套 name */
 export function parseRecruitType(
   raw: Partial<Job> & Record<string, unknown>
 ): string | undefined {
   const v = raw.recruit_type ?? raw.recruitType;
-  return typeof v === "string" ? v : undefined;
+  return coerceRecruitTypeRaw(v);
 }
 
 export interface Job {

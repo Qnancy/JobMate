@@ -20,7 +20,7 @@
         <input 
           v-model="searchQuery"
           type="text" 
-          placeholder="搜索职位、招聘会..."
+          placeholder="搜索职位、活动或企业..."
                     class="w-full px-4 py-3 pl-12 rounded-xl border-2 focus:outline-none shadow-sm home-search-input"
           @keyup.enter="handleSearch"
         />
@@ -48,13 +48,23 @@
         </button>
         
         <button 
-          @click="$router.push('/info?tab=fair')"
+          @click="$router.push('/info?tab=event')"
                     class="w-full text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 home-feature-btn"
         >
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
                     查看活动
+        </button>
+
+        <button 
+          @click="$router.push('/info/companies')"
+                    class="w-full text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 home-feature-btn"
+        >
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          查看公司
         </button>
       </div>
 
@@ -113,7 +123,10 @@ const router = useRouter()
 function handleSearch() {
     const keyword = (searchQuery.value || '').trim()
     if (!keyword) return
-    router.push({ path: '/info/search', query: { keywords: keyword } })
+    router.push({
+      path: '/info/search',
+      query: { keywords: keyword, scope: 'all' },
+    })
 }
 
 // 平台统计数据

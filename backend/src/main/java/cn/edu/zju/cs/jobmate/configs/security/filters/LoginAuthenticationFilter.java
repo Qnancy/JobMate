@@ -7,6 +7,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -119,9 +120,13 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         AuthenticationException failed
     ) throws IOException, ServletException {
         ErrorCode error = switch (failed) {
+            case UsernameNotFoundException ex -> {
+                log.info("Login failed: account not found");
+                yield ErrorCode.LOGIN_ACCOUNT_NOT_FOUND;
+            }
             case BadCredentialsException ex -> {
-                log.info("Authentication failed: {}", failed.getMessage());
-                yield ErrorCode.INVALID_AUTHENTICATION;
+                log.info("Login failed: bad credentials");
+                yield ErrorCode.INVALID_PASSWORD;
             }
             default -> {
                 log.error("Authentication failed: {}", failed.getMessage());

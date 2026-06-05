@@ -14,7 +14,17 @@
             <span class="min-w-0 flex-1 font-bold text-lg leading-snug">{{ job.title }}</span>
           </div>
         </h3>
-        <p class="text-sky-600 font-medium mt-1">{{ job.company }}</p>
+        <p class="text-sky-600 font-medium mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span>{{ job.company }}</span>
+          <router-link
+            v-if="companyIntroTo"
+            :to="companyIntroTo"
+            class="text-xs text-violet-600 font-medium shrink-0"
+            @click.stop
+          >
+            企业简介
+          </router-link>
+        </p>
         <div class="flex flex-wrap gap-2 mt-2">
           <JobLocationChips :location="job.location" :max-tags="2" />
           <span class="px-2 py-0.5 bg-violet-50 text-violet-700 text-xs rounded">{{ job.educationLabel }}</span>
@@ -50,7 +60,7 @@
       </div>
       <button
         @click.stop="emit('view', job)"
-        class="text-sky-500 text-sm font-medium hover:text-sky-600"
+        :class="DETAIL_VIEW_CTA_CLASS"
       >
         查看详情 →
       </button>
@@ -60,13 +70,25 @@
 
 <script setup lang="ts">
 import JobLocationChips from '@/components/JobLocationChips.vue';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { DETAIL_VIEW_CTA_CLASS } from '@/constants/detailViewCta';
+import { withReturnFrom } from '@/utils/returnNavigation';
 import type { JobCard } from './cards';
 
-defineProps<{
+const route = useRoute();
+
+const props = defineProps<{
   job: JobCard;
   favorited: boolean;
   animating: boolean;
 }>();
+
+const companyIntroTo = computed(() => {
+  const id = props.job.companyId;
+  if (!id) return null;
+  return withReturnFrom(`/info/company/${id}`, route);
+});
 
 /** 校招 / 实习 等招聘类型，与 {@link cards.RECRUIT_TYPE_MAP} 展示文案一致 */
 function recruitBadgeClass(type: string) {

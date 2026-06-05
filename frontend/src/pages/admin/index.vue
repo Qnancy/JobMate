@@ -23,7 +23,18 @@
 
       <div class="mt-4 mx-auto max-w-[640px] bg-white rounded-2xl overflow-hidden">
         <van-cell-group inset>
-          <van-cell is-link :to="{ path: '/admin/jobs' }">
+          <van-cell is-link @click="goAdmin('/admin/companies')">
+            <template #title>
+              <div class="flex items-center gap-2 text-left">
+                <van-icon name="shop-o" class="text-[22px] text-[#2f69c8]" />
+                <span class="text-[#1f2a44] text-[15px] font-semibold">企业管理</span>
+              </div>
+            </template>
+            <template #label>
+              <span class="text-xs text-gray-400">维护企业简介（资讯页展示）</span>
+            </template>
+          </van-cell>
+          <van-cell is-link @click="goAdmin('/admin/jobs')">
             <template #title>
               <div class="flex items-center gap-2 text-left">
                 <van-icon name="todo-list-o" class="text-[22px] text-[#2f69c8]" />
@@ -34,7 +45,7 @@
               <span class="text-xs text-gray-400">独立页面：列表、发布、编辑、删除</span>
             </template>
           </van-cell>
-          <van-cell is-link :to="{ path: '/admin/activities' }">
+          <van-cell is-link @click="goAdmin('/admin/activities')">
             <template #title>
               <div class="flex items-center gap-2 text-left">
                 <van-icon name="bullhorn-o" class="text-[22px] text-[#2f69c8]" />
@@ -43,6 +54,17 @@
             </template>
             <template #label>
               <span class="text-xs text-gray-400">独立页面：列表、发布、编辑、删除</span>
+            </template>
+          </van-cell>
+          <van-cell is-link @click="goAdmin('/admin/import')">
+            <template #title>
+              <div class="flex items-center gap-2 text-left">
+                <van-icon name="upgrade" class="text-[22px] text-[#2f69c8]" />
+                <span class="text-[#1f2a44] text-[15px] font-semibold">问卷 CSV 导入</span>
+              </div>
+            </template>
+            <template #label>
+              <span class="text-xs text-gray-400">导入金数据用人单位信息采集 CSV</span>
             </template>
           </van-cell>
           <van-cell is-link @click="showUserMgr = true">
@@ -107,6 +129,10 @@ function goHome() {
   router.push("/");
 }
 
+function goAdmin(path: string) {
+  router.push(path);
+}
+
 watch(showUserMgr, (val) => {
   if (val) fetchUsers();
 });
@@ -135,7 +161,7 @@ onMounted(() => {
   const currentUser = auth.currentUser();
   if (!currentUser) {
     showToast("请先登录");
-    router.push({ path: "/my/login-admin", query: { redirect: router.currentRoute.value.fullPath } });
+    router.push({ path: "/my/login-admin" });
     return;
   }
   if (currentUser.role !== "ADMIN") {

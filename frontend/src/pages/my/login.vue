@@ -15,7 +15,6 @@
           label="用户名"
           placeholder="请输入用户名"
           clearable
-          @update:value="saveForm"
           class="custom-field"
         />
 
@@ -26,7 +25,6 @@
           label="密码"
           placeholder="请输入密码"
           clearable
-          @update:value="saveForm"
           class="custom-field"
         >
           <template #right-icon>
@@ -73,9 +71,8 @@
 </template>
 
 <script setup lang="ts">
-// 原有逻辑保持不变，无需修改
-import { ref, onMounted, watchEffect } from "vue";
-import { useRouter, onBeforeRouteLeave } from "vue-router";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { showToast } from "vant";
 import * as auth from "@/services/auth";
 import { isSuccessResponse } from "@/utils/request";
@@ -84,51 +81,15 @@ import ZjuLoginButton from "@/components/zju-login-button.vue";
 
 const router = useRouter();
 
-const STORAGE_KEY = "jobmate_login_form";
+const LEGACY_LOGIN_FORM_KEY = "jobmate_login_form";
 const form = ref({ username: "", password: "" });
 const showPassword = ref(false);
 
-function saveForm() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      username: form.value.username,
-      password: form.value.password
-    }));
-  } catch (e) {
-    console.error("保存表单数据失败:", e);
-  }
+try {
+  localStorage.removeItem(LEGACY_LOGIN_FORM_KEY);
+} catch {
+  /* ignore */
 }
-
-onMounted(() => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.username) form.value.username = parsed.username;
-      if (parsed.password) form.value.password = parsed.password;
-    }
-  } catch (e) {
-    console.error("恢复表单数据失败:", e);
-  }
-});
-
-let saveTimer: ReturnType<typeof setTimeout> | null = null;
-function debouncedSave() {
-  if (saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    saveForm();
-  }, 300);
-}
-
-watchEffect(() => {
-  form.value.username;
-  form.value.password;
-  debouncedSave();
-});
-
-onBeforeRouteLeave(() => {
-  saveForm();
-});
 
 async function onSubmit() {
   if (!form.value.username) return showToast("请输入用户名");
@@ -142,13 +103,9 @@ async function onSubmit() {
       return;
     }
 
-    localStorage.removeItem(STORAGE_KEY);
     showToast("登录成功");
-    const redirect = router.currentRoute.value.query.redirect;
-    const target = typeof redirect === "string"
-      ? redirect
-      : (res?.data?.role === 'ADMIN' ? '/admin' : '/my');
-    router.push({ path: target });
+    const target = res?.data?.role === "ADMIN" ? "/admin" : "/my";
+    router.replace(target);
   } catch {
     /* auth.login 已尽量返回结构体；此处兜底避免未捕获异常导致界面异常 */
     showToast("登录请求失败，请稍后重试");

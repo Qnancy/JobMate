@@ -7,7 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -63,15 +65,17 @@ public class SecurityConfig {
     }
 
     /**
-     * Authentication manager used in authentication processes.
-     * 
-     * @param config AuthenticationConfiguration instance
-     * @return AuthenticationManager instance
-     * @throws Exception if an error occurs during configuration
+     * 登录认证：对用户不存在与密码错误区分异常类型（{@link DaoAuthenticationProvider#setHideUserNotFoundExceptions}）。
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(
+            UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder
+    ) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder);
+        provider.setUserDetailsService(userDetailsService);
+        provider.setHideUserNotFoundExceptions(false);
+        return new ProviderManager(provider);
     }
 
     /**
@@ -109,7 +113,10 @@ public class SecurityConfig {
      * @throws Exception if an error occurs during configuration
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            AuthenticationManager authenticationManager
+    ) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -128,7 +135,7 @@ public class SecurityConfig {
             )
             .addFilterAt(
                 new LoginAuthenticationFilter(
-                    authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)),
+                    authenticationManager,
                     responder,
                     mapper,
                     jwtTokenProvider,

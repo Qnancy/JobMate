@@ -1,5 +1,5 @@
 <template>
-    <main class="pb-4">
+  <main class="min-h-screen bg-gradient-to-b from-sky-50 to-white pb-6">
       <div class="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 py-6">
         <button
           type="button"
@@ -12,24 +12,28 @@
           </svg>
           <span class="text-sm">返回</span>
         </button>
-        <h2 class="text-xl font-bold">{{ job.title }}</h2>
-        <p class="text-sky-100 mt-1">{{ job.company }}</p>
-        <div class="flex flex-wrap gap-2 mt-3">
-          <span
-            v-for="(city, i) in locationCities"
-            :key="'loc-' + i"
-            class="px-3 py-1 bg-white/20 rounded-full text-sm"
-          >{{ city }}</span>
-          <span class="px-3 py-1 bg-white/20 rounded-full text-sm">{{ job.type }}</span>
-          <span class="px-3 py-1 bg-white/20 rounded-full text-sm">{{ job.educationLabel }}</span>
-          <span v-if="job.deadlineText" class="px-3 py-1 bg-white/20 rounded-full text-sm">{{ job.deadlineText }}</span>
-        </div>
-        <p class="text-2xl font-bold mt-4 text-yellow-300">{{ job.salary }}</p>
-        <p v-if="job.publishText" class="text-xs text-sky-100/80 mt-2">{{ job.publishText }}</p>
+        <div v-if="loading" class="text-sky-100 text-sm">加载中…</div>
+        <template v-else>
+          <h1 class="text-xl font-bold leading-snug">{{ job.title }}</h1>
+          <p class="text-sky-100 mt-1">{{ job.company }}</p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span
+              v-for="(city, i) in locationCities"
+              :key="'loc-' + i"
+              class="px-3 py-1 bg-white/20 rounded-full text-sm"
+            >{{ city }}</span>
+            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">{{ job.type }}</span>
+            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">{{ job.educationLabel }}</span>
+            <span v-if="job.deadlineText" class="px-3 py-1 bg-white/20 rounded-full text-sm">{{ job.deadlineText }}</span>
+          </div>
+          <p class="text-2xl font-bold mt-4 text-yellow-300">{{ job.salary }}</p>
+          <p v-if="job.publishText" class="text-xs text-sky-100/80 mt-2">{{ job.publishText }}</p>
+        </template>
       </div>
 
+      <template v-if="!loading">
       <div class="p-4 space-y-4">
-        <div class="bg-white rounded-xl p-4 shadow-md">
+        <div class="bg-white rounded-xl p-4 shadow-md border border-sky-50">
           <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
             <span class="w-1 h-5 bg-sky-500 rounded-full"></span>
             职位详情
@@ -38,7 +42,7 @@
           <div class="text-gray-600 text-sm leading-relaxed" v-html="job.fullDescription"></div>
         </div>
 
-        <div class="bg-white rounded-xl p-4 shadow-md">
+        <div class="bg-white rounded-xl p-4 shadow-md border border-sky-50">
           <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
             <span class="w-1 h-5 bg-sky-500 rounded-full"></span>
             学历要求
@@ -46,7 +50,7 @@
           <p class="text-gray-700 text-sm">{{ job.educationLabel }}</p>
         </div>
 
-        <div class="bg-white rounded-xl p-4 shadow-md">
+        <div class="bg-white rounded-xl p-4 shadow-md border border-sky-50">
           <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
             <span class="w-1 h-5 bg-sky-500 rounded-full"></span>
             投递方式
@@ -74,33 +78,42 @@
           </p>
         </div>
 
-        <div class="bg-white rounded-xl p-4 shadow-md">
+        <div
+          class="bg-white rounded-xl p-4 shadow-md border border-sky-50"
+          :class="
+            job.companyId
+              ? 'group hover:shadow-lg transition cursor-pointer active:opacity-95'
+              : ''
+          "
+          role="button"
+          :tabindex="job.companyId ? 0 : -1"
+          @click="goCompanyDetail"
+          @keydown.enter.prevent="goCompanyDetail"
+        >
           <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
             <span class="w-1 h-5 bg-sky-500 rounded-full"></span>
             公司信息
           </h3>
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-sky-100 rounded-lg flex items-center justify-center">
+            <div class="w-12 h-12 shrink-0 bg-sky-100 rounded-lg flex items-center justify-center">
               <span class="text-sky-600 font-bold text-lg">{{ job.company.charAt(0) }}</span>
             </div>
-            <div>
-              <p class="font-medium text-gray-800">{{ job.company }}</p>
-              <p class="text-sm text-gray-500">{{ job.companyType }} · {{ job.companySize }}</p>
-              <button
-                v-if="job.companyId"
-                type="button"
-                class="mt-2 text-sm text-sky-600 font-medium"
-                @click="goCompanyJobs"
-              >
-                查看该公司全部职位
-              </button>
+            <div class="min-w-0 flex-1">
+              <p class="font-medium text-gray-800 truncate">{{ job.company }}</p>
+              <p class="text-sm text-gray-500">{{ job.companyType }}</p>
             </div>
+          </div>
+          <div
+            v-if="job.companyId"
+            class="flex justify-end items-center mt-3 pt-3 border-t border-gray-100"
+          >
+            <span :class="DETAIL_VIEW_CTA_GROUP_CLASS">查看详情 →</span>
           </div>
         </div>
       </div>
 
       <!-- 操作栏 -->
-      <div class="bg-white border-t border-gray-100 p-4 flex gap-3 mt-4">
+      <div class="bg-white border-t border-gray-100 p-4 flex gap-3 mt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <button 
           @click="toggleFavorite('job', job.id)"
           class="flex-1 py-3 border-2 border-sky-500 text-sky-500 rounded-xl font-medium flex items-center justify-center gap-2"
@@ -124,6 +137,7 @@
           立即投递
         </button>
       </div>
+      </template>
     </main>
 </template>
 
@@ -131,14 +145,13 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { showToast } from 'vant';
+import { DETAIL_VIEW_CTA_GROUP_CLASS } from '@/constants/detailViewCta';
 import { getJobById, labelEducationRequirement, parseEducationRequirement } from '@/services/job';
+import { labelCompanyType } from '@/services/company';
 import { isSuccessResponse } from '@/utils/request';
 import { favoriteStore } from '@/utils/favoriteStore';
 import { parseJobLocations } from '@/utils/jobLocation';
-import {
-  navigateBackPreferFrom,
-  withReturnFromQuery,
-} from '@/utils/returnNavigation';
+import { navigateBackPreferFrom, withReturnFrom } from '@/utils/returnNavigation';
 
 // const props = defineProps({
 //   params: {
@@ -157,7 +170,7 @@ type JobDetailView = {
   id: number;
   title: string;
   company: string;
-  /** 有值时可跳转「该公司全部职位」 */
+  /** 有值时可跳转企业详情（简介 + 在招职位） */
   companyId: number | null;
   location: string;
   type: string;
@@ -188,6 +201,7 @@ const job = ref<JobDetailView>({
   educationLabel: '不限',
 });
 
+const loading = ref(true);
 const heartAnimating = ref(false);
 const isFavorite = computed(() => favoriteStore.isFavorited('JOB', job.value.id));
 
@@ -246,8 +260,12 @@ function buildDeadlineText(deadline?: string | null): string | null {
 
 async function loadJob() {
   const id = Number(route.params.id);
-  if (!id) return;
+  if (!id) {
+    loading.value = false;
+    return;
+  }
 
+  loading.value = true;
   try {
     const res = await getJobById(id);
     if (!isSuccessResponse(res) || !res.data) {
@@ -265,7 +283,7 @@ async function loadJob() {
       type: mapRecruitType(item.recruit_type),
       salary: '面议',
       fullDescription: item.extra || '暂无职位描述',
-      companyType: item.company?.type || '未知',
+      companyType: labelCompanyType(item.company?.type),
       companySize: '规模未知',
       link: item.link || '',
       publishText: buildPublishText(item.created_at, item.updated_at),
@@ -279,6 +297,8 @@ async function loadJob() {
     favoriteStore.syncForIds('JOB', [item.id]);
   } catch {
     showToast('获取职位详情失败');
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -286,22 +306,10 @@ onMounted(async () => {
   await loadJob();
 });
 
-function goCompanyJobs() {
+function goCompanyDetail() {
   const id = job.value.companyId;
   if (!id) return;
-  const name = job.value.company || '';
-  router.push(
-    withReturnFromQuery(
-      {
-        path: '/info/search',
-        query: {
-          company_id: String(id),
-          ...(name ? { company_name: name } : {}),
-        },
-      },
-      route,
-    ),
-  );
+  router.push(withReturnFrom(`/info/company/${id}`, route));
 }
 
 function toggleFavorite(type: 'job', id: number) {

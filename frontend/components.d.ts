@@ -12,6 +12,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AdminManageLayout: typeof import('./src/components/admin/AdminManageLayout.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     JobLocationChips: typeof import('./src/components/JobLocationChips.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -21,6 +22,8 @@ declare module 'vue' {
     VanCell: typeof import('vant/es')['Cell']
     VanCellGroup: typeof import('vant/es')['CellGroup']
     VanCheckbox: typeof import('vant/es')['Checkbox']
+    VanCollapse: typeof import('vant/es')['Collapse']
+    VanCollapseItem: typeof import('vant/es')['CollapseItem']
     VanDialog: typeof import('vant/es')['Dialog']
     VanEmpty: typeof import('vant/es')['Empty']
     VanField: typeof import('vant/es')['Field']
@@ -32,6 +35,9 @@ declare module 'vue' {
     VanNavBar: typeof import('vant/es')['NavBar']
     VanPicker: typeof import('vant/es')['Picker']
     VanPopup: typeof import('vant/es')['Popup']
+    VanPullRefresh: typeof import('vant/es')['PullRefresh']
+    VanRadio: typeof import('vant/es')['Radio']
+    VanRadioGroup: typeof import('vant/es')['RadioGroup']
     VanSearch: typeof import('vant/es')['Search']
     VanSwipeCell: typeof import('vant/es')['SwipeCell']
     VanSwitch: typeof import('vant/es')['Switch']
@@ -46,6 +52,7 @@ declare module 'vue' {
 
 // For TSX support
 declare global {
+  const AdminManageLayout: typeof import('./src/components/admin/AdminManageLayout.vue')['default']
   const HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
   const JobLocationChips: typeof import('./src/components/JobLocationChips.vue')['default']
   const RouterLink: typeof import('vue-router')['RouterLink']
@@ -55,6 +62,8 @@ declare global {
   const VanCell: typeof import('vant/es')['Cell']
   const VanCellGroup: typeof import('vant/es')['CellGroup']
   const VanCheckbox: typeof import('vant/es')['Checkbox']
+  const VanCollapse: typeof import('vant/es')['Collapse']
+  const VanCollapseItem: typeof import('vant/es')['CollapseItem']
   const VanDialog: typeof import('vant/es')['Dialog']
   const VanEmpty: typeof import('vant/es')['Empty']
   const VanField: typeof import('vant/es')['Field']
@@ -66,6 +75,9 @@ declare global {
   const VanNavBar: typeof import('vant/es')['NavBar']
   const VanPicker: typeof import('vant/es')['Picker']
   const VanPopup: typeof import('vant/es')['Popup']
+  const VanPullRefresh: typeof import('vant/es')['PullRefresh']
+  const VanRadio: typeof import('vant/es')['Radio']
+  const VanRadioGroup: typeof import('vant/es')['RadioGroup']
   const VanSearch: typeof import('vant/es')['Search']
   const VanSwipeCell: typeof import('vant/es')['SwipeCell']
   const VanSwitch: typeof import('vant/es')['Switch']

@@ -1,34 +1,42 @@
 <template>
-  <van-nav-bar title="职位管理" left-arrow @click-left="goBack" />
-
-  <div class="min-h-screen bg-w pt-2 px-3 pb-28">
-    <div class="mx-auto max-w-[min(820px,96vw)] flex justify-end mb-3">
+  <AdminManageLayout
+    v-model:keyword="keyword"
+    v-model:refreshing="refreshing"
+    title="职位管理"
+    search-placeholder="搜索职位名称、公司名、工作地点…"
+    @back="goBack"
+    @refresh="onListRefresh"
+    @apply-search="applySearch"
+  >
+    <template #toolbar>
       <van-button size="small" type="primary" icon="plus" @click="openJobEdit(null)">发布职位</van-button>
-    </div>
+    </template>
 
-    <div class="mx-auto max-w-[min(820px,96vw)] bg-white rounded-2xl shadow-sm">
-      <van-cell-group :border="false">
-        <van-cell
-          v-for="job in jobList"
-          :key="job.id"
-          :title="job.position"
-          :label="`${recruitTypeMap[job.recruit_type] || job.recruit_type} · ${jobService.labelEducationRequirement(job.education_requirement)} · ${job.location || '暂无地点'} · 发布于 ${(job.created_at || '').slice(0, 10) || '—'}${job.deadline ? ' · 截止 ' + job.deadline.slice(0, 16) : ''}`"
-        >
-          <template #value>
-            <div class="flex flex-col gap-1 items-end shrink-0" @click.stop>
-              <van-button size="small" type="primary" plain @click="openJobEdit(job)">编辑</van-button>
-              <van-button size="small" type="danger" plain @click="handleDeleteJob(job.id)">删除</van-button>
-            </div>
-          </template>
-        </van-cell>
-      </van-cell-group>
+    <van-cell-group :border="false">
+      <van-cell
+        v-for="job in jobList"
+        :key="job.id"
+        :title="job.position"
+        :label="`${recruitTypeMap[job.recruit_type] || job.recruit_type} · ${jobService.labelEducationRequirement(job.education_requirement)} · ${job.location || '暂无地点'} · ${job.company?.name ? job.company.name + ' · ' : ''}发布于 ${(job.created_at || '').slice(0, 10) || '—'}${job.deadline ? ' · 截止 ' + job.deadline.slice(0, 16) : ''}`"
+      >
+        <template #value>
+          <div class="flex flex-col gap-1 items-end shrink-0" @click.stop>
+            <van-button size="small" type="primary" plain @click="openJobEdit(job)">编辑</van-button>
+            <van-button size="small" type="danger" plain @click="handleDeleteJob(job.id)">删除</van-button>
+          </div>
+        </template>
+      </van-cell>
+    </van-cell-group>
+    <div v-if="!jobLoading && jobList.length === 0" class="text-center text-gray-400 py-12 text-sm">暂无职位数据</div>
+
+    <template #after-card>
       <div ref="jobSentinel" class="h-6" />
-      <div v-if="jobLoading" class="text-center text-gray-400 py-3">加载中...</div>
-      <div v-else-if="!jobHasMore && jobList.length" class="text-center text-gray-400 py-3">没有更多</div>
-      <div v-if="!jobLoading && jobList.length === 0" class="text-center text-gray-400 py-12">暂无职位数据</div>
-    </div>
+      <div v-if="jobLoading" class="text-center text-gray-400 py-3 text-sm">加载中…</div>
+      <div v-else-if="!jobHasMore && jobList.length" class="text-center text-gray-400 py-3 text-sm">没有更多了</div>
+    </template>
+  </AdminManageLayout>
 
-    <van-dialog
+  <van-dialog
       v-model:show="showJobEdit"
       class="admin-editor-wide-dialog"
       width="min(820px, 94vw)"
@@ -188,13 +196,13 @@
         </div>
       </div>
     </van-dialog>
-  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, reactive, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import { showToast, showSuccessToast } from "vant";
+import { showToast, showSuccessToast, showConfirmDialog } from "vant";
+import AdminManageLayout from "@/components/admin/AdminManageLayout.vue";
 import * as auth from "@/services/auth";
 import * as jobService from "@/services/job";
 import * as companyService from "@/services/company";
@@ -202,6 +210,9 @@ import * as promotionParse from "@/services/promotionParse";
 import { isSuccessResponse } from "@/utils/request";
 
 const router = useRouter();
+
+const keyword = ref("");
+const refreshing = ref(false);
 
 const jobList = ref<jobService.Job[]>([]);
 const jobPage = ref(1);
@@ -299,7 +310,7 @@ function assertAdmin() {
   const u = auth.currentUser();
   if (!u) {
     showToast("请先登录");
-    router.replace({ path: "/my/login-admin", query: { redirect: router.currentRoute.value.fullPath } });
+    router.replace({ path: "/my/login-admin" });
     return false;
   }
   if (u.role !== "ADMIN") {
@@ -320,13 +331,29 @@ function setupJobObserver() {
   if (jobSentinel.value) jobObserver.observe(jobSentinel.value);
 }
 
+function applySearch() {
+  jobPage.value = 1;
+  jobHasMore.value = true;
+  jobList.value = [];
+  nextTick(() => {
+    setupJobObserver();
+    fetchMoreJobs();
+  });
+}
+
+function onListRefresh() {
+  applySearch();
+}
+
 async function fetchMoreJobs() {
   if (jobLoading.value || !jobHasMore.value) return;
   jobLoading.value = true;
   try {
-    const res = await jobService.getJob({
+    const kw = keyword.value.trim();
+    const res = await jobService.searchJob({
       page: jobPage.value,
       page_size: jobPageSize.value,
+      ...(kw ? { keyword: kw } : {}),
     });
     if (isSuccessResponse(res)) {
       const list = res.data?.content || [];
@@ -339,8 +366,10 @@ async function fetchMoreJobs() {
     }
   } catch (e) {
     console.error(e);
+  } finally {
+    jobLoading.value = false;
+    refreshing.value = false;
   }
-  jobLoading.value = false;
 }
 
 async function runAiParseJob() {
@@ -482,10 +511,7 @@ async function saveJob(): Promise<boolean> {
       }
       showSuccessToast("发布成功");
     }
-    jobPage.value = 1;
-    jobHasMore.value = true;
-    jobList.value = [];
-    await fetchMoreJobs();
+    applySearch();
     return true;
   } catch {
     showToast("操作失败");
@@ -507,22 +533,14 @@ function handleDeleteJob(id: number) {
         return;
       }
       showSuccessToast("删除成功");
-      jobPage.value = 1;
-      jobHasMore.value = true;
-      jobList.value = [];
-      await fetchMoreJobs();
+      applySearch();
     })
     .catch(() => {});
 }
 
 onMounted(async () => {
   if (!assertAdmin()) return;
-  jobPage.value = 1;
-  jobHasMore.value = true;
-  jobList.value = [];
-  await nextTick();
-  setupJobObserver();
-  await fetchMoreJobs();
+  applySearch();
 });
 
 onUnmounted(() => {

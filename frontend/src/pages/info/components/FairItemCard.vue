@@ -63,8 +63,8 @@
       <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
         <span></span>
         <button
-          @click="emit('view', fair)"
-          class="text-sky-500 text-sm font-medium hover:text-sky-600"
+          @click.stop="emit('view', fair)"
+          :class="DETAIL_VIEW_CTA_CLASS"
         >
           查看详情 →
         </button>
@@ -74,6 +74,7 @@
 </template>
 
 <script setup lang="ts">
+import { DETAIL_VIEW_CTA_CLASS } from '@/constants/detailViewCta';
 import type { FairCard } from './cards';
 
 defineProps<{

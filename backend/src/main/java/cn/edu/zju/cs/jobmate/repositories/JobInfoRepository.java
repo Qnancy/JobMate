@@ -1,5 +1,6 @@
 package cn.edu.zju.cs.jobmate.repositories;
 
+import cn.edu.zju.cs.jobmate.enums.RecruitType;
 import cn.edu.zju.cs.jobmate.models.JobInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,11 +10,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 /**
  * DAO for {@link JobInfo}.
  */
 @Repository
 public interface JobInfoRepository extends JpaRepository<JobInfo, Long>, JpaSpecificationExecutor<JobInfo> {
+
+    Optional<JobInfo> findFirstByCompanyIdAndPositionAndRecruitType(
+        Long companyId,
+        String position,
+        RecruitType recruitType
+    );
 
     /**
      * Full-text keyword search backed by MySQL 8 ngram FULLTEXT indexes on

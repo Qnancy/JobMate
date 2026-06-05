@@ -163,7 +163,7 @@ public class AuthenticationTest {
             .content(mapper.writeValueAsString(loginRequest)))
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.code").value(401))
-            .andExpect(jsonPath("$.message").value("用户名或密码错误"));
+            .andExpect(jsonPath("$.message").value("用户不存在"));
     }
 
     @Test
@@ -193,7 +193,7 @@ public class AuthenticationTest {
             .content(mapper.writeValueAsString(loginRequest)))
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.code").value(401))
-            .andExpect(jsonPath("$.message").value("用户名或密码错误"));
+            .andExpect(jsonPath("$.message").value("密码错误"));
     }
 
     @Test

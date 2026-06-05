@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from 'vue-router/auto-routes'
 import { TOKEN_KEY } from '@/utils/request'
+import * as auth from '@/services/auth'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -21,11 +22,23 @@ const PUBLIC_PATHS = new Set([
 router.beforeEach((to) => {
   const token = localStorage.getItem(TOKEN_KEY)
   const isPublicPage = PUBLIC_PATHS.has(to.path)
+  const isAdminSection = to.path === '/admin' || to.path.startsWith('/admin/')
 
   if (!token && !isPublicPage) {
-    return {
-      path: '/my/login',
-      query: { redirect: to.fullPath },
+    // 未登录访问后台：去管理员登录页并带上回跳，避免被误送到普通用户登录
+    if (isAdminSection) {
+      return { path: '/my/login-admin', query: { redirect: to.fullPath } }
+    }
+    return { path: '/my/login' }
+  }
+
+  if (isAdminSection && token) {
+    const u = auth.currentUser()
+    if (!u) {
+      return { path: '/my/login-admin', query: { redirect: to.fullPath } }
+    }
+    if (u.role !== 'ADMIN') {
+      return { path: '/' }
     }
   }
 

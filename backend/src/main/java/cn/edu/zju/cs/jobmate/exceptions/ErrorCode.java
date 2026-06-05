@@ -27,6 +27,10 @@ public enum ErrorCode {
     AUTHENTICATION_FAILED (3002, HttpStatus.UNAUTHORIZED, "认证失败"),
     INVALID_TOKEN         (3003, HttpStatus.UNAUTHORIZED, "无效或过期的令牌"),
     INVALID_AUTHENTICATION(3004, HttpStatus.UNAUTHORIZED, "用户名或密码错误"),
+    /** 登录时用户名在系统中不存在（与普通接口 {@link #USER_NOT_FOUND} 区分，此处固定返回 401） */
+    LOGIN_ACCOUNT_NOT_FOUND(3006, HttpStatus.UNAUTHORIZED, "用户不存在"),
+    /** 登录时密码与用户名不匹配 */
+    INVALID_PASSWORD      (3007, HttpStatus.UNAUTHORIZED, "密码错误"),
 
     // Permission Errors.
     INVALID_ADMIN_SECRET(4001, HttpStatus.FORBIDDEN, "无效的管理员密钥"),

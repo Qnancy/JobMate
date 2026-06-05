@@ -8,7 +8,7 @@ import * as auth from "@/services/auth";
 const route = useRoute();
 const router = useRouter();
 
-/** 登录/注册相关页隐藏底栏 */
+/** 登录/注册相关页、资讯「详情」子页隐藏底栏，全屏独立浏览（与 /info/company/:id 一致） */
 const hideTabbar = computed(() => {
   const authPages = new Set([
     "/my/login",
@@ -16,7 +16,16 @@ const hideTabbar = computed(() => {
     "/my/login-admin",
     "/my/register-admin",
   ]);
-  return authPages.has(route.path);
+  if (authPages.has(route.path)) return true;
+  const p = route.path;
+  if (
+    /^\/info\/company\/[^/]+$/.test(p) ||
+    /^\/info\/job\/[^/]+$/.test(p) ||
+    /^\/info\/activity\/[^/]+$/.test(p)
+  ) {
+    return true;
+  }
+  return false;
 });
 
 /** 当前用户为管理员：底栏仅「主页 + 管理员后台」，不展示「我的」 */
@@ -69,6 +78,20 @@ function onTabChange(name: string | number) {
   else if (n === "admin") router.push("/admin");
   else if (n === "my") router.push("/my");
 }
+
+/**
+ * 在 /info 等子页时，底栏「主页」早已高亮，再点不会触发 @change，需单独处理才能回到门户首页 /。
+ * 已在 / 时则滚回顶部，避免无反馈。
+ */
+function onHomeTabClick() {
+  if (route.path === "/" || route.path === "") {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    return;
+  }
+  router.push("/");
+}
 </script>
 
 <template>
@@ -89,7 +112,7 @@ function onTabChange(name: string | number) {
     safe-area-inset-bottom
     @change="onTabChange"
   >
-    <van-tabbar-item name="home" icon="home-o">主页</van-tabbar-item>
+    <van-tabbar-item name="home" icon="home-o" @click="onHomeTabClick">主页</van-tabbar-item>
     <van-tabbar-item v-if="showAdminTab" name="admin" icon="apps-o">管理员后台</van-tabbar-item>
     <van-tabbar-item v-else name="my" icon="friends-o">我的</van-tabbar-item>
   </van-tabbar>

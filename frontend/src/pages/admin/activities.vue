@@ -1,34 +1,42 @@
 <template>
-  <van-nav-bar title="活动管理" left-arrow @click-left="goBack" />
-
-  <div class="min-h-screen bg-w pt-2 px-3 pb-28">
-    <div class="mx-auto max-w-[min(820px,96vw)] flex justify-end mb-3">
+  <AdminManageLayout
+    v-model:keyword="keyword"
+    v-model:refreshing="refreshing"
+    title="宣讲会管理"
+    search-placeholder="搜索活动标题、公司名、地点…"
+    @back="goBack"
+    @refresh="onListRefresh"
+    @apply-search="applySearch"
+  >
+    <template #toolbar>
       <van-button size="small" type="primary" icon="plus" @click="openActivityEdit(null)">发布活动</van-button>
-    </div>
+    </template>
 
-    <div class="mx-auto max-w-[min(820px,96vw)] bg-white rounded-2xl shadow-sm">
-      <van-cell-group :border="false">
-        <van-cell
-          v-for="act in activityList"
-          :key="act.id"
-          :title="act.title"
-          :label="`${ACTIVITY_TYPE_LABELS[act.type] || '宣讲会'} · ${act.time} · ${act.location || '暂无地点'}`"
-        >
-          <template #value>
-            <div class="flex flex-col gap-1 items-end shrink-0" @click.stop>
-              <van-button size="small" type="primary" plain @click="openActivityEdit(act)">编辑</van-button>
-              <van-button size="small" type="danger" plain @click="handleDeleteActivity(act.id)">删除</van-button>
-            </div>
-          </template>
-        </van-cell>
-      </van-cell-group>
+    <van-cell-group :border="false">
+      <van-cell
+        v-for="act in activityList"
+        :key="act.id"
+        :title="act.title"
+        :label="`${ACTIVITY_TYPE_LABELS[act.type] || '宣讲会'} · ${act.time} · ${act.location || '暂无地点'}${act.company?.name ? ' · ' + act.company.name : ''}`"
+      >
+        <template #value>
+          <div class="flex flex-col gap-1 items-end shrink-0" @click.stop>
+            <van-button size="small" type="primary" plain @click="openActivityEdit(act)">编辑</van-button>
+            <van-button size="small" type="danger" plain @click="handleDeleteActivity(act.id)">删除</van-button>
+          </div>
+        </template>
+      </van-cell>
+    </van-cell-group>
+    <div v-if="!activityLoading && activityList.length === 0" class="text-center text-gray-400 py-12 text-sm">暂无活动数据</div>
+
+    <template #after-card>
       <div ref="activitySentinel" class="h-6" />
-      <div v-if="activityLoading" class="text-center text-gray-400 py-3">加载中...</div>
-          <div v-else-if="!activityHasMore && activityList.length" class="text-center text-gray-400 py-3">没有更多</div>
-      <div v-if="!activityLoading && activityList.length === 0" class="text-center text-gray-400 py-12">暂无活动数据</div>
-    </div>
+      <div v-if="activityLoading" class="text-center text-gray-400 py-3 text-sm">加载中…</div>
+      <div v-else-if="!activityHasMore && activityList.length" class="text-center text-gray-400 py-3 text-sm">没有更多了</div>
+    </template>
+  </AdminManageLayout>
 
-    <van-dialog
+  <van-dialog
       v-model:show="showActivityEdit"
       class="admin-editor-wide-dialog"
       width="min(820px, 94vw)"
@@ -146,13 +154,13 @@
         </div>
       </div>
     </van-dialog>
-  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, reactive, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import { showToast, showSuccessToast } from "vant";
+import { showToast, showSuccessToast, showConfirmDialog } from "vant";
+import AdminManageLayout from "@/components/admin/AdminManageLayout.vue";
 import * as auth from "@/services/auth";
 import * as activityService from "@/services/activity";
 import { ACTIVITY_TYPE_LABELS } from "@/services/activity";
@@ -174,6 +182,9 @@ function onConfirmActivityType({ selectedOptions }: { selectedOptions: { value: 
 }
 
 const router = useRouter();
+
+const keyword = ref("");
+const refreshing = ref(false);
 
 const activityList = ref<activityService.Activity[]>([]);
 const activityPage = ref(1);
@@ -229,7 +240,7 @@ function assertAdmin() {
   const u = auth.currentUser();
   if (!u) {
     showToast("请先登录");
-    router.replace({ path: "/my/login-admin", query: { redirect: router.currentRoute.value.fullPath } });
+    router.replace({ path: "/my/login-admin" });
     return false;
   }
   if (u.role !== "ADMIN") {
@@ -250,13 +261,29 @@ function setupActivityObserver() {
   if (activitySentinel.value) activityObserver.observe(activitySentinel.value);
 }
 
+function applySearch() {
+  activityPage.value = 1;
+  activityHasMore.value = true;
+  activityList.value = [];
+  nextTick(() => {
+    setupActivityObserver();
+    fetchMoreActivities();
+  });
+}
+
+function onListRefresh() {
+  applySearch();
+}
+
 async function fetchMoreActivities() {
   if (activityLoading.value || !activityHasMore.value) return;
   activityLoading.value = true;
   try {
-    const res = await activityService.getActivities({
+    const kw = keyword.value.trim();
+    const res = await activityService.searchActivities({
       page: activityPage.value,
       page_size: activityPageSize.value,
+      ...(kw ? { keyword: kw } : {}),
     });
     if (isSuccessResponse(res)) {
       const list = res.data?.content || [];
@@ -269,8 +296,10 @@ async function fetchMoreActivities() {
     }
   } catch (e) {
     console.error(e);
+  } finally {
+    activityLoading.value = false;
+    refreshing.value = false;
   }
-  activityLoading.value = false;
 }
 
 async function runAiParseActivity() {
@@ -394,10 +423,7 @@ async function saveActivity(): Promise<boolean> {
       }
       showSuccessToast("发布成功");
     }
-    activityPage.value = 1;
-    activityHasMore.value = true;
-    activityList.value = [];
-    await fetchMoreActivities();
+    applySearch();
     return true;
   } catch {
     showToast("操作失败");
@@ -419,22 +445,14 @@ function handleDeleteActivity(id: number) {
         return;
       }
       showSuccessToast("删除成功");
-      activityPage.value = 1;
-      activityHasMore.value = true;
-      activityList.value = [];
-      await fetchMoreActivities();
+      applySearch();
     })
     .catch(() => {});
 }
 
 onMounted(async () => {
   if (!assertAdmin()) return;
-  activityPage.value = 1;
-  activityHasMore.value = true;
-  activityList.value = [];
-  await nextTick();
-  setupActivityObserver();
-  await fetchMoreActivities();
+  applySearch();
 });
 
 onUnmounted(() => {
